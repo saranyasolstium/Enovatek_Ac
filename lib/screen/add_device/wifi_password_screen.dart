@@ -14,13 +14,11 @@ class WifiPasswordScreen extends StatefulWidget {
 }
 
 class WifiPasswordScreenState extends State<WifiPasswordScreen> {
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
         child: Column(
           children: [
@@ -45,30 +43,42 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
               height: 50,
             ),
             Center(
-            
               child: Text(
-              textAlign:TextAlign.center,
+                textAlign: TextAlign.center,
                 'Select a Wi-Fi network from the list \n to connect air conditioner.',
                 style: GoogleFonts.roboto(
-                    fontSize: 16,
-                    color: ConstantColors.mainlyTextColor),
+                    fontSize: 16, color: ConstantColors.mainlyTextColor),
               ),
             ),
             const SizedBox(
               height: 80,
             ),
-           Padding(
+           
+            Container(
+              margin: const EdgeInsets.only(left: 20),
               padding: const EdgeInsets.only(left: 20, right: 0),
+              decoration: BoxDecoration(
+                color: ConstantColors.inputColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
               child: TextField(
-                style: GoogleFonts.roboto(
-                  color: ConstantColors.mainlyTextColor,
-                  fontWeight: FontWeight.w500,
-                ),
-                decoration: InputDecorationStyle.textFieldDecoration(
-                  placeholder: "Your_Wi-Fi_name",
+                autocorrect: false,
+                textAlignVertical: TextAlignVertical.center,
+                decoration: InputDecoration(
+                  suffixIcon: const Icon(
+                    Icons.expand_more,
+                    color: ConstantColors.mainlyTextColor,
+                  ),
+                  border: InputBorder.none,
+                  hintStyle: GoogleFonts.roboto(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  hintText: 'Your_Wi-Fi_name'
                 ),
               ),
             ),
+
             const SizedBox(
               height: 30,
             ),
@@ -87,18 +97,18 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
             const SizedBox(
               height: 80,
             ),
-           
-             const Center(
+
+            const Center(
               child: SizedBox(
-              width: 150,
-              height: 50,
-              child: RoundedButton(
-                text: "Connect",
-                backgroundColor: ConstantColors.borderButtonColor,
-                textColor: ConstantColors.whiteColor,
-                naviagtionRoute: deviceName,),
-            ),
-          
+                width: 150,
+                height: 50,
+                child: RoundedButton(
+                  text: "Connect",
+                  backgroundColor: ConstantColors.borderButtonColor,
+                  textColor: ConstantColors.whiteColor,
+                  naviagtionRoute: deviceName,
+                ),
+              ),
             )
           ],
         ),

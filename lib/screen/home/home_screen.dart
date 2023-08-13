@@ -3,7 +3,6 @@ import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,16 +33,26 @@ class HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Image.asset(
-                        ImgPath.pngNotifcation,
-                        height: 30,
-                        width: 30,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, notificationRoute);
+                        },
+                        child: Image.asset(
+                          ImgPath.pngNotifcation,
+                          height: 30,
+                          width: 30,
+                        ),
                       ),
                       const SizedBox(width: 20),
-                      Image.asset(
-                        ImgPath.pngMenu,
-                        height: 30,
-                        width: 30,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, menuRoute);
+                        },
+                        child: Image.asset(
+                          ImgPath.pngMenu,
+                          height: 30,
+                          width: 30,
+                        ),
                       ),
                     ],
                   ),
@@ -76,207 +85,214 @@ class HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 30,
             ),
-            Container(
-                decoration: BoxDecoration(
-                    color: ConstantColors.whiteColor,
-                    borderRadius: BorderRadius.circular(30)),
-                height: 180,
-                child: Column(children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 20, top: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Lorem ipsum building',
-                          style: GoogleFonts.roboto(
-                              fontSize: 14,
-                              color: ConstantColors.mainlyTextColor),
-                        ),
-                        const SizedBox(width: 20),
-                        Image.asset(
-                          ImgPath.pngAdd,
-                          height: 25,
-                          width: 25,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: ConstantColors.mainlyTextColor,
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 10, top: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Device (10),\n ',
-                                style: GoogleFonts.roboto(
-                                    color: ConstantColors.mainlyTextColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14),
-                              ),
-                              TextSpan(
-                                text: 'Energy consumption: 1256 wh',
-                                style: GoogleFonts.roboto(
-                                    color: ConstantColors.mainlyTextColor,
-                                    fontSize: 12),
-                              ),
-                            ],
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, allDeviceRoute);
+              },
+              child: Container(
+                  decoration: BoxDecoration(
+                      color: ConstantColors.whiteColor,
+                      borderRadius: BorderRadius.circular(30)),
+                  height: 180,
+                  child: Column(children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 20, right: 20, top: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Lorem ipsum building',
+                            style: GoogleFonts.roboto(
+                                fontSize: 14,
+                                color: ConstantColors.mainlyTextColor),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          color: ConstantColors.mainlyTextColor,
-                          size: 20,
-                        ),
-                      ],
+                          const SizedBox(width: 20),
+                          Image.asset(
+                            ImgPath.pngAdd,
+                            height: 25,
+                            width: 25,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 0, top: 15),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: ConstantColors.mainlyTextColor,
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 20, right: 10, top: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           RichText(
                             text: TextSpan(
                               children: [
-                                const WidgetSpan(
-                                  child: Icon(
-                                    CupertinoIcons.thermometer,
-                                    color: ConstantColors.mainlyTextColor,
-                                    size: 20,
-                                  ),
+                                TextSpan(
+                                  text: 'Device (10),\n ',
+                                  style: GoogleFonts.roboto(
+                                      color: ConstantColors.mainlyTextColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14),
                                 ),
                                 TextSpan(
-                                  text: 'Temp\n',
+                                  text: 'Energy consumption: 1256 wh',
                                   style: GoogleFonts.roboto(
-                                      color: ConstantColors.mainlyTextColor),
-                                ),
-                                TextSpan(
-                                  text: '   24° C',
-                                  style: GoogleFonts.roboto(
-                                    color: ConstantColors.mainlyTextColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                      color: ConstantColors.mainlyTextColor,
+                                      fontSize: 12),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(width: 30),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                const WidgetSpan(
-                                  child: Icon(
-                                    CupertinoIcons.clock,
-                                    color: ConstantColors.mainlyTextColor,
-                                    size: 15,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: 'Mobile\n',
-                                  style: GoogleFonts.roboto(
-                                    color: ConstantColors.mainlyTextColor,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: '  Cool',
-                                  style: GoogleFonts.roboto(
-                                    color: ConstantColors.mainlyTextColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          const SizedBox(width: 20),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            color: ConstantColors.mainlyTextColor,
+                            size: 20,
                           ),
-                          const SizedBox(width:15),
-                          MaterialButton(
-                            onPressed: () {},
-                            color: ConstantColors.whiteColor,
-                            textColor: Colors.white,
-                            minWidth: 40,
-                            height: 40,
-                            shape: const CircleBorder(
-                              side: BorderSide(
-                                color: ConstantColors.borderButtonColor,
-                                width: 2,
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 15, right: 15, top: 15),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  WidgetSpan(
+                                    child: Image.asset(
+                                      ImgPath.pngThermometer,
+                                      width: 12,
+                                      height: 12,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Temp\n',
+                                    style: GoogleFonts.roboto(
+                                      color: ConstantColors.mainlyTextColor,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: '    24° C',
+                                    style: GoogleFonts.roboto(
+                                      color: ConstantColors.mainlyTextColor,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Image.asset(
-                              ImgPath.pngPlus,
-                              height: 15,
-                              width: 15,
-                            ),
-                          ),
-                          const SizedBox(width: 15),
-                          MaterialButton(
-                            onPressed: () {},
-                            color: ConstantColors.whiteColor,
-                            textColor: Colors.white,
-                            minWidth: 40,
-                            height: 40,
-                            shape: const CircleBorder(
-                              side: BorderSide(
-                                color: ConstantColors.borderButtonColor,
-                                width: 2,
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  WidgetSpan(
+                                    child: Image.asset(
+                                      ImgPath.pngAutoNew,
+                                      width: 12,
+                                      height: 12,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: ' Mobile\n',
+                                    style: GoogleFonts.roboto(
+                                      color: ConstantColors.mainlyTextColor,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: '    Cool',
+                                    style: GoogleFonts.roboto(
+                                      color: ConstantColors.mainlyTextColor,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Image.asset(
-                              ImgPath.pngRemove,
-                              height: 15,
-                              width: 15,
-                            ),
-                          ),
-                          const SizedBox(width: 15),
-                          MaterialButton(
-                            onPressed: () {},
-                            color: ConstantColors.greenColor,
-                            textColor: Colors.white,
-                            minWidth: 40,
-                            height: 40,
-                            shape: const CircleBorder(
-                              side: BorderSide(
-                                color: ConstantColors.greenColor,
-                                width: 2,
+                            MaterialButton(
+                              onPressed: () {},
+                              color: ConstantColors.whiteColor,
+                              textColor: Colors.white,
+                              minWidth: 30,
+                              height: 30,
+                              shape: const CircleBorder(
+                                side: BorderSide(
+                                  color: ConstantColors.borderButtonColor,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Image.asset(
+                                ImgPath.pngPlus,
+                                height: 15,
+                                width: 15,
                               ),
                             ),
-                            child: const Icon(Icons.power_settings_new,
-                                size: 20, color: ConstantColors.whiteColor),
-                          )
-                        ]),
-                  ),
-                ])),
-                const SizedBox(height: 30,),
+                            MaterialButton(
+                              onPressed: () {},
+                              color: ConstantColors.whiteColor,
+                              textColor: Colors.white,
+                              minWidth: 30,
+                              height: 30,
+                              shape: const CircleBorder(
+                                side: BorderSide(
+                                  color: ConstantColors.borderButtonColor,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Image.asset(
+                                ImgPath.pngRemove,
+                                height: 15,
+                                width: 15,
+                              ),
+                            ),
+                            MaterialButton(
+                              onPressed: () {},
+                              color: ConstantColors.greenColor,
+                              textColor: Colors.white,
+                              minWidth: 30,
+                              height: 30,
+                              shape: const CircleBorder(
+                                side: BorderSide(
+                                  color: ConstantColors.greenColor,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Icon(Icons.power_settings_new,
+                                  size: 20, color: ConstantColors.whiteColor),
+                            )
+                          ]),
+                    ),
+                  ])),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
             const Center(
               child: SizedBox(
-              width: 150,
-              height: 50,
-              child: RoundedButton(
-                text: "Add Device",
-                backgroundColor: ConstantColors.borderButtonColor,
-                textColor: ConstantColors.whiteColor,
-                naviagtionRoute: allDeviceRoute,),
-            ),
-          
+                width: 150,
+                height: 50,
+                child: RoundedButton(
+                  text: "Add Device",
+                  backgroundColor: ConstantColors.borderButtonColor,
+                  textColor: ConstantColors.whiteColor,
+                  naviagtionRoute: addDeviceRoute,
+                ),
+              ),
             )
-         
           ],
         ),
       ),
     );
   }
 }
-

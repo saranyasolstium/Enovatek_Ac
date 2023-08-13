@@ -15,14 +15,15 @@ class ConstantColors {
 
   static const Color greenColor = Color(0xFF4BB474);
   static const Color orangeColor = Color(0xFFDF6039);
-
+  static const Color yellowColor = Color(0xFFECB048);
+  static const Color iconColr = Color(0xFF5484AE);
 
   static const Color blueColor = Color(0xFF1977F3);
   static const Color darkBlueColor = Color(0xFF1D19F3);
   static const Color purpleColor = Color(0xFF632A6E);
   static const Color darkGrayColor = Color(0xFF3F3F3F);
 
-  static const Color greyColor = Color(0xFFF4F4F4);
+  static const Color greyColor = Color(0x00000029);
   static const Color whiteColor = Color(0xFFFFFFFF);
   static const Color transparent = Colors.transparent;
   static const Color black = Color(0xFF000000);

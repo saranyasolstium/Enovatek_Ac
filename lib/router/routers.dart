@@ -9,6 +9,11 @@ import 'package:enavatek_mobile/screen/device_details/device_details_screen.dart
 import 'package:enavatek_mobile/screen/home/home_screen.dart';
 import 'package:enavatek_mobile/screen/introduce/introduce_screen.dart';
 import 'package:enavatek_mobile/screen/login_screen/login_screen.dart';
+import 'package:enavatek_mobile/screen/menu/calculate/calculate_saving.dart';
+import 'package:enavatek_mobile/screen/menu/calculate/saving_display.dart';
+import 'package:enavatek_mobile/screen/menu/menu.dart';
+import 'package:enavatek_mobile/screen/menu/support.dart';
+import 'package:enavatek_mobile/screen/notification/notification_screen.dart';
 import 'package:enavatek_mobile/screen/profile/profile_screen.dart';
 import 'package:enavatek_mobile/screen/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -46,19 +51,19 @@ class Routers {
           type: PageTransitionType.rightToLeft,
         );
 
-        case allDeviceRoute:
+      case allDeviceRoute:
         return PageTransition(
           child: const AllDeviceScreen(),
           type: PageTransitionType.rightToLeft,
         );
 
-        case deviceDetailRoute:
+      case deviceDetailRoute:
         return PageTransition(
           child: const DeviceDetailScreen(),
           type: PageTransitionType.rightToLeft,
         );
 
-        case addDeviceRoute:
+      case addDeviceRoute:
         return PageTransition(
           child: const AddDeviceScreen(),
           type: PageTransitionType.rightToLeft,
@@ -76,18 +81,46 @@ class Routers {
           type: PageTransitionType.rightToLeft,
         );
 
-        case wifiPassword:
+      case wifiPassword:
         return PageTransition(
           child: const WifiPasswordScreen(),
           type: PageTransitionType.rightToLeft,
         );
 
-         case deviceName:
+      case deviceName:
         return PageTransition(
           child: const DeviceNameScreen(),
           type: PageTransitionType.rightToLeft,
         );
 
+      case notificationRoute:
+        return PageTransition(
+          child: const NotificationScreen(),
+          type: PageTransitionType.rightToLeft,
+        );
+      case menuRoute:
+        return PageTransition(
+          child: const MenuScreen(),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case calculateRoute:
+        return PageTransition(
+          child: const CalculateSavingScreen(),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case savingRoute:
+        return PageTransition(
+          child: const SavingDisplayScreen(),
+          type: PageTransitionType.rightToLeft,
+        );
+
+         case supportRoute:
+        return PageTransition(
+          child: const SupportScreen(),
+          type: PageTransitionType.rightToLeft,
+        );
       default:
         return MaterialPageRoute(builder: (_) => Container());
     }

@@ -17,6 +17,17 @@ const String wifiPassword="wifiPassword";
 const String  deviceName="deviceName";
 
 
+//extra
+const String notificationRoute="notification";
+const String menuRoute='menu';
+const String calculateRoute='calculate';
+const String savingRoute='saving';
+const String supportRoute='support';
+
+
+
+
+
 
 
 

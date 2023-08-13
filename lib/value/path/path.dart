@@ -16,4 +16,28 @@ class ImgPath {
   static String pngPlus = "assets/plus_icon.png";
   static String pngAirConditioner = "assets/airconditioner_icon.png";
   static String pngWifi = "assets/wifi_icon.png";
+
+  static String pngAutoNew = "assets/autonew_icon.png";
+  static String pngBuildIcon = "assets/build_icon.png";
+  static String pngCoolDry = "assets/cool_to_dry_icon.png";
+  static String pngGrain = "assets/grain_icon.png";
+  static String pngHumidity = "assets/humidity_icon.png";
+  static String pngCool = "assets/mode_cool_icon.png";
+  static String pngFan = "assets/mode_fan_icon.png";
+  static String pngThermometer = "assets/thermometer_icon.png";
+  static String pngValumeUp = "assets/volume_up_icon.png";
+  static String pngSunny = "assets/wb_sunny_icon.png";
+
+  static String pngFaq = "assets/faq_icon.png";
+  static String pngGroup = "assets/group_icon.png";
+  static String pngLogout = "assets/logout_icon.png";
+  static String pngSaving = "assets/saving_icon.png";
+  static String pngSupport = "assets/support_icon.png";
+  static String pngApartment = "assets/apartment_icon.png";
+  static String pngDoller = "assets/doller_icon.png";
+  static String pngSolar = "assets/solar_panel_icon.png";
+  static String pngCo2 = "assets/co2_icon.png";
+  static String pngCelTower = "assets/cell_tower_icon.jpg";
+    static String pngUpload = "assets/upload_icon.png";
+
 }

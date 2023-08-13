@@ -155,7 +155,8 @@ class CustomTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, addDeviceRoute);
+         // Navigator.pushNamed(context, addDeviceRoute);
+         Navigator.pushNamed(context, deviceDetailRoute);
         },
         child: Card(
           elevation: 10.0,
