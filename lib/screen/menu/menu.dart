@@ -1,6 +1,7 @@
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/dialog_logout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -103,27 +104,32 @@ class MenuScreenState extends State<MenuScreen> {
                   left: 20, right: 20, top: 40, bottom: 40),
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Image.asset(
-                        ImgPath.pngApartment,
-                        height: 20,
-                        width: 20,
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        'Building',
-                        style: GoogleFonts.roboto(
-                            color: const Color.fromARGB(255, 7, 3, 3),
-                            fontSize: 16),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, buildingRoute);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Image.asset(
+                          ImgPath.pngApartment,
+                          height: 20,
+                          width: 20,
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          'Building',
+                          style: GoogleFonts.roboto(
+                              color: const Color.fromARGB(255, 7, 3, 3),
+                              fontSize: 16),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(
                     height: 30,
@@ -216,26 +222,31 @@ class MenuScreenState extends State<MenuScreen> {
                   const SizedBox(
                     height: 30,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Image.asset(
-                        ImgPath.pngGroup,
-                        height: 20,
-                        width: 20,
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        'Track Request',
-                        style: GoogleFonts.roboto(
-                            color: ConstantColors.black, fontSize: 16),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, requestRoute);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Image.asset(
+                          ImgPath.pngGroup,
+                          height: 20,
+                          width: 20,
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          'Track Request',
+                          style: GoogleFonts.roboto(
+                              color: ConstantColors.black, fontSize: 16),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(
                     height: 30,
@@ -246,27 +257,32 @@ class MenuScreenState extends State<MenuScreen> {
                   const SizedBox(
                     height: 30,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Image.asset(
-                        ImgPath.pngLogout,
-                        height: 20,
-                        width: 20,
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        'Log out',
-                        style: GoogleFonts.roboto(
-                            color: ConstantColors.black, fontSize: 16),
-                      ),
-                    ],
-                  )
+                  GestureDetector(
+                    onTap: () {
+                      showLogoutDialog(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Image.asset(
+                          ImgPath.pngLogout,
+                          height: 20,
+                          width: 20,
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          'Log out',
+                          style: GoogleFonts.roboto(
+                              color: ConstantColors.black, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

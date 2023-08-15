@@ -55,22 +55,14 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
               ),
             ),
             const SizedBox(
-              height: 80,
+              height: 50,
             ),
-            Container(
-              decoration: const BoxDecoration(color: ConstantColors.whiteColor),
-              width: 250,
-              height: 250,
-              child: Center(
-                child: Text(
-                  'Please need photo (Client)',
-                  style: GoogleFonts.roboto(
-                      fontSize: 16, color: ConstantColors.mainlyTextColor),
-                ),
-              ),
+           Image.asset(ImgPath.pngSerialNo,height: 300,width: 300,),
+            const SizedBox(
+              height: 30,
             ),
             const SizedBox(
-              height: 80,
+              height: 30,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 0),
@@ -96,7 +88,7 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
                 text: "Proceed",
                 backgroundColor: ConstantColors.borderButtonColor,
                 textColor: ConstantColors.whiteColor,
-                naviagtionRoute: wifiPassword,),
+                naviagtionRoute: wifiPasswordRoute,),
             ),
           
             )

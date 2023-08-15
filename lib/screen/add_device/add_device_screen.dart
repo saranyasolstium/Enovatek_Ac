@@ -95,7 +95,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, blueToothScan);
+                Navigator.pushNamed(context, blueToothScanRoute);
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -141,7 +141,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, manualAddDevice);
+                Navigator.pushNamed(context, manualAddDeviceRoute);
               },
               child: Container(
                 decoration: BoxDecoration(

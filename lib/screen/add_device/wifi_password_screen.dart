@@ -106,7 +106,7 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
                   text: "Connect",
                   backgroundColor: ConstantColors.borderButtonColor,
                   textColor: ConstantColors.whiteColor,
-                  naviagtionRoute: deviceName,
+                  naviagtionRoute: deviceNameRoute,
                 ),
               ),
             )

@@ -1,8 +1,5 @@
-import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
-import 'package:enavatek_mobile/widget/decoration.dart';
-import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -45,6 +42,7 @@ class SavingDisplayScreenState extends State<SavingDisplayScreen> {
             Center(
               child: Text(
                 textAlign: TextAlign.center,
+                // ignore: prefer_adjacent_string_concatenation
                 r'$50 saving per year' + '\n',
                 style: GoogleFonts.roboto(
                     fontSize: 16,

@@ -125,8 +125,8 @@ class SupportScreenState extends State<SupportScreen> {
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
                     suffixIcon: Container(
-                      padding: EdgeInsets.all(15.0),
-                      constraints: BoxConstraints(
+                      padding: const EdgeInsets.all(15.0),
+                      constraints: const BoxConstraints(
                         maxHeight: 10.0,
                         maxWidth: 10.0,
                       ),

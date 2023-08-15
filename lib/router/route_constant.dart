@@ -11,10 +11,14 @@ const String deviceDetailRoute="deviceDetail";
 
 //Add Device Route
 const String addDeviceRoute="addDevice";
-const String blueToothScan="blueToothScan";
-const String manualAddDevice="manualAdd";
-const String wifiPassword="wifiPassword";
-const String  deviceName="deviceName";
+const String blueToothScanRoute="blueToothScan";
+const String manualAddDeviceRoute="manualAdd";
+const String wifiPasswordRoute="wifiPassword";
+const String  deviceNameRoute="deviceName";
+const String deviceAssignRoute='deviceAssign';
+const String addFloorNameRoute='addFloorName';
+const String editFloorNameRoute='editFloorName';
+
 
 
 //extra
@@ -23,6 +27,15 @@ const String menuRoute='menu';
 const String calculateRoute='calculate';
 const String savingRoute='saving';
 const String supportRoute='support';
+const String requestRoute='request';
+const String buildingRoute='building';
+const String scheduleRoute='schedule';
+const String addScheduleRoute='addSchedule';
+
+
+
+
+
 
 
 

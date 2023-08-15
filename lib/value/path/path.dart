@@ -5,6 +5,8 @@ class ImgPath {
   static String pngIntro2 = "assets/intro_icon2.png";
   static String pngIntro3 = "assets/intro_icon3.png";
   static String pngIntro4 = "assets/intro_icon4.png";
+  static String pngSerialNo = "assets/serial_number_icon.png";
+
   static String pngArrowBack = "assets/arrow_back_icon.png";
   static String pngLoginBg = "assets/login_bg.png";
   static String pngPerson = "assets/person_icon.png";
@@ -38,6 +40,6 @@ class ImgPath {
   static String pngSolar = "assets/solar_panel_icon.png";
   static String pngCo2 = "assets/co2_icon.png";
   static String pngCelTower = "assets/cell_tower_icon.jpg";
-    static String pngUpload = "assets/upload_icon.png";
-
+  static String pngUpload = "assets/upload_icon.png";
+  static String pngDelete = "assets/delete_icon.png";
 }

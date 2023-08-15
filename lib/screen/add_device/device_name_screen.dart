@@ -86,7 +86,7 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
                 text: "Proceed",
                 backgroundColor: ConstantColors.borderButtonColor,
                 textColor: ConstantColors.whiteColor,
-                naviagtionRoute: allDeviceRoute,),
+                naviagtionRoute: deviceAssignRoute,),
             ),
           
             )

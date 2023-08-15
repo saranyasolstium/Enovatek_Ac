@@ -1,3 +1,4 @@
+import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:flutter/material.dart';
@@ -482,7 +483,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
             ),
             GestureDetector(
               onTap: () {
-                // Navigator.pushNamed(context, manualAddDevice);
+                 Navigator.pushNamed(context, scheduleRoute);
               },
               child: Container(
                 decoration: BoxDecoration(
