@@ -24,10 +24,15 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                 GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: 25,
+                    width: 25,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -91,6 +96,7 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
                 ),
                 decoration: InputDecorationStyle.textFieldDecoration(
                   placeholder: "Enter Password",
+                  context: context
                 ),
               ),
             ),

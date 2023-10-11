@@ -14,11 +14,15 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
+     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final isTablet = screenWidth >= 600; 
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 150),
+             SizedBox(height: screenHeight * 0.1,),
             Stack(
               clipBehavior: Clip.none,
               alignment: Alignment.topCenter,
@@ -31,15 +35,15 @@ class LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   width: MediaQuery.of(context).size.width,
-                  height: 300,
+                  height: isTablet ? screenHeight * 0.45 : screenHeight * 0.5,
                 ),
                 Positioned.fill(
-                  top: -100,
+                  top: - screenWidth * 0.3,
                   child: Center(
                       child: Text(
-                    'Welcome',
+                    'Welcome to',
                     style: GoogleFonts.roboto(
-                        fontSize: 20.0,
+                        fontSize: screenWidth * 0.04 ,
                         color: ConstantColors.black,
                         fontWeight: FontWeight.w700),
                   )),
@@ -55,41 +59,41 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
-            const SizedBox(
-              height: 30,
+             SizedBox(
+              height: isTablet ? screenHeight * 0.03 : screenHeight * 0.03 ,
             ),
             Container(
-              padding: const EdgeInsets.only(left: 50, right: 50),
-              height: 50,
+              padding:  EdgeInsets.only(left: screenWidth * 0.1, right: screenWidth * 0.1),
+              height: isTablet ? screenHeight * 0.09 : screenHeight * 0.07 ,
               width: MediaQuery.of(context).size.width,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.1),
                   ),
                 ),
                 onPressed: () {
-                  //Navigator.pushNamed(context, loginRoute);
+                  Navigator.pushNamed(context, profileRoute);
                 },
                 child: Text(
                   "Continue with google",
                   style: GoogleFonts.roboto(
-                    fontSize: 16.0,
+                    fontSize: isTablet ?screenWidth * 0.04  :screenWidth * 0.045,
                   ),
                 ),
               ),
             ),
-            const SizedBox(
-              height: 20,
+             SizedBox(
+              height: isTablet ? screenHeight * 0.02 : screenHeight * 0.02 ,
             ),
             Container(
-              padding: const EdgeInsets.only(left: 50, right: 50),
-              height: 50,
+              padding:  EdgeInsets.only(left: screenWidth * 0.1, right: screenWidth * 0.1),
+              height: isTablet ? screenHeight * 0.09 : screenHeight * 0.07 ,
               width: MediaQuery.of(context).size.width,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.1),
                   ),
                 ),
                 onPressed: () {
@@ -98,13 +102,13 @@ class LoginScreenState extends State<LoginScreen> {
                 child: Text(
                   "Continue with Facebook",
                   style: GoogleFonts.roboto(
-                    fontSize: 16.0,
+                    fontSize: isTablet ?screenWidth * 0.04  :screenWidth * 0.045,
                   ),
                 ),
               ),
             ),
-            const SizedBox(
-              height: 50,
+             SizedBox(
+              height: screenHeight * 0.05,
             ),
            
             Padding(
@@ -116,7 +120,7 @@ class LoginScreenState extends State<LoginScreen> {
                       TextSpan(
                         text: 'By selecting option you are agreeing to our ',
                         style: GoogleFonts.lato(
-                            color: ConstantColors.mainlyTextColor, fontSize: 14),
+                            color: ConstantColors.mainlyTextColor, fontSize: screenWidth * 0.037),
                       ),
                      
                       TextSpan(
@@ -124,19 +128,19 @@ class LoginScreenState extends State<LoginScreen> {
                         style: GoogleFonts.lato(
                             color: ConstantColors.blueColor,
                             fontWeight: FontWeight.bold,
-                            fontSize: 13),
+                            fontSize: screenWidth * 0.035),
                       ),
                       TextSpan(
                         text: ' and ',
                         style: GoogleFonts.lato(
-                            color: ConstantColors.mainlyTextColor, fontSize: 14),
+                            color: ConstantColors.mainlyTextColor, fontSize: screenWidth * 0.037),
                       ),
                       TextSpan(
                         text: 'Terms and Condition',
                         style: GoogleFonts.lato(
                             color: ConstantColors.blueColor,
                             fontWeight: FontWeight.bold,
-                            fontSize: 13),
+                            fontSize: screenWidth * 0.035),
                       ),
                     ],
                   ),

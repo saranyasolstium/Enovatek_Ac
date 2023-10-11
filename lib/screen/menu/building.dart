@@ -13,10 +13,19 @@ class BuildingScreen extends StatefulWidget {
 class BuildingScreenState extends State<BuildingScreen> {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final bool isTablet = screenWidth >= 600;
+
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
+        padding: EdgeInsets.fromLTRB(
+          screenWidth * 0.05,
+          screenHeight * 0.05,
+          screenWidth * 0.05,
+          screenHeight * 0.02,
+        ),
         child: Column(
           children: [
             Row(
@@ -26,16 +35,21 @@ class BuildingScreenState extends State<BuildingScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Image.asset(
-                        ImgPath.pngArrowBack,
-                        height: 20,
-                        width: 20,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          ImgPath.pngArrowBack,
+                          height: screenWidth * 0.05,
+                          width: screenWidth * 0.05,
+                        ),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         'Building',
                         style: GoogleFonts.roboto(
-                            fontSize: 18,
+                            fontSize: screenWidth * 0.05,
                             fontWeight: FontWeight.bold,
                             color: ConstantColors.black),
                       ),
@@ -46,8 +60,8 @@ class BuildingScreenState extends State<BuildingScreen> {
                   onPressed: () {},
                   color: ConstantColors.whiteColor,
                   textColor: Colors.white,
-                  minWidth: 25,
-                  height: 25,
+                  minWidth: isTablet ? 0.04 * screenWidth : 0.035 * screenWidth,
+                  height: isTablet ? 0.04 * screenHeight : 0.035 * screenHeight,
                   shape: const CircleBorder(
                     side: BorderSide(
                       color: ConstantColors.borderButtonColor,
@@ -56,8 +70,9 @@ class BuildingScreenState extends State<BuildingScreen> {
                   ),
                   child: Image.asset(
                     ImgPath.pngPlus,
-                    height: 15,
-                    width: 15,
+                    width: isTablet ? 0.03 * screenWidth : 0.03 * screenWidth,
+                    height:
+                        isTablet ? 0.03 * screenHeight : 0.03 * screenHeight,
                   ),
                 ),
               ],
@@ -68,26 +83,33 @@ class BuildingScreenState extends State<BuildingScreen> {
             Container(
               decoration: BoxDecoration(
                   color: ConstantColors.whiteColor,
-                  borderRadius: BorderRadius.circular(30)),
+                  borderRadius: BorderRadius.circular(0.1 * screenHeight)),
               child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
+                padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: isTablet ? 30 : 0,
+                    bottom: isTablet ? 30 : 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(
                       'Lorem building name',
                       style: GoogleFonts.roboto(
-                          color: ConstantColors.mainlyTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
+                        color: ConstantColors.mainlyTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: screenWidth * 0.04,
+                      ),
                     ),
-                    const SizedBox(width: 60),
+                    SizedBox(width: screenWidth * 0.05),
                     MaterialButton(
                       onPressed: () {},
                       color: ConstantColors.whiteColor,
                       textColor: Colors.white,
-                      minWidth: 20,
-                      height: 20,
+                      minWidth:
+                          isTablet ? 0.04 * screenWidth : 0.03 * screenWidth,
+                      height:
+                          isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                       shape: const CircleBorder(
                         side: BorderSide(
                           color: ConstantColors.borderButtonColor,
@@ -96,8 +118,11 @@ class BuildingScreenState extends State<BuildingScreen> {
                       ),
                       child: Image.asset(
                         ImgPath.pngEdit,
-                        height: 10,
-                        width: 10,
+                        width:
+                            isTablet ? 0.03 * screenWidth : 0.025 * screenWidth,
+                        height: isTablet
+                            ? 0.03 * screenHeight
+                            : 0.02 * screenHeight,
                         color: ConstantColors.lightBlueColor,
                       ),
                     ),
@@ -105,8 +130,10 @@ class BuildingScreenState extends State<BuildingScreen> {
                       onPressed: () {},
                       color: ConstantColors.orangeColor,
                       textColor: Colors.white,
-                      minWidth: 20,
-                      height: 20,
+                      minWidth:
+                          isTablet ? 0.04 * screenWidth : 0.03 * screenWidth,
+                      height:
+                          isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                       shape: const CircleBorder(
                         side: BorderSide(
                           color: ConstantColors.orangeColor,
@@ -115,39 +142,50 @@ class BuildingScreenState extends State<BuildingScreen> {
                       ),
                       child: Image.asset(
                         ImgPath.pngDelete,
-                        height: 10,
-                        width: 10,
+                        width:
+                            isTablet ? 0.03 * screenWidth : 0.025 * screenWidth,
+                        height: isTablet
+                            ? 0.03 * screenHeight
+                            : 0.025 * screenHeight,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-           
-           const SizedBox(height: 20,),
+            SizedBox(
+              height: isTablet ? 0.03 * screenHeight : 0.03 * screenHeight,
+            ),
             Container(
               decoration: BoxDecoration(
                   color: ConstantColors.whiteColor,
-                  borderRadius: BorderRadius.circular(30)),
+                  borderRadius: BorderRadius.circular(0.1 * screenHeight)),
               child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
+                padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: isTablet ? 30 : 0,
+                    bottom: isTablet ? 30 : 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(
                       'Lorem building name',
                       style: GoogleFonts.roboto(
-                          color: ConstantColors.mainlyTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
+                        color: ConstantColors.mainlyTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: screenWidth * 0.04,
+                      ),
                     ),
-                    const SizedBox(width: 60),
+                    SizedBox(width: screenWidth * 0.05),
                     MaterialButton(
                       onPressed: () {},
                       color: ConstantColors.whiteColor,
                       textColor: Colors.white,
-                      minWidth: 20,
-                      height: 20,
+                      minWidth:
+                          isTablet ? 0.04 * screenWidth : 0.03 * screenWidth,
+                      height:
+                          isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                       shape: const CircleBorder(
                         side: BorderSide(
                           color: ConstantColors.borderButtonColor,
@@ -156,8 +194,11 @@ class BuildingScreenState extends State<BuildingScreen> {
                       ),
                       child: Image.asset(
                         ImgPath.pngEdit,
-                        height: 10,
-                        width: 10,
+                        width:
+                            isTablet ? 0.03 * screenWidth : 0.025 * screenWidth,
+                        height: isTablet
+                            ? 0.03 * screenHeight
+                            : 0.02 * screenHeight,
                         color: ConstantColors.lightBlueColor,
                       ),
                     ),
@@ -165,8 +206,10 @@ class BuildingScreenState extends State<BuildingScreen> {
                       onPressed: () {},
                       color: ConstantColors.orangeColor,
                       textColor: Colors.white,
-                      minWidth: 20,
-                      height: 20,
+                      minWidth:
+                          isTablet ? 0.04 * screenWidth : 0.03 * screenWidth,
+                      height:
+                          isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                       shape: const CircleBorder(
                         side: BorderSide(
                           color: ConstantColors.orangeColor,
@@ -175,8 +218,11 @@ class BuildingScreenState extends State<BuildingScreen> {
                       ),
                       child: Image.asset(
                         ImgPath.pngDelete,
-                        height: 10,
-                        width: 10,
+                        width:
+                            isTablet ? 0.03 * screenWidth : 0.025 * screenWidth,
+                        height: isTablet
+                            ? 0.03 * screenHeight
+                            : 0.025 * screenHeight,
                       ),
                     ),
                   ],

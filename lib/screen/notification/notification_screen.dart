@@ -13,40 +13,56 @@ class NotificationScreen extends StatefulWidget {
 class NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
+        padding: EdgeInsets.fromLTRB(
+          screenWidth * 0.05,
+          screenHeight * 0.05,
+          screenWidth * 0.05,
+          screenHeight * 0.02,
+        ),
         child: Column(
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: screenWidth * 0.05,
+                    width: screenWidth * 0.05,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Notification',
                   style: GoogleFonts.roboto(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: ConstantColors.black),
+                    fontSize: screenWidth * 0.05,
+                    fontWeight: FontWeight.bold,
+                    color: ConstantColors.black,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(
-              height: 50,
+            SizedBox(
+              height: 0.05 * screenHeight,
             ),
-            const CustomListTile(
+            CustomListTile(
               status: 'PROGRESS PENDING',
+              screenWidth: screenWidth,
             ),
-             const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 0.02 * screenHeight,
             ),
-            const CustomListTile(
+            CustomListTile(
               status: 'REQUIRED MAINTENANCE',
+              screenWidth: screenWidth,
             ),
           ],
         ),
@@ -57,96 +73,119 @@ class NotificationScreenState extends State<NotificationScreen> {
 
 class CustomListTile extends StatelessWidget {
   final String status;
+  final double screenWidth;
 
   const CustomListTile(
-      {super.key,
-      required this.status,});
+      {Key? key, required this.status, required this.screenWidth})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final bool isTablet = screenWidth >= 600;
     return Card(
       elevation: 10.0,
       child: Container(
-          decoration: BoxDecoration(
-              color: ConstantColors.whiteColor,
-              borderRadius: BorderRadius.circular(50)),
-          child: Column(children: [
+        decoration: BoxDecoration(
+          color: ConstantColors.whiteColor,
+          borderRadius: BorderRadius.circular(0.05 * screenWidth),
+        ),
+        child: Column(
+          children: [
             Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15,top: 10),
+              padding: EdgeInsets.fromLTRB(
+                isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+                isTablet ? 0.05 * screenHeight : 0.02 * screenHeight,
+                isTablet ? 0.05 * screenWidth : 0.03 * screenWidth,
+                isTablet ? 0.05 * screenWidth : 0.02 * screenWidth,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Lorem building name',
                     style: GoogleFonts.roboto(
-                        fontSize: 16, color: ConstantColors.black),
+                      fontSize: 0.04 * screenWidth,
+                      color: ConstantColors.black,
+                    ),
                   ),
                   MaterialButton(
                     onPressed: () {},
                     color: ConstantColors.whiteColor,
-                    minWidth: 30,
-                    height: 30,
+                    minWidth: 0.06 * screenWidth,
+                    height: 0.06 * screenWidth,
                     shape: const CircleBorder(
                       side: BorderSide(
                         color: ConstantColors.lightBlueColor,
                         width: 2,
                       ),
                     ),
-                    child: const Icon(Icons.phone,
-                        size: 20, color: ConstantColors.lightBlueColor),
-                  )
+                    child: Icon(
+                      Icons.phone,
+                      size: 0.04 * screenWidth,
+                      color: ConstantColors.lightBlueColor,
+                    ),
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 15, ),
+              padding: EdgeInsets.only(
+                left: 0.05 * screenWidth,
+              ),
               child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Floor 1 - Device name',
-                            style: GoogleFonts.roboto(
-                              fontSize: 14,
-                              color: ConstantColors.mainlyTextColor,
-                            ),
-                          ),
-                          const WidgetSpan(
-                              child: SizedBox(
-                            width: 20,
-                          )),
-                          const WidgetSpan(
-                              child: Icon(
-                            Icons.circle,
-                            size: 8,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Floor 1 - Device name',
+                          style: GoogleFonts.roboto(
+                            fontSize: 0.04 * screenWidth,
                             color: ConstantColors.mainlyTextColor,
-                          )),
-                          TextSpan(
-                            text: ' 3 Aug 2023',
-                            style: GoogleFonts.roboto(
-                                color: ConstantColors.mainlyTextColor,
-                                fontSize: 14),
                           ),
-                        ],
-                      ),
+                        ),
+                        WidgetSpan(
+                          child: SizedBox(
+                            width: 0.03 * screenWidth,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' 3 Aug 2023',
+                          style: GoogleFonts.roboto(
+                            color: ConstantColors.mainlyTextColor,
+                            fontSize: 0.04 * screenWidth,
+                          ),
+                        ),
+                      ],
                     ),
-                  ]),
+                  ),
+                ],
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 15, bottom: 20, top: 15),
-              child: Align(alignment: Alignment.topLeft,
-              child: Text(
-                status,
-                style: GoogleFonts.roboto(
-                    color: ConstantColors.mainlyTextColor, fontSize: 14),
-              ),)
-              
-              
+              padding: EdgeInsets.only(
+                left: 0.05 * screenWidth,
+                bottom: 0.05 * screenWidth,
+                top: 0.03 * screenWidth,
+              ),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  status,
+                  style: GoogleFonts.roboto(
+                    color: ConstantColors.mainlyTextColor,
+                    fontSize: 0.035 * screenWidth,
+                  ),
+                ),
+              ),
             ),
-          ])),
+          ],
+        ),
+      ),
     );
   }
 }

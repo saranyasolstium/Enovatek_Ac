@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class DeviceDetailScreen extends StatefulWidget {
   const DeviceDetailScreen({Key? key}) : super(key: key);
@@ -13,6 +16,189 @@ class DeviceDetailScreen extends StatefulWidget {
 }
 
 class DeviceDetailScreenState extends State<DeviceDetailScreen> {
+  double progressValue = 24;
+  double secondaryProgressValue = 0;
+  bool isAutoSelected = false;
+  bool isCoolSelected = false;
+  bool isDrySelected = false;
+  bool isFanSelected = false;
+  bool isHeatSelected = false;
+
+  void increaseProgressValue() {
+    setState(() {
+      if (progressValue < 30) {
+        progressValue += 1;
+      }
+    });
+  }
+
+  void decreaseProgressValue() {
+    setState(() {
+      progressValue -= 1;
+      if (progressValue < 16) {
+        progressValue = 16;
+      }
+    });
+  }
+
+  /// Returns semi-circular style circular progress bar.
+  Widget getSemiCircleProgressStyle() {
+    double gaugeValue = progressValue;
+
+    return Container(
+      height: 250,
+      width: 500,
+      decoration: const BoxDecoration(
+        color: ConstantColors.lightBlueColor,
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SfRadialGauge(
+            axes: <RadialAxis>[
+              RadialAxis(
+                showLabels: false,
+                showTicks: false,
+                startAngle: 150,
+                endAngle: 30,
+                minimum: 0,
+                maximum: 30,
+                canScaleToFit: true,
+                radiusFactor: 0.8,
+                axisLineStyle: const AxisLineStyle(
+                  thickness: 0.1,
+                  color: Colors.grey,
+                  thicknessUnit: GaugeSizeUnit.factor,
+                  cornerStyle: CornerStyle.startCurve,
+                ),
+                pointers: <GaugePointer>[
+                  RangePointer(
+                    value: gaugeValue,
+                    width: 0.1,
+                    sizeUnit: GaugeSizeUnit.factor,
+                    enableAnimation: true,
+                    animationDuration: 100,
+                    animationType: AnimationType.linear,
+                    cornerStyle: CornerStyle.startCurve,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Positioned(
+              top: 150,
+              child: Row(
+                children: [
+                  MaterialButton(
+                    onPressed: () {
+                      decreaseProgressValue();
+                    },
+                    color: ConstantColors.whiteColor,
+                    textColor: Colors.white,
+                    minWidth: 30,
+                    height: 30,
+                    shape: const CircleBorder(
+                      side: BorderSide(
+                        color: ConstantColors.borderButtonColor,
+                        width: 2,
+                      ),
+                    ),
+                    child: Image.asset(
+                      ImgPath.pngRemove,
+                      height: 15,
+                      width: 15,
+                      color: ConstantColors.lightBlueColor,
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Text(
+                    "${progressValue.toString().split('.')[0]}°C",
+                    style: GoogleFonts.roboto(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: ConstantColors.black),
+                  ),
+                  const SizedBox(width: 20),
+                  MaterialButton(
+                    onPressed: () {
+                      increaseProgressValue();
+                    },
+                    color: ConstantColors.whiteColor,
+                    textColor: Colors.white,
+                    minWidth: 30,
+                    height: 30,
+                    shape: const CircleBorder(
+                      side: BorderSide(
+                        color: ConstantColors.borderButtonColor,
+                        width: 2,
+                      ),
+                    ),
+                    child: Image.asset(
+                      ImgPath.pngPlus,
+                      height: 15,
+                      width: 15,
+                      color: ConstantColors.lightBlueColor,
+                    ),
+                  ),
+                ],
+              )),
+        ],
+      ),
+    );
+  }
+
+  int selectedMode = -1; // Initially no mode selected
+
+  // List of mode data containing mode names and image paths
+  final List<ModeData> modes = [
+    ModeData('Auto', ImgPath.pngAutoNew),
+    ModeData('Cool', ImgPath.pngCool),
+    ModeData('Dry',  ImgPath.pngCoolDry),
+    ModeData('Fan',  ImgPath.pngFan),
+    ModeData('Heat', ImgPath.pngSunny),
+  ];
+
+  Widget buildModeToggle(int mode, String modeName, String imagePath) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Image.asset(
+              imagePath,
+              height: 12,
+              width: 12,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              modeName,
+              style: GoogleFonts.roboto(
+                  color: ConstantColors.mainlyTextColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15),
+            ),
+          ],
+        ),
+        GFToggle(
+          onChanged: (val) {
+            setState(() {
+              if (val ?? false) {
+                selectedMode = mode;
+              } else {
+                selectedMode = -1; // Turn off all modes
+              }
+            });
+          },
+          value: selectedMode == mode,
+          enabledThumbColor: Colors.white,
+          enabledTrackColor: Colors.lightBlue,
+          type: GFToggleType.ios,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,8 +209,8 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
           padding: const EdgeInsets.only(top: 30),
           child: AppBar(
             backgroundColor: ConstantColors.backgroundColor,
-            automaticallyImplyLeading: false, 
-            elevation: 0.0, 
+            automaticallyImplyLeading: false,
+            elevation: 0.0,
             title: Stack(
               children: [
                 Row(
@@ -34,10 +220,15 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Image.asset(
-                            ImgPath.pngArrowBack,
-                            height: 25,
-                            width: 25,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Image.asset(
+                              ImgPath.pngArrowBack,
+                              height: 25,
+                              width: 25,
+                            ),
                           ),
                           const SizedBox(width: 10),
                           Text(
@@ -141,7 +332,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -176,15 +367,8 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                 ),
               ),
             ),
-            Container(
-              height: 300,
-              decoration: const BoxDecoration(
-                color: ConstantColors.lightBlueColor,
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
+            getSemiCircleProgressStyle(),
+            const SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
                 color: ConstantColors.whiteColor,
@@ -282,166 +466,227 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              ImgPath.pngAutoNew,
-                              height: 12,
-                              width: 12,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Auto',
-                              style: GoogleFonts.roboto(
-                                  color: ConstantColors.mainlyTextColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
-                            ),
-                          ]),
-                      GFToggle(
-                        onChanged: (val) {},
-                        value: true,
-                        enabledThumbColor: ConstantColors.whiteColor,
-                        enabledTrackColor: ConstantColors.lightBlueColor,
-                        type: GFToggleType.ios,
-                      )
-                    ],
+
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: modes.length,
+                    itemBuilder: (context, index) {
+                      final modeData = modes[index];
+                      return buildModeToggle(
+                          index, modeData.modeName, modeData.imagePath);
+                    },
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              ImgPath.pngCool,
-                              height: 12,
-                              width: 12,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Cool',
-                              style: GoogleFonts.roboto(
-                                  color: ConstantColors.mainlyTextColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
-                            ),
-                          ]),
-                      GFToggle(
-                        onChanged: (val) {},
-                        value: true,
-                        enabledThumbColor: ConstantColors.whiteColor,
-                        enabledTrackColor: ConstantColors.lightBlueColor,
-                        type: GFToggleType.ios,
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              ImgPath.pngCoolDry,
-                              height: 12,
-                              width: 12,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Dry',
-                              style: GoogleFonts.roboto(
-                                  color: ConstantColors.mainlyTextColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
-                            ),
-                          ]),
-                      GFToggle(
-                        onChanged: (val) {},
-                        value: true,
-                        enabledThumbColor: ConstantColors.whiteColor,
-                        enabledTrackColor: ConstantColors.lightBlueColor,
-                        type: GFToggleType.ios,
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              ImgPath.pngFan,
-                              height: 12,
-                              width: 12,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Fan',
-                              style: GoogleFonts.roboto(
-                                  color: ConstantColors.mainlyTextColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
-                            ),
-                          ]),
-                      GFToggle(
-                        onChanged: (val) {},
-                        value: true,
-                        enabledThumbColor: ConstantColors.whiteColor,
-                        enabledTrackColor: ConstantColors.lightBlueColor,
-                        type: GFToggleType.ios,
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              ImgPath.pngSunny,
-                              height: 12,
-                              width: 12,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Heat',
-                              style: GoogleFonts.roboto(
-                                  color: ConstantColors.mainlyTextColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
-                            ),
-                          ]),
-                      GFToggle(
-                        onChanged: (val) {},
-                        value: true,
-                        enabledThumbColor: ConstantColors.whiteColor,
-                        enabledTrackColor: ConstantColors.lightBlueColor,
-                        type: GFToggleType.ios,
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+
+                  // buildModeToggle(0, 'Auto', ImgPath.pngAutoNew),
+
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Row(
+                  //         mainAxisAlignment: MainAxisAlignment.start,
+                  //         children: [
+                  //           Image.asset(
+                  //             ImgPath.pngAutoNew,
+                  //             height: 12,
+                  //             width: 12,
+                  //           ),
+                  //           const SizedBox(width: 10),
+                  //           Text(
+                  //             'Auto',
+                  //             style: GoogleFonts.roboto(
+                  //                 color: ConstantColors.mainlyTextColor,
+                  //                 fontWeight: FontWeight.bold,
+                  //                 fontSize: 15),
+                  //           ),
+                  //         ]),
+                  //     GFToggle(
+                  //       onChanged: (val) {
+                  //         setState(() {
+                  //           isAutoSelected = val ?? false;
+                  //           isCoolSelected = false;
+                  //           isDrySelected = false;
+                  //           isFanSelected = false;
+                  //           isHeatSelected = false;
+                  //         });
+                  //       },
+                  //       value: isAutoSelected,
+                  //       enabledThumbColor: ConstantColors.whiteColor,
+                  //       enabledTrackColor: ConstantColors.lightBlueColor,
+                  //       type: GFToggleType.ios,
+                  //     )
+                  //   ],
+                  // ),
+
+                  // const SizedBox(
+                  //   height: 10,
+                  // ),
+                  // buildModeToggle(1, 'Cool', ImgPath.pngCool),
+
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Row(
+                  //         mainAxisAlignment: MainAxisAlignment.start,
+                  //         children: [
+                  //           Image.asset(
+                  //             ImgPath.pngCool,
+                  //             height: 12,
+                  //             width: 12,
+                  //           ),
+                  //           const SizedBox(width: 10),
+                  //           Text(
+                  //             'Cool',
+                  //             style: GoogleFonts.roboto(
+                  //                 color: ConstantColors.mainlyTextColor,
+                  //                 fontWeight: FontWeight.bold,
+                  //                 fontSize: 15),
+                  //           ),
+                  //         ]),
+                  //     GFToggle(
+                  //       onChanged: (val) {
+                  //         setState(() {
+                  //           isAutoSelected = false;
+                  //           isCoolSelected = val ?? false;
+                  //           isDrySelected = false;
+                  //           isFanSelected = false;
+                  //           isHeatSelected = false;
+                  //         });
+                  //       },
+                  //       value: isCoolSelected,
+                  //       enabledThumbColor: ConstantColors.whiteColor,
+                  //       enabledTrackColor: ConstantColors.lightBlueColor,
+                  //       type: GFToggleType.ios,
+                  //     )
+                  //   ],
+                  // ),
+                  // const SizedBox(
+                  //   height: 10,
+                  // ),
+                  // buildModeToggle(2, 'Dry', ImgPath.pngCoolDry),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Row(
+                  //         mainAxisAlignment: MainAxisAlignment.start,
+                  //         children: [
+                  //           Image.asset(
+                  //             ImgPath.pngCoolDry,
+                  //             height: 12,
+                  //             width: 12,
+                  //           ),
+                  //           const SizedBox(width: 10),
+                  //           Text(
+                  //             'Dry',
+                  //             style: GoogleFonts.roboto(
+                  //                 color: ConstantColors.mainlyTextColor,
+                  //                 fontWeight: FontWeight.bold,
+                  //                 fontSize: 15),
+                  //           ),
+                  //         ]),
+                  //     GFToggle(
+                  //       onChanged: (val) {
+                  //         setState(() {
+                  //           isAutoSelected = false;
+                  //           isCoolSelected = false;
+                  //           isDrySelected = val ?? false;
+                  //           isFanSelected = false;
+                  //           isHeatSelected = false;
+                  //         });
+                  //       },
+                  //       value: isDrySelected,
+                  //       enabledThumbColor: ConstantColors.whiteColor,
+                  //       enabledTrackColor: ConstantColors.lightBlueColor,
+                  //       type: GFToggleType.ios,
+                  //     )
+                  //   ],
+                  // ),
+                  // const SizedBox(
+                  //   height: 10,
+                  // ),
+                  // buildModeToggle(3, 'Fan', ImgPath.pngFan),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Row(
+                  //         mainAxisAlignment: MainAxisAlignment.start,
+                  //         children: [
+                  //           Image.asset(
+                  //             ImgPath.pngFan,
+                  //             height: 12,
+                  //             width: 12,
+                  //           ),
+                  //           const SizedBox(width: 10),
+                  //           Text(
+                  //             'Fan',
+                  //             style: GoogleFonts.roboto(
+                  //                 color: ConstantColors.mainlyTextColor,
+                  //                 fontWeight: FontWeight.bold,
+                  //                 fontSize: 15),
+                  //           ),
+                  //         ]),
+                  //     GFToggle(
+                  //       onChanged: (val) {
+                  //         setState(() {
+                  //           isAutoSelected = false;
+                  //           isCoolSelected = false;
+                  //           isDrySelected = false;
+                  //           isFanSelected = val ?? false;
+                  //           isHeatSelected = false;
+                  //         });
+                  //       },
+                  //       value: isFanSelected,
+                  //       enabledThumbColor: ConstantColors.whiteColor,
+                  //       enabledTrackColor: ConstantColors.lightBlueColor,
+                  //       type: GFToggleType.ios,
+                  //     )
+                  //   ],
+                  // ),
+
+                  // const SizedBox(
+                  //   height: 10,
+                  // ),
+                  // buildModeToggle(4, 'Heat', ImgPath.pngSunny),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Row(
+                  //         mainAxisAlignment: MainAxisAlignment.start,
+                  //         children: [
+                  //           Image.asset(
+                  //             ImgPath.pngSunny,
+                  //             height: 12,
+                  //             width: 12,
+                  //           ),
+                  //           const SizedBox(width: 10),
+                  //           Text(
+                  //             'Heat',
+                  //             style: GoogleFonts.roboto(
+                  //                 color: ConstantColors.mainlyTextColor,
+                  //                 fontWeight: FontWeight.bold,
+                  //                 fontSize: 15),
+                  //           ),
+                  //         ]),
+                  //     GFToggle(
+                  //       onChanged: (val) {
+                  //         setState(() {
+                  //           isAutoSelected = false;
+                  //           isCoolSelected = false;
+                  //           isDrySelected = false;
+                  //           isFanSelected = false;
+                  //           isHeatSelected = val ?? false;
+                  //         });
+                  //       },
+                  //       value: isHeatSelected,
+                  //       enabledThumbColor: ConstantColors.whiteColor,
+                  //       enabledTrackColor: ConstantColors.lightBlueColor,
+                  //       type: GFToggleType.ios,
+                  //     )
+                  //   ],
+                  // ),
+
+                  // const SizedBox(
+                  //   height: 10,
+                  // ),
                 ],
               ),
             ),
@@ -483,7 +728,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
             ),
             GestureDetector(
               onTap: () {
-                 Navigator.pushNamed(context, scheduleRoute);
+                Navigator.pushNamed(context, scheduleRoute);
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -791,8 +1036,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                                   fontSize: 15),
                             ),
                             TextSpan(
-                              text:
-                                  'Contact to our customer service',
+                              text: 'Contact to our customer service',
                               style: GoogleFonts.roboto(
                                   color: ConstantColors.mainlyTextColor,
                                   fontSize: 13),
@@ -811,11 +1055,19 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                 ),
               ),
             ),
-
-            const SizedBox(height: 20,)
+            const SizedBox(
+              height: 20,
+            )
           ],
         ),
       ),
     );
   }
+}
+
+class ModeData {
+  final String modeName;
+  final String imagePath;
+
+  ModeData(this.modeName, this.imagePath);
 }

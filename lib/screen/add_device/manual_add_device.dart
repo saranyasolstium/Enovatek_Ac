@@ -27,10 +27,15 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                 GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: 25,
+                    width: 25,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -74,6 +79,7 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
                 ),
                 decoration: InputDecorationStyle.textFieldDecoration(
                   placeholder: "**** **** **** 1234",
+                  context: context
                 ),
               ),
             ),

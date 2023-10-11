@@ -10,7 +10,7 @@ class ConstantColors {
   static const Color backgroundColor = Color(0xFFF6F9FF);
   static const Color mainlyTextColor = Color(0xFF1B2D3C);
 
-  static const Color inputColor = Color(0xFFF3F4F5);
+  static const Color inputColor = Color(0xFFEDF0F1);
   static const Color inputColor2 = Color(0xFFF5F6F8);
 
   static const Color greenColor = Color(0xFF4BB474);

@@ -26,57 +26,62 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isTablet = screenWidth >= 600;
+
     return Scaffold(
       backgroundColor: ConstantColors.whiteColor,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Image.asset(
+            ImgPath.pngArrowBack,
+            height: screenWidth * 0.05,
+            width: screenWidth * 0.05,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
+          'Create Profile',
+          style: GoogleFonts.roboto(
+            fontSize: screenWidth * 0.05,
+            fontWeight: FontWeight.bold,
+            color: ConstantColors.black,
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(10, 50, 30, 10),
+        padding: EdgeInsets.all(screenWidth * 0.05),
         child: Column(
           children: [
-            Row(
-              children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  'Create Profile',
-                  style: GoogleFonts.roboto(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: ConstantColors.black),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 80,
-            ),
             Stack(
               clipBehavior: Clip.none,
-              alignment: Alignment.topCenter,
               children: [
                 Container(
                   decoration: BoxDecoration(
                       color: ConstantColors.inputColor,
-                      borderRadius: BorderRadius.circular(75)),
-                  width: 150,
-                  height: 150,
+                      borderRadius: BorderRadius.circular(200)),
+                  width: screenHeight * 0.15,
+                  height: screenHeight * 0.15,
                 ),
                 Positioned.fill(
                   child: Center(
                     child: Image.asset(
                       ImgPath.pngPerson,
-                      height: 50,
-                      width: 50,
+                      height: screenHeight * 0.05,
+                      width: screenHeight * 0.05,
                     ),
                   ),
                 ),
                 Positioned.fill(
+                  top: 5,
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 100,top: 120
-                    ),
+                    padding: EdgeInsets.only(
+                        left: isTablet ? 100 : 100, top: isTablet ? 200 : 110),
                     child: Stack(
                       clipBehavior: Clip.none,
                       alignment: Alignment.topCenter,
@@ -84,17 +89,16 @@ class ProfileScreenState extends State<ProfileScreen> {
                         Container(
                           decoration: BoxDecoration(
                               color: ConstantColors.lightBlueColor,
-                              borderRadius: BorderRadius.circular(10)),
-                          width: 25,
-                          height: 25,
+                              borderRadius: BorderRadius.circular(50)),
+                          // width: isTablet ? 50 : 30,
+                          // height: isTablet ? 60 : 100,
                         ),
                         Positioned.fill(
-                          top: -5,
                           child: Center(
                             child: Image.asset(
                               ImgPath.pngEdit,
-                              height: 12,
-                              width: 12,
+                              height: isTablet ? 20 : 12,
+                              width: isTablet ? 20 : 12,
                             ),
                           ),
                         ),
@@ -107,50 +111,43 @@ class ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(
               height: 50,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 0),
-              child: TextField(
-                style: GoogleFonts.roboto(
-                  color: ConstantColors.mainlyTextColor,
-                  fontWeight: FontWeight.w500,
-                ),
-                decoration: InputDecorationStyle.textFieldDecoration(
-                  placeholder: "Your Name",
-                ),
+            TextField(
+              style: GoogleFonts.roboto(
+                color: ConstantColors.mainlyTextColor,
+                fontWeight: FontWeight.w500,
+                fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
               ),
+              decoration: InputDecorationStyle.textFieldDecoration(
+                  placeholder: "Your Name", context: context),
             ),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: isTablet ? 30 : 20,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 0),
-              child: TextField(
-                controller: emailEditingController,
-                style: GoogleFonts.roboto(
-                  color: ConstantColors.mainlyTextColor,
-                  fontWeight: FontWeight.w500,
-                ),
-                decoration: InputDecorationStyle.textFieldDecoration(
-                  placeholder: "Loremipsum@gmail.com",
-                ),
+            TextField(
+              controller: emailEditingController,
+              style: GoogleFonts.roboto(
+                color: ConstantColors.mainlyTextColor,
+                fontWeight: FontWeight.w500,
+                fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
               ),
+              decoration: InputDecorationStyle.textFieldDecoration(
+                  placeholder: "Loremipsum@gmail.com", context: context),
             ),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: isTablet ? 30 : 20,
             ),
             Container(
               decoration: BoxDecoration(
                   color: ConstantColors.inputColor,
                   borderRadius: BorderRadius.circular(75)),
-              margin: const EdgeInsets.only(left: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    width: 10,
+                  SizedBox(
+                    width: isTablet ? 30 : 10,
                   ),
                   SizedBox(
-                    width: 40,
+                    width: isTablet ? 80 : 40,
                     child: TextField(
                       controller: countryController,
                       keyboardType: TextInputType.number,
@@ -160,6 +157,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       style: GoogleFonts.roboto(
                         color: ConstantColors.mainlyTextColor,
                         fontWeight: FontWeight.w500,
+                        fontSize: screenWidth * 0.04,
                       ),
                     ),
                   ),
@@ -170,28 +168,39 @@ class ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(
                     width: 10,
                   ),
-                  const Expanded(
+                  Expanded(
                       child: TextField(
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "Phone",
+                      hintStyle: GoogleFonts.roboto(
+                        fontSize:
+                            isTablet ? screenWidth * 0.04 : screenWidth * 0.04,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.05,
+                        vertical: screenWidth * 0.05,
+                      ),
+                    ),
+                    style: GoogleFonts.roboto(
+                      color: ConstantColors.mainlyTextColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: screenWidth * 0.04,
                     ),
                   ))
                 ],
               ),
             ),
-            const SizedBox(
-              height: 30,
+            SizedBox(
+              height: isTablet ? 50 : 30,
             ),
-            const SizedBox(
-              width: 150,
-              child: RoundedButton(
-                  text: "Next",
-                  backgroundColor: ConstantColors.borderButtonColor,
-                  textColor: ConstantColors.whiteColor,
-                  naviagtionRoute: homedRoute,
-                  ),
+            const RoundedButton(
+              text: "Next",
+              backgroundColor: ConstantColors.borderButtonColor,
+              textColor: ConstantColors.whiteColor,
+              naviagtionRoute: homedRoute,
             ),
           ],
         ),

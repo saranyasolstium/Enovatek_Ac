@@ -15,31 +15,44 @@ class MenuScreen extends StatefulWidget {
 class MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final bool isTablet = screenWidth >= 600;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
+        padding: EdgeInsets.fromLTRB(
+          isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+          isTablet ? 0.05 * screenHeight : 0.05 * screenHeight,
+          isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+          isTablet ? 0.02 * screenHeight : 0.05 * screenHeight,
+        ),
         child: Column(
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: screenWidth * 0.05,
+                    width: screenWidth * 0.05,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Menu',
                   style: GoogleFonts.roboto(
-                      fontSize: 18,
+                      fontSize: screenWidth * 0.05,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
               ],
             ),
-            const SizedBox(
-              height: 50,
+            SizedBox(
+              height: 0.05 * screenHeight,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,16 +64,17 @@ class MenuScreenState extends State<MenuScreen> {
                     Container(
                       decoration: BoxDecoration(
                           color: ConstantColors.inputColor,
-                          borderRadius: BorderRadius.circular(40)),
-                      width: 80,
-                      height: 80,
+                          borderRadius:
+                              BorderRadius.circular(screenHeight * 0.05)),
+                      width: screenWidth * 0.2,
+                      height: screenHeight * 0.1,
                     ),
                     Positioned.fill(
                       child: Center(
                         child: Image.asset(
                           ImgPath.pngPerson,
-                          height: 30,
-                          width: 30,
+                          height: screenWidth * 0.08,
+                          width: screenWidth * 0.08,
                         ),
                       ),
                     ),
@@ -74,34 +88,40 @@ class MenuScreenState extends State<MenuScreen> {
                         style: GoogleFonts.roboto(
                             color: ConstantColors.black,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16),
+                            fontSize: screenWidth * 0.05),
                       ),
                       TextSpan(
                         text: 'loremname@gmail.com',
                         style: GoogleFonts.roboto(
                             color: ConstantColors.mainlyTextColor,
-                            fontSize: 16),
+                            fontSize: screenWidth * 0.05),
                       ),
                     ],
                   ),
                 ),
-                const Icon(
+                Icon(
                   Icons.arrow_forward_ios,
                   color: ConstantColors.mainlyTextColor,
-                  size: 25,
+                  size: screenWidth * 0.07,
                 ),
               ],
             ),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 0.05 * screenHeight,
             ),
             Container(
               decoration: BoxDecoration(
                   color: ConstantColors.whiteColor,
                   borderRadius: BorderRadius.circular(30)),
-              margin: const EdgeInsets.only(left: 10, right: 10, top: 40),
-              padding: const EdgeInsets.only(
-                  left: 20, right: 20, top: 40, bottom: 40),
+              margin: EdgeInsets.all(
+                screenWidth * 0.02,
+              ),
+              padding: EdgeInsets.fromLTRB(
+                screenWidth * 0.05,
+                screenHeight * 0.05,
+                screenWidth * 0.05,
+                screenHeight * 0.05,
+              ),
               child: Column(
                 children: [
                   GestureDetector(
@@ -116,23 +136,23 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngApartment,
-                          height: 20,
-                          width: 20,
+                          height: screenWidth * 0.06,
+                          width: screenWidth * 0.06,
                         ),
-                        const SizedBox(
-                          width: 20,
+                        SizedBox(
+                          width: 0.02 * screenHeight,
                         ),
                         Text(
                           'Building',
                           style: GoogleFonts.roboto(
                               color: const Color.fromARGB(255, 7, 3, 3),
-                              fontSize: 16),
+                              fontSize: screenWidth * 0.05),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 30,
+                  SizedBox(
+                    height: 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -146,28 +166,29 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngSaving,
-                          height: 20,
-                          width: 20,
+                          height: screenWidth * 0.06,
+                          width: screenWidth * 0.06,
                         ),
-                        const SizedBox(
-                          width: 20,
+                        SizedBox(
+                          width: 0.02 * screenHeight,
                         ),
                         Text(
                           'Calculate saving',
                           style: GoogleFonts.roboto(
-                              color: ConstantColors.black, fontSize: 16),
+                              color: ConstantColors.black,
+                              fontSize: screenWidth * 0.05),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 30,
+                  SizedBox(
+                    height: 0.03 * screenHeight,
                   ),
                   const Divider(
                     thickness: 1,
                   ),
-                  const SizedBox(
-                    height: 30,
+                  SizedBox(
+                    height: 0.03 * screenHeight,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -177,21 +198,22 @@ class MenuScreenState extends State<MenuScreen> {
                       ),
                       Image.asset(
                         ImgPath.pngFaq,
-                        height: 20,
-                        width: 20,
+                        height: screenWidth * 0.06,
+                        width: screenWidth * 0.06,
                       ),
-                      const SizedBox(
-                        width: 20,
+                      SizedBox(
+                        width: 0.02 * screenHeight,
                       ),
                       Text(
                         'FAQ',
                         style: GoogleFonts.roboto(
-                            color: ConstantColors.black, fontSize: 16),
+                            color: ConstantColors.black,
+                            fontSize: screenWidth * 0.05),
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 30,
+                  SizedBox(
+                    height: 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -205,22 +227,23 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngSupport,
-                          height: 20,
-                          width: 20,
+                          height: screenWidth * 0.06,
+                          width: screenWidth * 0.06,
                         ),
-                        const SizedBox(
-                          width: 20,
+                        SizedBox(
+                          width: 0.02 * screenHeight,
                         ),
                         Text(
                           'Support',
                           style: GoogleFonts.roboto(
-                              color: ConstantColors.black, fontSize: 16),
+                              color: ConstantColors.black,
+                              fontSize: screenWidth * 0.05),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 30,
+                  SizedBox(
+                    height: 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -234,28 +257,29 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngGroup,
-                          height: 20,
-                          width: 20,
+                          height: screenWidth * 0.06,
+                          width: screenWidth * 0.06,
                         ),
-                        const SizedBox(
-                          width: 20,
+                        SizedBox(
+                          width: 0.02 * screenHeight,
                         ),
                         Text(
                           'Track Request',
                           style: GoogleFonts.roboto(
-                              color: ConstantColors.black, fontSize: 16),
+                              color: ConstantColors.black,
+                              fontSize: screenWidth * 0.05),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 30,
+                  SizedBox(
+                    height: 0.03 * screenHeight,
                   ),
                   const Divider(
                     thickness: 1,
                   ),
-                  const SizedBox(
-                    height: 30,
+                  SizedBox(
+                    height: 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -269,16 +293,17 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngLogout,
-                          height: 20,
-                          width: 20,
+                          height: screenWidth * 0.06,
+                          width: screenWidth * 0.06,
                         ),
-                        const SizedBox(
-                          width: 20,
+                        SizedBox(
+                          width: 0.02 * screenHeight,
                         ),
                         Text(
                           'Log out',
                           style: GoogleFonts.roboto(
-                              color: ConstantColors.black, fontSize: 16),
+                              color: ConstantColors.black,
+                              fontSize: screenWidth * 0.05),
                         ),
                       ],
                     ),

@@ -7,22 +7,56 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:enavatek_mobile/auth/authhelper.dart';
 
+import 'package:device_preview/device_preview.dart';
+import 'package:sizer/sizer.dart';
 
-
-
-void main() async {
-  // Load the login state from shared preferences
-  WidgetsFlutterBinding.ensureInitialized();
-  AuthHelper authHelper = AuthHelper();
-  await authHelper.loadLoggedInState();
-
+void main() {
   runApp(
-    ChangeNotifierProvider.value(
-      value: authHelper,
-      child: const Enavatek(),
+    DevicePreview(
+      enabled: true, // Enable device preview
+      builder: (context) => Sizer(
+        builder: (context, orientation, deviceType) {
+          return const Enavatek();
+        },
+      ),
     ),
   );
 }
+
+
+
+// void main() async {
+//   // Load the login state from shared preferences
+//   WidgetsFlutterBinding.ensureInitialized();
+//   AuthHelper authHelper = AuthHelper();
+//   await authHelper.loadLoggedInState();
+
+//   runApp(
+//     ChangeNotifierProvider.value(
+//       value: authHelper,
+//       child: Builder(
+//         builder: (context) {
+//           return MaterialApp(
+//             builder: DevicePreview.appBuilder, 
+            
+//             title: 'Enavatek',
+//             debugShowCheckedModeBanner: false,
+//             theme: ThemeData(
+//               fontFamily: GoogleFonts.nunito(
+//                 fontWeight: FontWeight.w500,
+//               ).fontFamily,
+//               primarySwatch: brandingColor,
+//             ),
+//             onGenerateRoute: Routers.onGenerateRoute,
+//             initialRoute: splashRoute,
+//           );
+//         },
+//       ),
+//     ),
+//   );
+// }
+
+
 
 
 class Enavatek extends StatelessWidget {

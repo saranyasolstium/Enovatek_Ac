@@ -29,10 +29,15 @@ class AddSheduleScreenState extends State<AddSheduleScreen> {
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: 25,
+                    width: 25,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -54,10 +59,12 @@ class AddSheduleScreenState extends State<AddSheduleScreen> {
                 decoration: const InputDecoration(
                   labelText: "Add schedule name",
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color:ConstantColors.mainlyTextColor),
+                    borderSide:
+                        BorderSide(color: ConstantColors.mainlyTextColor),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: ConstantColors.mainlyTextColor),
+                    borderSide:
+                        BorderSide(color: ConstantColors.mainlyTextColor),
                   ),
                 ),
               ),

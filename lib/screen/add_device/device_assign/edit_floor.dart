@@ -49,10 +49,15 @@ class EditFloorNameState extends State<EditFloorName> {
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: 25,
+                    width: 25,
+                  ),
                 ),
               ],
             ),
@@ -66,9 +71,10 @@ class EditFloorNameState extends State<EditFloorName> {
                 decoration: const InputDecoration(
                   labelText: "Add floor name",
                   suffixIcon: Padding(
-                    padding:const EdgeInsets.all(8.0), // Adjust padding as needed
+                    padding:
+                        const EdgeInsets.all(8.0), // Adjust padding as needed
                     child: Icon(
-                      Icons.edit, 
+                      Icons.edit,
                       size: 20,
                       color: ConstantColors.mainlyTextColor,
                     ),

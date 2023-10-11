@@ -1,5 +1,3 @@
-import 'package:enavatek_mobile/value/constant_colors.dart';
-import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -9,65 +7,50 @@ class SlideItem extends StatelessWidget {
   final String description;
 
   const SlideItem({
-    super.key,
+    Key? key,
     required this.imageUrl,
     required this.title,
     required this.description,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Container(
-      padding: const EdgeInsets.fromLTRB(10, 50, 30, 10),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth < 600 ? screenWidth * 0.05 : screenWidth * 0.1,
+        vertical: screenWidth < 600 ? screenHeight * 0.02 : screenHeight * 0.1,
+      ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Image.asset(
-            ImgPath.pngArrowBack,
-            height: 25,
-            width: 25,
+            imageUrl,
+            height: screenWidth < 600 ? screenHeight * 0.6 : screenHeight * 0.5,
+            width: double.infinity,
+            fit: BoxFit.contain,
           ),
-          const SizedBox(
-            height: 50,
-          ),
-          Container(
-            height: 300,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(imageUrl),
-                fit: BoxFit.cover,
-              ),
+          SizedBox(height: screenWidth < 600 ? screenHeight * 0.02 : screenHeight * 0.03 ), 
+          Text(
+            title,
+            style: GoogleFonts.roboto(
+              fontSize: screenWidth < 600 ? screenWidth * 0.05 : screenWidth * 0.05,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(
-            height: 50,
-          ),
-          Center(
-            child: Text(
-              title,
-              style:  GoogleFonts.roboto(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-                color: ConstantColors.black,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20.0),
+          SizedBox(height: screenHeight * 0.01), 
           Container(
-            padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-             child: Center(
+            padding: EdgeInsets.symmetric(
+                horizontal: screenWidth < 600 ? screenWidth * 0.01 : screenWidth * 0.01),
             child: Text(
               description,
-              style:  GoogleFonts.roboto(
-                fontSize: 18.0,
-                color: ConstantColors.mainlyTextColor,
+              style: GoogleFonts.roboto(
+                fontSize: screenWidth < 600 ? screenWidth * 0.04 : screenWidth * 0.04,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          )
-         
         ],
       ),
     );

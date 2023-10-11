@@ -19,7 +19,7 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
+        padding: const EdgeInsets.fromLTRB(20, 60, 20, 10),
         child: Column(
           children: [
             Row(
@@ -29,10 +29,15 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Image.asset(
-                        ImgPath.pngArrowBack,
-                        height: 25,
-                        width: 25,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          ImgPath.pngArrowBack,
+                          height: 25,
+                          width: 25,
+                        ),
                       ),
                       const SizedBox(width: 10),
                       Text(
@@ -46,6 +51,12 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
                   ),
                 ),
                 const Icon(
+                  Icons.filter_alt_rounded,
+                  color: ConstantColors.mainlyTextColor,
+                  size: 30,
+                ),
+                const SizedBox(width: 20),
+                const Icon(
                   Icons.search,
                   color: ConstantColors.mainlyTextColor,
                   size: 30,
@@ -56,68 +67,66 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
             const SizedBox(
               height: 30,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  width: 80,
-                  child: RoundedButton(
-                    text: "All(50)",
-                    backgroundColor: ConstantColors.borderButtonColor,
-                    textColor: ConstantColors.whiteColor,
-                    naviagtionRoute: "",
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                const SizedBox(
-                  width: 90,
-                  child: RoundedButton(
-                    text: "Floor 1",
-                    backgroundColor: ConstantColors.whiteColor,
-                    textColor: ConstantColors.borderButtonColor,
-                    naviagtionRoute: "",
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                const SizedBox(
-                  width: 90,
-                  child: RoundedButton(
-                    text: "Floor 2",
-                    backgroundColor: ConstantColors.whiteColor,
-                    textColor: ConstantColors.borderButtonColor,
-                    naviagtionRoute: "",
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                MaterialButton(
-                  onPressed: () {},
-                  color: ConstantColors.whiteColor,
-                  textColor: Colors.white,
-                  minWidth: 20,
-                  height: 20,
-                  shape: const CircleBorder(
-                    side: BorderSide(
-                      color: ConstantColors.borderButtonColor,
-                      width: 2,
-                    ),
-                  ),
-                  child: Image.asset(
-                    ImgPath.pngPlus,
-                    height: 10,
-                    width: 10,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 30,
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.start,
+            //   children: [
+            //     const SizedBox(
+            //       width: 80,
+            //       child: RoundedButton(
+            //         text: "All(50)",
+            //         backgroundColor: ConstantColors.borderButtonColor,
+            //         textColor: ConstantColors.whiteColor,
+            //         naviagtionRoute: "",
+            //       ),
+            //     ),
+            //     const SizedBox(
+            //       width: 10,
+            //     ),
+            //     const SizedBox(
+            //       width: 90,
+            //       child: RoundedButton(
+            //         text: "Floor 1",
+            //         backgroundColor: ConstantColors.whiteColor,
+            //         textColor: ConstantColors.borderButtonColor,
+            //         naviagtionRoute: "",
+            //       ),
+            //     ),
+            //     const SizedBox(
+            //       width: 10,
+            //     ),
+            //     const SizedBox(
+            //       width: 90,
+            //       child: RoundedButton(
+            //         text: "Floor 2",
+            //         backgroundColor: ConstantColors.whiteColor,
+            //         textColor: ConstantColors.borderButtonColor,
+            //         naviagtionRoute: "",
+            //       ),
+            //     ),
+            //     const SizedBox(
+            //       width: 10,
+            //     ),
+            //     MaterialButton(
+            //       onPressed: () {},
+            //       color: ConstantColors.whiteColor,
+            //       textColor: Colors.white,
+            //       minWidth: 20,
+            //       height: 20,
+            //       shape: const CircleBorder(
+            //         side: BorderSide(
+            //           color: ConstantColors.borderButtonColor,
+            //           width: 2,
+            //         ),
+            //       ),
+            //       child: Image.asset(
+            //         ImgPath.pngPlus,
+            //         height: 10,
+            //         width: 10,
+            //       ),
+            //     ),
+            //   ],
+            // ),
+
             const CustomTile(
               floorName: 'Floor 1',
               status: 'off',
@@ -155,8 +164,8 @@ class CustomTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-         // Navigator.pushNamed(context, addDeviceRoute);
-         Navigator.pushNamed(context, deviceDetailRoute);
+          // Navigator.pushNamed(context, addDeviceRoute);
+          Navigator.pushNamed(context, deviceDetailRoute);
         },
         child: Card(
           elevation: 10.0,

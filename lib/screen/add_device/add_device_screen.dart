@@ -22,10 +22,15 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: 25,
+                    width: 25,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(

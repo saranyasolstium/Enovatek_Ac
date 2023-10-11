@@ -49,10 +49,15 @@ class AddFloorNameState extends State<AddFloorName> {
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: 25,
+                    width: 25,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -97,9 +102,13 @@ class AddFloorNameState extends State<AddFloorName> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                       primary: isUnAssignedVisible ? ConstantColors.lightBlueColor : ConstantColors.whiteColor,
-                      onPrimary: isUnAssignedVisible ? ConstantColors.whiteColor : ConstantColors.lightBlueColor,
-                     side: const BorderSide(
+                      primary: isUnAssignedVisible
+                          ? ConstantColors.lightBlueColor
+                          : ConstantColors.whiteColor,
+                      onPrimary: isUnAssignedVisible
+                          ? ConstantColors.whiteColor
+                          : ConstantColors.lightBlueColor,
+                      side: const BorderSide(
                         color: ConstantColors.borderButtonColor,
                         width: 1.0,
                         style: BorderStyle.solid,
@@ -126,9 +135,13 @@ class AddFloorNameState extends State<AddFloorName> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                       primary: isAssignedVisible ? ConstantColors.lightBlueColor : ConstantColors.whiteColor,
-                      onPrimary: isAssignedVisible ? ConstantColors.whiteColor : ConstantColors.lightBlueColor,
-                     side: const BorderSide(
+                      primary: isAssignedVisible
+                          ? ConstantColors.lightBlueColor
+                          : ConstantColors.whiteColor,
+                      onPrimary: isAssignedVisible
+                          ? ConstantColors.whiteColor
+                          : ConstantColors.lightBlueColor,
+                      side: const BorderSide(
                         color: ConstantColors.borderButtonColor,
                         width: 1.0,
                         style: BorderStyle.solid,

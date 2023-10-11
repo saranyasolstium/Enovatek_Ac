@@ -21,10 +21,15 @@ class SavingDisplayScreenState extends State<SavingDisplayScreen> {
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: 25,
+                    width: 25,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -99,8 +104,7 @@ class SavingDisplayScreenState extends State<SavingDisplayScreen> {
                 ),
               ),
             ),
-
-             const SizedBox(
+            const SizedBox(
               height: 30,
             ),
             Container(
@@ -141,8 +145,7 @@ class SavingDisplayScreenState extends State<SavingDisplayScreen> {
                 ),
               ),
             ),
-
-             const SizedBox(
+            const SizedBox(
               height: 30,
             ),
             Container(
@@ -183,8 +186,7 @@ class SavingDisplayScreenState extends State<SavingDisplayScreen> {
                 ),
               ),
             ),
-
-             const SizedBox(
+            const SizedBox(
               height: 30,
             ),
             Container(
@@ -225,7 +227,6 @@ class SavingDisplayScreenState extends State<SavingDisplayScreen> {
                 ),
               ),
             ),
-
           ],
         ),
       ),

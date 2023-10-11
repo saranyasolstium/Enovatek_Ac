@@ -21,10 +21,15 @@ class BluetoothScanState extends State<BluetoothScan> {
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: 25,
+                    width: 25,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -48,19 +53,21 @@ class BluetoothScanState extends State<BluetoothScan> {
                     color: ConstantColors.black),
               ),
             ),
-            const SizedBox(height: 80,),
-             Center(
+            const SizedBox(
+              height: 80,
+            ),
+            Center(
               child: Image.asset(
                 ImgPath.pngWifi,
-              height: 50,
-              width: 100,
+                height: 50,
+                width: 100,
               ),
             ),
-             Center(
+            Center(
               child: Image.asset(
                 ImgPath.pngAirConditioner,
-              height: 200,
-              width: 200,
+                height: 200,
+                width: 200,
               ),
             ),
           ],

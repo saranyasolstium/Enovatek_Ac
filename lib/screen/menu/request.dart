@@ -16,25 +16,26 @@ class RequestScreenState extends State<RequestScreen> {
 
   void togglePendingVisibility() {
     setState(() {
-      isClosedVisible=false;
+      isClosedVisible = false;
       isPendingVisible = !isPendingVisible;
     });
   }
 
   void toggleClosedVisibility() {
     setState(() {
-      isPendingVisible=false;
+      isPendingVisible = false;
       isClosedVisible = !isClosedVisible;
     });
   }
 
-@override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    isPendingVisible=true;
-    isClosedVisible=false;
+    isPendingVisible = true;
+    isClosedVisible = false;
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,10 +46,15 @@ class RequestScreenState extends State<RequestScreen> {
           children: [
             Row(
               children: [
-                Image.asset(
-                  ImgPath.pngArrowBack,
-                  height: 25,
-                  width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: 25,
+                    width: 25,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -73,8 +79,12 @@ class RequestScreenState extends State<RequestScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      primary: isPendingVisible ? ConstantColors.lightBlueColor : ConstantColors.whiteColor,
-                      onPrimary: isPendingVisible ? ConstantColors.whiteColor : ConstantColors.lightBlueColor,
+                      primary: isPendingVisible
+                          ? ConstantColors.lightBlueColor
+                          : ConstantColors.whiteColor,
+                      onPrimary: isPendingVisible
+                          ? ConstantColors.whiteColor
+                          : ConstantColors.lightBlueColor,
                       side: const BorderSide(
                         color: ConstantColors.borderButtonColor,
                         width: 1.0,
@@ -99,8 +109,12 @@ class RequestScreenState extends State<RequestScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      primary: isClosedVisible ? ConstantColors.lightBlueColor : ConstantColors.whiteColor,
-                      onPrimary: isClosedVisible ? ConstantColors.whiteColor : ConstantColors.lightBlueColor,
+                      primary: isClosedVisible
+                          ? ConstantColors.lightBlueColor
+                          : ConstantColors.whiteColor,
+                      onPrimary: isClosedVisible
+                          ? ConstantColors.whiteColor
+                          : ConstantColors.lightBlueColor,
                       side: const BorderSide(
                         color: ConstantColors.borderButtonColor,
                         width: 1.0,
@@ -123,41 +137,40 @@ class RequestScreenState extends State<RequestScreen> {
             const SizedBox(
               height: 50,
             ),
-             Visibility(
-              visible: isPendingVisible,
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CustomListTile(
-                  status: 'PROGRESS PENDING',
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                CustomListTile(
-                  status: 'PROGRESS PENDING',
-                ),
-              ],
-            )),
-
             Visibility(
-              visible: isClosedVisible,
+                visible: isPendingVisible,
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CustomListTile(
-                  status: 'PROGRESS RESOLVED',
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                CustomListTile(
-                  status: 'PROGRESS RESOLVED',
-                ),
-              ],
-            )),
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CustomListTile(
+                      status: 'PROGRESS PENDING',
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    CustomListTile(
+                      status: 'PROGRESS PENDING',
+                    ),
+                  ],
+                )),
+            Visibility(
+                visible: isClosedVisible,
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CustomListTile(
+                      status: 'PROGRESS RESOLVED',
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    CustomListTile(
+                      status: 'PROGRESS RESOLVED',
+                    ),
+                  ],
+                )),
           ],
         ),
       ),

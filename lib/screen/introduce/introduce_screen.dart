@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 
 class IntroductionScreen extends StatelessWidget {
-  IntroductionScreen({super.key});
+  IntroductionScreen({Key? key}) : super(key: key);
 
   final List<Slide> slides = [
     Slide(
@@ -34,13 +34,18 @@ class IntroductionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final isTablet = screenWidth >= 600; 
+
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: Swiper(
         itemCount: slides.length,
         loop: false,
-        autoplay: true, // Enable autoplay
-        autoplayDelay: 3000, // Delay between auto-scrolls (milliseconds)
+        autoplay: true,
+        autoplayDelay: 3000,
         autoplayDisableOnInteraction: true,
         itemBuilder: (context, index) {
           return SlideItem(
@@ -49,40 +54,34 @@ class IntroductionScreen extends StatelessWidget {
             description: slides[index].description,
           );
         },
-        pagination: const SwiperPagination(
+        pagination:  SwiperPagination(
           builder: DotSwiperPaginationBuilder(
-              color: ConstantColors.dotColor,
-              activeColor: ConstantColors.lightBlueColor),
+            color: ConstantColors.dotColor,
+            size: screenHeight * 0.05, 
+            activeColor: ConstantColors.lightBlueColor,
+          ),
         ),
       ),
-      bottomNavigationBar: const BottomAppBar(
-              color: ConstantColors.backgroundColor,
-
-        height: 100,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+      bottomNavigationBar: BottomAppBar(
+        color: ConstantColors.backgroundColor,
+        
+        height:  screenHeight * 0.1, 
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            SizedBox(
-              width: 100,
-              child: RoundedButton(
+            RoundedButton(
                 text: "Skip",
                 backgroundColor: ConstantColors.whiteColor,
                 textColor: ConstantColors.borderButtonColor,
                 naviagtionRoute: loginRoute,
               ),
-            ),
-            SizedBox(
-              width: 100,
-            ),
-            SizedBox(
-              width: 100,
-              child: RoundedButton(
+            RoundedButton(
                 text: "Next",
                 backgroundColor: ConstantColors.borderButtonColor,
                 textColor: ConstantColors.whiteColor,
                 naviagtionRoute: loginRoute,
               ),
-            ),
+            
           ],
         ),
       ),
