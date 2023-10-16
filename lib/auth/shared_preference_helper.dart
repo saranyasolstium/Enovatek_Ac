@@ -19,4 +19,12 @@ class SharedPreferencesHelper {
     return prefs.getString('deviceId');
   }
 
+  Future<void> saveUserDataToSharedPreferences(String userName, String userEmail) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('userName', userName);
+  await prefs.setString('userEmail', userEmail);
+}
+
+
+
 }

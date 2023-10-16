@@ -14,33 +14,38 @@ class DeviceNameScreen extends StatefulWidget {
 }
 
 class DeviceNameScreenState extends State<DeviceNameScreen> {
-  
-
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
+        padding: EdgeInsets.fromLTRB(
+          screenWidth * 0.05,
+          screenHeight * 0.05,
+          screenWidth * 0.05,
+          screenHeight * 0.02,
+        ),
         child: Column(
           children: [
             Row(
               children: [
-                 GestureDetector(
+                GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
-                    height: 25,
-                    width: 25,
+                    height: screenWidth * 0.05,
+                    width: screenWidth * 0.05,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Add Device',
                   style: GoogleFonts.roboto(
-                      fontSize: 18,
+                      fontSize: screenWidth * 0.05,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
@@ -50,9 +55,8 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
               height: 50,
             ),
             Center(
-            
               child: Text(
-              textAlign:TextAlign.center,
+                textAlign: TextAlign.center,
                 'Customise your device name',
                 style: GoogleFonts.roboto(
                     fontSize: 16,
@@ -63,7 +67,10 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
             const SizedBox(
               height: 30,
             ),
-           Image.asset(ImgPath.pngIntro4,height: 350,),
+            Image.asset(
+              ImgPath.pngIntro4,
+              height: 350,
+            ),
             const SizedBox(
               height: 30,
             ),
@@ -75,26 +82,23 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
                   fontWeight: FontWeight.w500,
                 ),
                 decoration: InputDecorationStyle.textFieldDecoration(
-                  placeholder: "Enter Name",
-                  context: context
-                ),
+                    placeholder: "Enter Name", context: context),
               ),
             ),
             const SizedBox(
               height: 30,
             ),
-           
-             const Center(
+            const Center(
               child: SizedBox(
-              width: 150,
-              height: 50,
-              child: RoundedButton(
-                text: "Proceed",
-                backgroundColor: ConstantColors.borderButtonColor,
-                textColor: ConstantColors.whiteColor,
-                naviagtionRoute: deviceAssignRoute,),
-            ),
-          
+                width: 150,
+                height: 50,
+                child: RoundedButton(
+                  text: "Proceed",
+                  backgroundColor: ConstantColors.borderButtonColor,
+                  textColor: ConstantColors.whiteColor,
+                  naviagtionRoute: deviceAssignRoute,
+                ),
+              ),
             )
           ],
         ),

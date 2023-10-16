@@ -6,15 +6,16 @@ void showLogoutDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
+      final double screenWidth = MediaQuery.of(context).size.width;
+      final double screenHeight = MediaQuery.of(context).size.height;
       return AlertDialog(
         backgroundColor: ConstantColors.whiteColor,
         content: Text(
           'Are you sure to log out?',
           style: GoogleFonts.roboto(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            color: ConstantColors.mainlyTextColor
-          ),
+              fontSize: screenWidth * 0.05,
+              fontWeight: FontWeight.bold,
+              color: ConstantColors.mainlyTextColor),
         ),
         actions: <Widget>[
           Row(
@@ -41,12 +42,14 @@ void showLogoutDialog(BuildContext context) {
                   child: Text(
                     "Cancel",
                     style: GoogleFonts.roboto(
-                      fontSize: 12.0,
+                      fontSize: screenWidth * 0.035
                     ),
                   ),
                 ),
               ),
-              SizedBox(width: 30,),
+              SizedBox(
+                width: 30,
+              ),
               Padding(
                 padding: const EdgeInsets.only(left: 0.0, right: 0.0),
                 child: ElevatedButton(
@@ -68,7 +71,7 @@ void showLogoutDialog(BuildContext context) {
                   child: Text(
                     "Log out",
                     style: GoogleFonts.roboto(
-                      fontSize: 12.0,
+                      fontSize: screenWidth * 0.035
                     ),
                   ),
                 ),

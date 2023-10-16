@@ -14,10 +14,17 @@ class AddDeviceScreen extends StatefulWidget {
 class AddDeviceScreenState extends State<AddDeviceScreen> {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
+        padding: EdgeInsets.fromLTRB(
+          screenWidth * 0.05,
+          screenHeight * 0.05,
+          screenWidth * 0.05,
+          screenHeight * 0.02,
+        ),
         child: Column(
           children: [
             Row(
@@ -28,15 +35,15 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
-                    height: 25,
-                    width: 25,
+                    height: screenWidth * 0.05,
+                    width: screenWidth * 0.05,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Add Device',
                   style: GoogleFonts.roboto(
-                      fontSize: 18,
+                      fontSize: screenWidth * 0.05,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
@@ -49,7 +56,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
               child: Text(
                 'Select option',
                 style: GoogleFonts.roboto(
-                    fontSize: 18,
+                    fontSize: screenWidth * 0.05,
                     fontWeight: FontWeight.bold,
                     color: ConstantColors.black),
               ),
@@ -62,7 +69,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                   color: ConstantColors.whiteColor,
                   borderRadius: BorderRadius.circular(30)),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.only(left:20,right: 10,bottom: 20,top: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -72,15 +79,17 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                           TextSpan(
                             text: 'Scan QR code\n\n ',
                             style: GoogleFonts.roboto(
-                                color: ConstantColors.mainlyTextColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15),
+                              color: ConstantColors.mainlyTextColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.04,
+                            ),
                           ),
                           TextSpan(
                             text: 'Scan the QR code available on your device',
                             style: GoogleFonts.roboto(
-                                color: ConstantColors.mainlyTextColor,
-                                fontSize: 13),
+                              color: ConstantColors.mainlyTextColor,
+                              fontSize: screenWidth * 0.034,
+                            ),
                           ),
                         ],
                       ),
@@ -107,7 +116,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                     color: ConstantColors.whiteColor,
                     borderRadius: BorderRadius.circular(30)),
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.only(left:20,right: 10,bottom: 20,top: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -117,15 +126,17 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                             TextSpan(
                               text: 'Scan for nearby device\n\n ',
                               style: GoogleFonts.roboto(
-                                  color: ConstantColors.mainlyTextColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
+                                color: ConstantColors.mainlyTextColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: screenWidth * 0.04,
+                              ),
                             ),
                             TextSpan(
                               text: 'Scan the QR code available on your device',
                               style: GoogleFonts.roboto(
-                                  color: ConstantColors.mainlyTextColor,
-                                  fontSize: 13),
+                                color: ConstantColors.mainlyTextColor,
+                                fontSize: screenWidth * 0.034,
+                              ),
                             ),
                           ],
                         ),
@@ -153,7 +164,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                     color: ConstantColors.whiteColor,
                     borderRadius: BorderRadius.circular(30)),
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.only(left:20,right: 10,bottom: 20,top: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -163,16 +174,18 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                             TextSpan(
                               text: 'Enter serial no.\n\n ',
                               style: GoogleFonts.roboto(
-                                  color: ConstantColors.mainlyTextColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
+                                color: ConstantColors.mainlyTextColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: screenWidth * 0.04,
+                              ),
                             ),
                             TextSpan(
                               text:
                                   'Enter the serial number manually to connect',
                               style: GoogleFonts.roboto(
-                                  color: ConstantColors.mainlyTextColor,
-                                  fontSize: 13),
+                                color: ConstantColors.mainlyTextColor,
+                                fontSize: screenWidth * 0.034,
+                              ),
                             ),
                           ],
                         ),

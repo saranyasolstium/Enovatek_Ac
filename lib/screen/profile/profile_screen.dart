@@ -1,10 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:io';
+
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/decoration.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -14,14 +22,81 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
-  TextEditingController emailEditingController =
-      TextEditingController(text: 'Loremipsum@gmail.com');
   TextEditingController countryController = TextEditingController(text: '+65');
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  late String imageUrl = "";
 
   @override
   void initState() {
     countryController.text = "+65";
     super.initState();
+    getUserDataFromSharedPreferences();
+  }
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  String? userName;
+  String? userEmail;
+  Future<void> signOutGoogle() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      await _googleSignIn.signOut();
+      Navigator.pushNamed(context, loginRoute);
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> getUserDataFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userName = prefs.getString('userName');
+    userEmail = prefs.getString('userEmail');
+    nameController.text = userName ?? "";
+    emailController.text = userEmail ?? "";
+  }
+
+  late File? pickedImage=null;
+
+  late PickedFile? image;
+  Future<void> getImage({required ImageSource source}) async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: source);
+    if (image != null) {
+      setState(() {
+        pickedImage = File(image.path);
+      });
+    }
+  }
+
+  Future<void> dialogBoxImagePicker(context) {
+    return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.camera_alt),
+                    title: const Text("Pick Form Camera"),
+                    onTap: () {
+                      getImage(source: ImageSource.camera);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text("Pick Form Gallery"),
+                    onTap: () {
+                      getImage(source: ImageSource.gallery);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   @override
@@ -42,7 +117,8 @@ class ProfileScreenState extends State<ProfileScreen> {
             width: screenWidth * 0.05,
           ),
           onPressed: () {
-            Navigator.pop(context);
+            signOutGoogle();
+            // Navigator.pop(context);
           },
         ),
         title: Text(
@@ -68,15 +144,25 @@ class ProfileScreenState extends State<ProfileScreen> {
                   width: screenHeight * 0.15,
                   height: screenHeight * 0.15,
                 ),
-                Positioned.fill(
-                  child: Center(
-                    child: Image.asset(
-                      ImgPath.pngPerson,
-                      height: screenHeight * 0.05,
-                      width: screenHeight * 0.05,
-                    ),
-                  ),
-                ),
+                pickedImage != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: Image.file(
+                          pickedImage!,
+                          fit: BoxFit.cover,
+                          width: screenHeight * 0.15,
+                          height: screenHeight * 0.15,
+                        ),
+                      )
+                    : Positioned.fill(
+                        child: Center(
+                          child: Image.asset(
+                            ImgPath.pngPerson,
+                            height: screenHeight * 0.05,
+                            width: screenHeight * 0.05,
+                          ),
+                        ),
+                      ),
                 Positioned.fill(
                   top: 5,
                   child: Padding(
@@ -86,12 +172,17 @@ class ProfileScreenState extends State<ProfileScreen> {
                       clipBehavior: Clip.none,
                       alignment: Alignment.topCenter,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              color: ConstantColors.lightBlueColor,
-                              borderRadius: BorderRadius.circular(50)),
-                          // width: isTablet ? 50 : 30,
-                          // height: isTablet ? 60 : 100,
+                        GestureDetector(
+                          onTap: () {
+                            dialogBoxImagePicker(context);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: ConstantColors.lightBlueColor,
+                                borderRadius: BorderRadius.circular(50)),
+                            // width: isTablet ? 50 : 30,
+                            // height: isTablet ? 60 : 100,
+                          ),
                         ),
                         Positioned.fill(
                           child: Center(
@@ -112,6 +203,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               height: 50,
             ),
             TextField(
+              controller: nameController,
               style: GoogleFonts.roboto(
                 color: ConstantColors.mainlyTextColor,
                 fontWeight: FontWeight.w500,
@@ -124,7 +216,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               height: isTablet ? 30 : 20,
             ),
             TextField(
-              controller: emailEditingController,
+              controller: emailController,
               style: GoogleFonts.roboto(
                 color: ConstantColors.mainlyTextColor,
                 fontWeight: FontWeight.w500,
@@ -132,6 +224,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
               decoration: InputDecorationStyle.textFieldDecoration(
                   placeholder: "Loremipsum@gmail.com", context: context),
+              enabled: false,
             ),
             SizedBox(
               height: isTablet ? 30 : 20,

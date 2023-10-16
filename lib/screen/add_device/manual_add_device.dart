@@ -19,29 +19,36 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
+        padding: EdgeInsets.fromLTRB(
+          screenWidth * 0.05,
+          screenHeight * 0.05,
+          screenWidth * 0.05,
+          screenHeight * 0.02,
+        ),
         child: Column(
           children: [
             Row(
               children: [
-                 GestureDetector(
+                GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
-                    height: 25,
-                    width: 25,
+                    height: screenWidth * 0.05,
+                    width: screenWidth * 0.05,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Add Device',
                   style: GoogleFonts.roboto(
-                      fontSize: 18,
+                      fontSize: screenWidth * 0.05,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
@@ -54,7 +61,7 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
               child: Text(
                 'Add serial no. manually of your device',
                 style: GoogleFonts.roboto(
-                    fontSize: 18,
+                    fontSize: screenWidth * 0.05,
                     fontWeight: FontWeight.bold,
                     color: ConstantColors.black),
               ),
@@ -62,9 +69,10 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
             const SizedBox(
               height: 50,
             ),
-           Image.asset(ImgPath.pngSerialNo,height: 300,width: 300,),
-            const SizedBox(
-              height: 30,
+            Image.asset(
+              ImgPath.pngSerialNo,
+              height: screenWidth * 0.6,
+              width: screenWidth * 0.6,
             ),
             const SizedBox(
               height: 30,
@@ -78,25 +86,19 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
                   fontWeight: FontWeight.w500,
                 ),
                 decoration: InputDecorationStyle.textFieldDecoration(
-                  placeholder: "**** **** **** 1234",
-                  context: context
-                ),
+                    placeholder: "**** **** **** 1234", context: context),
               ),
             ),
             const SizedBox(
               height: 30,
             ),
-             const Center(
-              child: SizedBox(
-              width: 150,
-              height: 50,
+            const Center(
               child: RoundedButton(
                 text: "Proceed",
                 backgroundColor: ConstantColors.borderButtonColor,
                 textColor: ConstantColors.whiteColor,
-                naviagtionRoute: wifiPasswordRoute,),
-            ),
-          
+                naviagtionRoute: wifiPasswordRoute,
+              ),
             )
           ],
         ),

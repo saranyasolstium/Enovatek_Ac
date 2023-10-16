@@ -13,10 +13,17 @@ class BluetoothScan extends StatefulWidget {
 class BluetoothScanState extends State<BluetoothScan> {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
+        padding: EdgeInsets.fromLTRB(
+          screenWidth * 0.05,
+          screenHeight * 0.05,
+          screenWidth * 0.05,
+          screenHeight * 0.02,
+        ),
         child: Column(
           children: [
             Row(
@@ -27,15 +34,15 @@ class BluetoothScanState extends State<BluetoothScan> {
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
-                    height: 25,
-                    width: 25,
+                    height: screenWidth * 0.05,
+                    width: screenWidth * 0.05,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Add Device',
                   style: GoogleFonts.roboto(
-                      fontSize: 18,
+                      fontSize: screenWidth * 0.05,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
@@ -48,7 +55,7 @@ class BluetoothScanState extends State<BluetoothScan> {
               child: Text(
                 'Bring you phone closer to the device',
                 style: GoogleFonts.roboto(
-                    fontSize: 18,
+                    fontSize: screenWidth * 0.05,
                     fontWeight: FontWeight.bold,
                     color: ConstantColors.black),
               ),
@@ -59,15 +66,15 @@ class BluetoothScanState extends State<BluetoothScan> {
             Center(
               child: Image.asset(
                 ImgPath.pngWifi,
-                height: 50,
-                width: 100,
+                height: screenWidth * 0.2,
+                width: screenWidth * 0.3,
               ),
             ),
             Center(
               child: Image.asset(
                 ImgPath.pngAirConditioner,
-                height: 200,
-                width: 200,
+                height: screenWidth * 0.5,
+                width: screenWidth * 0.5,
               ),
             ),
           ],

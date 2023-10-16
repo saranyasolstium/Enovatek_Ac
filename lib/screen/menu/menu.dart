@@ -4,6 +4,7 @@ import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/dialog_logout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -13,6 +14,22 @@ class MenuScreen extends StatefulWidget {
 }
 
 class MenuScreenState extends State<MenuScreen> {
+  String? userName;
+  String? userEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDataFromSharedPreferences();
+  }
+
+  Future<void> getUserDataFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userName = prefs.getString('userName');
+    userEmail = prefs.getString('userEmail');
+    print('userName');
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -45,7 +62,7 @@ class MenuScreenState extends State<MenuScreen> {
                 Text(
                   'Menu',
                   style: GoogleFonts.roboto(
-                      fontSize: screenWidth * 0.05,
+                      fontSize: screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
@@ -80,23 +97,28 @@ class MenuScreenState extends State<MenuScreen> {
                     ),
                   ],
                 ),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Lorem Name\n\n ',
-                        style: GoogleFonts.roboto(
+                SizedBox(width: 10,),
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '$userName\n\n',
+                          style: GoogleFonts.roboto(
                             color: ConstantColors.black,
                             fontWeight: FontWeight.bold,
-                            fontSize: screenWidth * 0.05),
-                      ),
-                      TextSpan(
-                        text: 'loremname@gmail.com',
-                        style: GoogleFonts.roboto(
+                            fontSize: screenWidth * 0.042,
+                          ),
+                        ),
+                        TextSpan(
+                          text: userEmail,
+                          style: GoogleFonts.roboto(
                             color: ConstantColors.mainlyTextColor,
-                            fontSize: screenWidth * 0.05),
-                      ),
-                    ],
+                            fontSize: screenWidth * 0.042,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Icon(
@@ -146,7 +168,7 @@ class MenuScreenState extends State<MenuScreen> {
                           'Building',
                           style: GoogleFonts.roboto(
                               color: const Color.fromARGB(255, 7, 3, 3),
-                              fontSize: screenWidth * 0.05),
+                              fontSize: screenWidth * 0.045),
                         ),
                       ],
                     ),
@@ -176,7 +198,7 @@ class MenuScreenState extends State<MenuScreen> {
                           'Calculate saving',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.05),
+                              fontSize: screenWidth * 0.045),
                         ),
                       ],
                     ),
@@ -208,7 +230,7 @@ class MenuScreenState extends State<MenuScreen> {
                         'FAQ',
                         style: GoogleFonts.roboto(
                             color: ConstantColors.black,
-                            fontSize: screenWidth * 0.05),
+                            fontSize: screenWidth * 0.045),
                       ),
                     ],
                   ),
@@ -237,7 +259,7 @@ class MenuScreenState extends State<MenuScreen> {
                           'Support',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.05),
+                              fontSize: screenWidth * 0.045),
                         ),
                       ],
                     ),
@@ -267,7 +289,7 @@ class MenuScreenState extends State<MenuScreen> {
                           'Track Request',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.05),
+                              fontSize: screenWidth * 0.045),
                         ),
                       ],
                     ),
@@ -303,7 +325,7 @@ class MenuScreenState extends State<MenuScreen> {
                           'Log out',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.05),
+                              fontSize: screenWidth * 0.045),
                         ),
                       ],
                     ),

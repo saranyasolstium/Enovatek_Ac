@@ -9,11 +9,15 @@ import 'package:enavatek_mobile/auth/authhelper.dart';
 
 import 'package:device_preview/device_preview.dart';
 import 'package:sizer/sizer.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
-  runApp(
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+    runApp(
     DevicePreview(
-      enabled: true, // Enable device preview
+      enabled: false, // Enable device preview
       builder: (context) => Sizer(
         builder: (context, orientation, deviceType) {
           return const Enavatek();

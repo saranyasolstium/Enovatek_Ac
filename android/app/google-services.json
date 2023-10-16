@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "707298527476",
+    "project_id": "enavatek",
+    "storage_bucket": "enavatek.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707298527476:android:ce93a1dedd3e9f71a876a1",
+        "android_client_info": {
+          "package_name": "com.example.enavatek_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCITGnAnJpLcl4_0mbtV8zNvKgUWaWt3wQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -47,5 +47,31 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+
+<!-- Initialize Facebook App ID -->
+<array>
+  <dict>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>fb710218861129853</string>
+    </array>
+  </dict>
+</array>
+<key>FacebookAppID</key>
+<string>710218861129853</string>
+<key>FacebookDisplayName</key>
+<string>Enavatek</string>
+<!-- Initialize Image Picker -->
+<key>NSMicrophoneUsageDescription</key>
+<string>Microphone Access Required</string>
+<key>NSMotionUsageDescription</key>
+<string>Motion Usage Required</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>Please allow access to photo library so you can easily upload your photos.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Please allow access to photo library so you can easily upload your photos.</string>
+
+
 </dict>
 </plist>
