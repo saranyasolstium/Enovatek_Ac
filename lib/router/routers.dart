@@ -11,6 +11,8 @@ import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/add_schedule.dart';
 import 'package:enavatek_mobile/screen/device_details/device_details_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/schedule.dart';
+import 'package:enavatek_mobile/screen/home/add_building.dart';
+import 'package:enavatek_mobile/screen/home/building.dart';
 import 'package:enavatek_mobile/screen/home/home_screen.dart';
 import 'package:enavatek_mobile/screen/introduce/introduce_screen.dart';
 import 'package:enavatek_mobile/screen/login_screen/login_screen.dart';
@@ -55,6 +57,18 @@ class Routers {
       case homedRoute:
         return PageTransition(
           child: const HomeScreen(),
+          type: PageTransitionType.rightToLeft,
+        );
+
+        case addBuildingRoute:
+        return PageTransition(
+          child: const AddBuilding(),
+          type: PageTransitionType.rightToLeft,
+        );
+
+        case homBuildingRoute:
+        return PageTransition(
+          child: const HomeBuildingScreen(),
           type: PageTransitionType.rightToLeft,
         );
 
@@ -154,21 +168,21 @@ class Routers {
 
         case deviceAssignRoute:
         return PageTransition(
-          child: const DeviceAssigningScreen(),
+          child: const DeviceAssigningScreen(buildingId: '1'),
           type: PageTransitionType.rightToLeft,
         );
 
-         case addFloorNameRoute:
-        return PageTransition(
-          child: const AddFloorName(),
-          type: PageTransitionType.rightToLeft,
-        );
+        // case addFloorNameRoute:
+        // return PageTransition(
+        //   child: const AddFloorName(),
+        //   type: PageTransitionType.rightToLeft,
+        // );
 
-        case editFloorNameRoute:
-        return PageTransition(
-          child: const EditFloorName(),
-          type: PageTransitionType.rightToLeft,
-        );
+        // case editFloorNameRoute:
+        // return PageTransition(
+        //   child: const EditFloorName(),
+        //   type: PageTransitionType.rightToLeft,
+        // );
 
       default:
         return MaterialPageRoute(builder: (_) => Container());

@@ -24,7 +24,7 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
           children: [
             Row(
               children: [
-                 GestureDetector(
+                GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
                   },
@@ -58,7 +58,6 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
             const SizedBox(
               height: 80,
             ),
-           
             Container(
               margin: const EdgeInsets.only(left: 20),
               padding: const EdgeInsets.only(left: 20, right: 0),
@@ -70,20 +69,18 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
                 autocorrect: false,
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
-                  suffixIcon: const Icon(
-                    Icons.expand_more,
-                    color: ConstantColors.mainlyTextColor,
-                  ),
-                  border: InputBorder.none,
-                  hintStyle: GoogleFonts.roboto(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  hintText: 'Your_Wi-Fi_name'
-                ),
+                    suffixIcon: const Icon(
+                      Icons.expand_more,
+                      color: ConstantColors.mainlyTextColor,
+                    ),
+                    border: InputBorder.none,
+                    hintStyle: GoogleFonts.roboto(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    hintText: 'Your_Wi-Fi_name'),
               ),
             ),
-
             const SizedBox(
               height: 30,
             ),
@@ -95,24 +92,23 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
                   fontWeight: FontWeight.w500,
                 ),
                 decoration: InputDecorationStyle.textFieldDecoration(
-                  placeholder: "Enter Password",
-                  context: context
-                ),
+                    placeholder: "Enter Password", context: context),
               ),
             ),
             const SizedBox(
               height: 80,
             ),
-
-            const Center(
+            Center(
               child: SizedBox(
                 width: 150,
                 height: 50,
                 child: RoundedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, deviceNameRoute);
+                  },
                   text: "Connect",
                   backgroundColor: ConstantColors.borderButtonColor,
                   textColor: ConstantColors.whiteColor,
-                  naviagtionRoute: deviceNameRoute,
                 ),
               ),
             )

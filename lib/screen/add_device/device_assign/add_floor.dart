@@ -1,12 +1,21 @@
-import 'package:enavatek_mobile/screen/device_details/schedule_list.dart';
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
+import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/add_device/device_assign/device_assigning.dart';
+import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:enavatek_mobile/widget/rounded_btn.dart';
+import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 
 class AddFloorName extends StatefulWidget {
-  const AddFloorName({Key? key}) : super(key: key);
+  final String? buildingID;
+
+  const AddFloorName({Key? key, required this.buildingID}) : super(key: key);
 
   @override
   AddFloorNameState createState() => AddFloorNameState();
@@ -14,6 +23,7 @@ class AddFloorName extends StatefulWidget {
 
 class AddFloorNameState extends State<AddFloorName> {
   final TextEditingController _searchController = TextEditingController();
+  TextEditingController floorNameController = TextEditingController();
 
   bool isAssignedVisible = true;
   bool isUnAssignedVisible = true;
@@ -75,6 +85,7 @@ class AddFloorNameState extends State<AddFloorName> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: TextFormField(
+                controller: floorNameController,
                 maxLines: 1,
                 decoration: const InputDecoration(
                   labelText: "Add floor name",
@@ -92,213 +103,251 @@ class AddFloorNameState extends State<AddFloorName> {
             const SizedBox(
               height: 50,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 0.0, right: 0.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      primary: isUnAssignedVisible
-                          ? ConstantColors.lightBlueColor
-                          : ConstantColors.whiteColor,
-                      onPrimary: isUnAssignedVisible
-                          ? ConstantColors.whiteColor
-                          : ConstantColors.lightBlueColor,
-                      side: const BorderSide(
-                        color: ConstantColors.borderButtonColor,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                    onPressed: () {
-                      toggleUnAssignedVisibility();
-                    },
-                    child: Text(
-                      "Unassigned",
-                      style: GoogleFonts.roboto(
-                        fontSize: 14.0,
+            RoundedButton(
+              onPressed: () async {
+                String floorName = floorNameController.text;
+
+                if (floorName.isEmpty) {
+                  SnackbarHelper.showSnackBar(
+                      context, "Please enter a Floor name");
+                  return;
+                }
+                String? authToken =
+                    await SharedPreferencesHelper.instance.getAuthToken();
+                Response response = await RemoteServices.createFloor(
+                    authToken!, floorName, widget.buildingID!);
+                print(response.statusCode);
+                if (response.statusCode == 201) {
+                  SnackbarHelper.showSnackBar(
+                      context, "Floor created successfully.'");
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DeviceAssigningScreen(
+                        buildingId: widget.buildingID!,
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(
-                  width: 30,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 0.0, right: 0.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      primary: isAssignedVisible
-                          ? ConstantColors.lightBlueColor
-                          : ConstantColors.whiteColor,
-                      onPrimary: isAssignedVisible
-                          ? ConstantColors.whiteColor
-                          : ConstantColors.lightBlueColor,
-                      side: const BorderSide(
-                        color: ConstantColors.borderButtonColor,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                    onPressed: () {
-                      toggleAssignedVisibility();
-                    },
-                    child: Text(
-                      "Assigned",
-                      style: GoogleFonts.roboto(
-                        fontSize: 14.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search for device',
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () => _searchController.clear(),
-                    ),
-                    prefixIcon: IconButton(
-                      icon: const Icon(Icons.search),
-                      onPressed: () {},
-                    ),
-                    fillColor: ConstantColors.inputColor,
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      borderSide: const BorderSide(
-                        width: 0,
-                        style: BorderStyle.none,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            if (isUnAssignedVisible)
-              ListView.separated(
-                shrinkWrap: true,
-                itemCount: 10, // Change this to the number of items you have
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(
-                  thickness: 2,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text(
-                      'Device Name $index\n',
-                      style: GoogleFonts.roboto(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.mainlyTextColor),
-                    ),
-                    subtitle: Text(
-                      'Unassigned',
-                      style: GoogleFonts.roboto(
-                          fontSize: 14.0,
-                          color: ConstantColors.mainlyTextColor),
-                    ),
-                    trailing: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        primary: ConstantColors.lightBlueColor,
-                        onPrimary: ConstantColors.whiteColor,
-                        side: const BorderSide(
-                          color: ConstantColors.borderButtonColor,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ),
-                      ),
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        "Add",
-                        style: GoogleFonts.roboto(
-                          fontSize: 14.0,
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      // Add your onTap functionality here
-                    },
                   );
-                },
-              ),
-            if (isAssignedVisible)
-              ListView.separated(
-                shrinkWrap: true,
-                itemCount: 10, // Change this to the number of items you have
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(
-                  thickness: 2,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text(
-                      'Device Name $index\n',
-                      style: GoogleFonts.roboto(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.mainlyTextColor),
-                    ),
-                    subtitle: Text(
-                      'assigned',
-                      style: GoogleFonts.roboto(
-                          fontSize: 14.0,
-                          color: ConstantColors.mainlyTextColor),
-                    ),
-                    trailing: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        primary: ConstantColors.lightBlueColor,
-                        onPrimary: ConstantColors.whiteColor,
-                        side: const BorderSide(
-                          color: ConstantColors.borderButtonColor,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ),
-                      ),
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        "Remove",
-                        style: GoogleFonts.roboto(
-                          fontSize: 14.0,
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      // Add your onTap functionality here
-                    },
-                  );
-                },
-              ),
+                } else {
+                  SnackbarHelper.showSnackBar(
+                      context, "Failed to create the floor.Please try again!");
+                }
+              },
+              text: "Add",
+              backgroundColor: ConstantColors.borderButtonColor,
+              textColor: ConstantColors.whiteColor,
+            ),
+
+            // const SizedBox(
+            //   height: 50,
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     Padding(
+            //       padding: const EdgeInsets.only(left: 0.0, right: 0.0),
+            //       child: ElevatedButton(
+            //         style: ElevatedButton.styleFrom(
+            //           shape: RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(30.0),
+            //           ),
+            //           primary: isUnAssignedVisible
+            //               ? ConstantColors.lightBlueColor
+            //               : ConstantColors.whiteColor,
+            //           onPrimary: isUnAssignedVisible
+            //               ? ConstantColors.whiteColor
+            //               : ConstantColors.lightBlueColor,
+            //           side: const BorderSide(
+            //             color: ConstantColors.borderButtonColor,
+            //             width: 1.0,
+            //             style: BorderStyle.solid,
+            //           ),
+            //         ),
+            //         onPressed: () {
+            //           toggleUnAssignedVisibility();
+            //         },
+            //         child: Text(
+            //           "Unassigned",
+            //           style: GoogleFonts.roboto(
+            //             fontSize: 14.0,
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //     const SizedBox(
+            //       width: 30,
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.only(left: 0.0, right: 0.0),
+            //       child: ElevatedButton(
+            //         style: ElevatedButton.styleFrom(
+            //           shape: RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(30.0),
+            //           ),
+            //           primary: isAssignedVisible
+            //               ? ConstantColors.lightBlueColor
+            //               : ConstantColors.whiteColor,
+            //           onPrimary: isAssignedVisible
+            //               ? ConstantColors.whiteColor
+            //               : ConstantColors.lightBlueColor,
+            //           side: const BorderSide(
+            //             color: ConstantColors.borderButtonColor,
+            //             width: 1.0,
+            //             style: BorderStyle.solid,
+            //           ),
+            //         ),
+            //         onPressed: () {
+            //           toggleAssignedVisibility();
+            //         },
+            //         child: Text(
+            //           "Assigned",
+            //           style: GoogleFonts.roboto(
+            //             fontSize: 14.0,
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(
+            //   height: 30,
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Container(
+            //     padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            //     child: TextField(
+            //       controller: _searchController,
+            //       decoration: InputDecoration(
+            //         hintText: 'Search for device',
+            //         suffixIcon: IconButton(
+            //           icon: const Icon(Icons.clear),
+            //           onPressed: () => _searchController.clear(),
+            //         ),
+            //         prefixIcon: IconButton(
+            //           icon: const Icon(Icons.search),
+            //           onPressed: () {},
+            //         ),
+            //         fillColor: ConstantColors.inputColor,
+            //         filled: true,
+            //         border: OutlineInputBorder(
+            //           borderRadius: BorderRadius.circular(30.0),
+            //           borderSide: const BorderSide(
+            //             width: 0,
+            //             style: BorderStyle.none,
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // const SizedBox(
+            //   height: 20,
+            // ),
+            // if (isUnAssignedVisible)
+            //   ListView.separated(
+            //     shrinkWrap: true,
+            //     itemCount: 10, // Change this to the number of items you have
+            //     separatorBuilder: (BuildContext context, int index) =>
+            //         const Divider(
+            //       thickness: 2,
+            //     ),
+            //     itemBuilder: (BuildContext context, int index) {
+            //       return ListTile(
+            //         title: Text(
+            //           'Device Name $index\n',
+            //           style: GoogleFonts.roboto(
+            //               fontSize: 14.0,
+            //               fontWeight: FontWeight.bold,
+            //               color: ConstantColors.mainlyTextColor),
+            //         ),
+            //         subtitle: Text(
+            //           'Unassigned',
+            //           style: GoogleFonts.roboto(
+            //               fontSize: 14.0,
+            //               color: ConstantColors.mainlyTextColor),
+            //         ),
+            //         trailing: ElevatedButton(
+            //           style: ElevatedButton.styleFrom(
+            //             shape: RoundedRectangleBorder(
+            //               borderRadius: BorderRadius.circular(30.0),
+            //             ),
+            //             primary: ConstantColors.lightBlueColor,
+            //             onPrimary: ConstantColors.whiteColor,
+            //             side: const BorderSide(
+            //               color: ConstantColors.borderButtonColor,
+            //               width: 1.0,
+            //               style: BorderStyle.solid,
+            //             ),
+            //           ),
+            //           onPressed: () {
+            //             //Navigator.of(context).pop();
+            //           },
+            //           child: Text(
+            //             "Add",
+            //             style: GoogleFonts.roboto(
+            //               fontSize: 14.0,
+            //             ),
+            //           ),
+            //         ),
+            //         onTap: () {
+            //           // Add your onTap functionality here
+            //         },
+            //       );
+            //     },
+            //   ),
+            // if (isAssignedVisible)
+            //   ListView.separated(
+            //     shrinkWrap: true,
+            //     itemCount: 10, // Change this to the number of items you have
+            //     separatorBuilder: (BuildContext context, int index) =>
+            //         const Divider(
+            //       thickness: 2,
+            //     ),
+            //     itemBuilder: (BuildContext context, int index) {
+            //       return ListTile(
+            //         title: Text(
+            //           'Device Name $index\n',
+            //           style: GoogleFonts.roboto(
+            //               fontSize: 14.0,
+            //               fontWeight: FontWeight.bold,
+            //               color: ConstantColors.mainlyTextColor),
+            //         ),
+            //         subtitle: Text(
+            //           'assigned',
+            //           style: GoogleFonts.roboto(
+            //               fontSize: 14.0,
+            //               color: ConstantColors.mainlyTextColor),
+            //         ),
+            //         trailing: ElevatedButton(
+            //           style: ElevatedButton.styleFrom(
+            //             shape: RoundedRectangleBorder(
+            //               borderRadius: BorderRadius.circular(30.0),
+            //             ),
+            //             primary: ConstantColors.lightBlueColor,
+            //             onPrimary: ConstantColors.whiteColor,
+            //             side: const BorderSide(
+            //               color: ConstantColors.borderButtonColor,
+            //               width: 1.0,
+            //               style: BorderStyle.solid,
+            //             ),
+            //           ),
+            //           onPressed: () {
+            //             //Navigator.of(context).pop();
+            //           },
+            //           child: Text(
+            //             "Remove",
+            //             style: GoogleFonts.roboto(
+            //               fontSize: 14.0,
+            //             ),
+            //           ),
+            //         ),
+            //         onTap: () {
+            //           // Add your onTap functionality here
+            //         },
+            //       );
+            //     },
+            //   ),
           ],
         ),
       ),

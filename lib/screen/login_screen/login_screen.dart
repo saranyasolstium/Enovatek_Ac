@@ -1,15 +1,21 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:http/http.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,6 +27,7 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   User? _user;
 
   Future<void> signInWithGoogle() async {
@@ -52,9 +59,10 @@ class LoginScreenState extends State<LoginScreen> {
       String? displayname = _user!.displayName;
       String? email = _user!.email;
       await SharedPreferencesHelper.instance
-          .saveUserDataToSharedPreferences(displayname!, email!);
-
+               .saveUserDataToSharedPreferences(displayname!, email!);
       Navigator.pushNamed(context, profileRoute);
+
+      
     } catch (error) {
       print(error);
     }
@@ -79,6 +87,13 @@ class LoginScreenState extends State<LoginScreen> {
       // You can also access other user information if needed.
       print("User ID: ${userData['id']}");
       print("User Name: ${userData['name']}");
+              print("User Email: ${userData['email']}");
+              String displayname = userData['name'];
+              String email=userData['email'] ?? "";
+await SharedPreferencesHelper.instance
+               .saveUserDataToSharedPreferences(displayname, email);
+      Navigator.pushNamed(context, profileRoute);
+
     } else {
       // Handle login failure.
       print("Facebook login failed: ${loginResult.status}");

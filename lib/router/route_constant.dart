@@ -6,6 +6,8 @@ const String introduceRoute="introduce";
 const String loginRoute = "login";
 const String profileRoute = "profile";
 const String homedRoute = "home";
+const String addBuildingRoute="addBuilding";
+const String homBuildingRoute="homeBuilding";
 const String allDeviceRoute="allDevice";
 const String deviceDetailRoute="deviceDetail";
 
@@ -16,7 +18,7 @@ const String manualAddDeviceRoute="manualAdd";
 const String wifiPasswordRoute="wifiPassword";
 const String  deviceNameRoute="deviceName";
 const String deviceAssignRoute='deviceAssign';
-const String addFloorNameRoute='addFloorName';
+//const String addFloorNameRoute='addFloorName';
 const String editFloorNameRoute='editFloorName';
 
 

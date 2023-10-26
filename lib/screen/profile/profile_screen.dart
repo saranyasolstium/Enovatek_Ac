@@ -1,16 +1,21 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/decoration.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
+import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -25,6 +30,8 @@ class ProfileScreenState extends State<ProfileScreen> {
   TextEditingController countryController = TextEditingController(text: '+65');
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController mobileController = TextEditingController();
+
   late String imageUrl = "";
 
   @override
@@ -47,6 +54,13 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+// Function to validate an email address
+  bool isValidEmail(String email) {
+    String emailPattern = r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$';
+    RegExp regex = RegExp(emailPattern);
+    return regex.hasMatch(email);
+  }
+
   Future<void> getUserDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     userName = prefs.getString('userName');
@@ -55,7 +69,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     emailController.text = userEmail ?? "";
   }
 
-  late File? pickedImage=null;
+  late File? pickedImage = null;
 
   late PickedFile? image;
   Future<void> getImage({required ImageSource source}) async {
@@ -224,7 +238,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
               decoration: InputDecorationStyle.textFieldDecoration(
                   placeholder: "Loremipsum@gmail.com", context: context),
-              enabled: false,
+              //enabled: false,
             ),
             SizedBox(
               height: isTablet ? 30 : 20,
@@ -263,6 +277,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                   ),
                   Expanded(
                       child: TextField(
+                    controller: mobileController,
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -289,11 +304,57 @@ class ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               height: isTablet ? 50 : 30,
             ),
-            const RoundedButton(
+            RoundedButton(
+              onPressed: () async {
+                // Step 1: Check Validation
+                String name = nameController.text;
+                String email = emailController.text;
+                String mobile =
+                    "${countryController.text} ${mobileController.text}";
+
+                if (name.isEmpty) {
+                  // Show an error message for name validation
+                  SnackbarHelper.showSnackBar(
+                      context, "Please enter your name");
+                  return;
+                }
+
+                if (email.isEmpty || !isValidEmail(email)) {
+                  // Show an error message for email validation
+                  SnackbarHelper.showSnackBar(
+                      context, "Please enter a valid email");
+                  return;
+                }
+
+                if (mobileController.text.isEmpty) {
+                  // Show an error message for mobile validation
+                  SnackbarHelper.showSnackBar(
+                      context, "Please enter a valid mobile number");
+                  return;
+                }
+                try {
+                  Response response =
+                      await RemoteServices.login(email, name, mobile);
+                  print(response.statusCode);
+                  if (response.statusCode == 201 ||
+                      response.statusCode == 400) {
+                    await SharedPreferencesHelper.instance
+                        .saveUserDataToSharedPreferences(name, email);
+                    var data = jsonDecode(response.body);
+                Navigator.pushNamed(context, homedRoute);
+
+                    print(data);
+                  } else {
+                    SnackbarHelper.showSnackBar(
+                        context, "Create profile failed! Please try again!");
+                  }
+                } catch (e) {
+                  print(e.toString());
+                }
+              },
               text: "Next",
               backgroundColor: ConstantColors.borderButtonColor,
               textColor: ConstantColors.whiteColor,
-              naviagtionRoute: homedRoute,
             ),
           ],
         ),

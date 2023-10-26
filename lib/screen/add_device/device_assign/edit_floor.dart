@@ -1,12 +1,13 @@
 import 'package:enavatek_mobile/screen/device_details/schedule_list.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditFloorName extends StatefulWidget {
-  const EditFloorName({Key? key}) : super(key: key);
+  final String floorName;
+  final String floorid;
+  const EditFloorName({Key? key, required this.floorName, required this.floorid}) : super(key: key);
 
   @override
   EditFloorNameState createState() => EditFloorNameState();
@@ -67,12 +68,12 @@ class EditFloorNameState extends State<EditFloorName> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: TextFormField(
+                initialValue: widget.floorName, 
                 maxLines: 1,
                 decoration: const InputDecoration(
                   labelText: "Add floor name",
                   suffixIcon: Padding(
-                    padding:
-                        const EdgeInsets.all(8.0), // Adjust padding as needed
+                    padding: EdgeInsets.all(8.0),
                     child: Icon(
                       Icons.edit,
                       size: 20,

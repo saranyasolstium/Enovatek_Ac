@@ -88,15 +88,17 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
             const SizedBox(
               height: 30,
             ),
-            const Center(
+             Center(
               child: SizedBox(
                 width: 150,
                 height: 50,
                 child: RoundedButton(
+                   onPressed: (){
+                Navigator.pushNamed(context, deviceAssignRoute);
+              },
                   text: "Proceed",
                   backgroundColor: ConstantColors.borderButtonColor,
                   textColor: ConstantColors.whiteColor,
-                  naviagtionRoute: deviceAssignRoute,
                 ),
               ),
             )

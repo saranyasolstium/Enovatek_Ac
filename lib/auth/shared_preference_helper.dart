@@ -25,6 +25,28 @@ class SharedPreferencesHelper {
   await prefs.setString('userEmail', userEmail);
 }
 
+// Method to set the authentication token in shared preferences
+  Future<void> setAuthToken(String authToken) async {
+    final SharedPreferences prefs = await _prefs;
+    await prefs.setString('authToken', authToken);
+  }
+
+  // Method to get the device ID from shared preferences
+  Future<String?> getAuthToken() async {
+    final SharedPreferences prefs = await _prefs;
+    return prefs.getString('authToken');
+  }
+
+  Future<void> saveBuildingData(String buildingID, String buildingName) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('buildingID', buildingID);
+  await prefs.setString('buildingName', buildingName);
+}
+Future<String?> getBuildingID() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('buildingID');
+}
+
 
 
 }

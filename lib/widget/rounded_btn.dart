@@ -6,14 +6,16 @@ class RoundedButton extends StatelessWidget {
   final String text;
   final Color backgroundColor;
   final Color textColor;
-  final String naviagtionRoute;
+  final Function onPressed;
+
 
   const RoundedButton({
     super.key,
     required this.text,
     required this.backgroundColor,
     required this.textColor,
-    required this.naviagtionRoute,
+    required this. onPressed
+
   });
 
   @override
@@ -38,9 +40,10 @@ class RoundedButton extends StatelessWidget {
             style: BorderStyle.solid,
           ),
         ),
-        onPressed: () {
-          Navigator.pushNamed(context, naviagtionRoute);
-        },
+        onPressed: () => onPressed(),
+        // {
+        //   Navigator.pushNamed(context, naviagtionRoute);
+        // },
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: isTablet ?screenWidth * 0.05  : screenWidth * 0.02,

@@ -22,11 +22,10 @@ class SupportScreenState extends State<SupportScreen> {
       backgroundColor: ConstantColors.backgroundColor,
       body: Padding(
         padding: EdgeInsets.fromLTRB(
-          isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-          isTablet ? 0.05 * screenHeight : 0.05 * screenHeight,
-          isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-          0
-        ),
+            isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+            isTablet ? 0.05 * screenHeight : 0.05 * screenHeight,
+            isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+            0),
         child: Column(
           children: [
             Row(
@@ -186,12 +185,14 @@ class SupportScreenState extends State<SupportScreen> {
             const SizedBox(
               height: 40,
             ),
-            const Center(
+            Center(
               child: RoundedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, savingRoute);
+                },
                 text: "Proceed",
                 backgroundColor: ConstantColors.borderButtonColor,
                 textColor: ConstantColors.whiteColor,
-                naviagtionRoute: savingRoute,
               ),
             )
           ],

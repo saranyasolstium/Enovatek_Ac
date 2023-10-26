@@ -66,20 +66,24 @@ class IntroductionScreen extends StatelessWidget {
         color: ConstantColors.backgroundColor,
         
         height:  screenHeight * 0.1, 
-        child: const Row(
+        child:  Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             RoundedButton(
+               onPressed: (){
+                Navigator.pushNamed(context, loginRoute);
+              },
                 text: "Skip",
                 backgroundColor: ConstantColors.whiteColor,
                 textColor: ConstantColors.borderButtonColor,
-                naviagtionRoute: loginRoute,
               ),
             RoundedButton(
+               onPressed: (){
+                Navigator.pushNamed(context, loginRoute);
+              },
                 text: "Next",
                 backgroundColor: ConstantColors.borderButtonColor,
                 textColor: ConstantColors.whiteColor,
-                naviagtionRoute: loginRoute,
               ),
             
           ],

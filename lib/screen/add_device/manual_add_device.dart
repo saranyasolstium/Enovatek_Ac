@@ -92,12 +92,14 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
             const SizedBox(
               height: 30,
             ),
-            const Center(
+             Center(
               child: RoundedButton(
+                 onPressed: (){
+                Navigator.pushNamed(context, wifiPasswordRoute);
+              },
                 text: "Proceed",
                 backgroundColor: ConstantColors.borderButtonColor,
                 textColor: ConstantColors.whiteColor,
-                naviagtionRoute: wifiPasswordRoute,
               ),
             )
           ],
