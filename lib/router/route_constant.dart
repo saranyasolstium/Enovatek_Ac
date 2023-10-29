@@ -7,7 +7,6 @@ const String loginRoute = "login";
 const String profileRoute = "profile";
 const String homedRoute = "home";
 const String addBuildingRoute="addBuilding";
-const String homBuildingRoute="homeBuilding";
 const String allDeviceRoute="allDevice";
 const String deviceDetailRoute="deviceDetail";
 

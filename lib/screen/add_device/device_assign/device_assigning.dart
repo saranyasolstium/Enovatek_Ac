@@ -1,12 +1,9 @@
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
-import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/add_device/device_assign/add_device.dart';
-import 'package:enavatek_mobile/screen/add_device/device_assign/add_floor.dart';
-import 'package:enavatek_mobile/screen/add_device/device_assign/add_room.dart';
+import 'package:enavatek_mobile/screen/menu/building/floor/add_floor.dart';
 import 'package:enavatek_mobile/screen/add_device/device_assign/edit_floor.dart';
-import 'package:enavatek_mobile/screen/device_details/schedule_list.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -33,50 +30,11 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
   @override
   void initState() {
     super.initState();
-    getFloorName();
-    getRoomName();
+   
     getDeviceInfo();
   }
 
-  Future<void> getFloorName() async {
-    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-
-    Response response = await RemoteServices.getFloorInfo(authToken!);
-
-    if (response.statusCode == 200) {
-      List<dynamic> dynamicFloorList = jsonDecode(response.body);
-      floorList = dynamicFloorList.cast<Map<String, dynamic>>();
-      setState(() {
-        filteredFloors = floorList
-            .where(
-                (floor) => floor['building_id'].toString() == widget.buildingId)
-            .toList();
-      });
-    } else {
-      print(
-          'Failed to get floor information. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-    }
-  }
-
-  Future<void> getRoomName() async {
-    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-
-    Response response = await RemoteServices.getRoomInfo(authToken!);
-
-    if (response.statusCode == 200) {
-      List<dynamic> dynamicRoomList = jsonDecode(response.body);
-
-      setState(() {
-        roomList = dynamicRoomList.cast<Map<String, dynamic>>();
-      });
-    } else {
-      print(
-          'Failed to get room information. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-    }
-  }
-
+ 
   Future<void> getDeviceInfo() async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
 
@@ -163,7 +121,8 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => AddFloorName(
-                                        buildingID: widget.buildingId,
+                                    buildingName: "",
+                                        buildingID: 0,
                                       )),
                             );
                           },
@@ -240,13 +199,13 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                                 const Spacer(),
                                 MaterialButton(
                                   onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => AddRoomName(
-                                                floorList: floorList,
-                                              )),
-                                    );
+                                    // Navigator.pushReplacement(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //       builder: (context) => AddRoomName(
+                                    //             floorList: floorList,
+                                    //           )),
+                                    // );
                                   },
                                   color: ConstantColors.whiteColor,
                                   textColor: Colors.white,

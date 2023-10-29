@@ -7,185 +7,19 @@ class RemoteServices {
   static var client = http.Client();
   static String url = 'http://13.212.177.46/';
 
-  //add building
-
-  static Future<Response> authenticationToken() async {
+  //Facebook login
+  static Future<Response> login(
+      String emailId, String password, String deviceID) async {
     try {
-      String apiUrl = '${url}authentication/token/';
-
-      // Encode the username and password for Basic Authentication
-      String basicAuth = 'Basic ${base64Encode(utf8.encode('admin:admin'))}';
-
-      // Create the request headers
+      print('${url}api/token');
+      String apiUrl = '${url}api/token';
       Map<String, String> headers = {
         'Content-Type': 'application/json',
-        'Authorization': basicAuth,
-      };
-      String jsonBody = jsonEncode({
-        'password': 'admin',
-        'username': 'admin',
-      });
-
-      Response response = await post(
-        Uri.parse(apiUrl),
-        headers: headers,
-        body: jsonBody,
-      );
-
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  static Future<Response> login(String email, name, mobileNo) async {
-    try {
-      print('${url}users/register_user/');
-      Response response =
-          await post(Uri.parse('${url}users/register_user/'), body: {
-        "email": email,
-        "mobile_no": mobileNo,
-        "first_name": name,
-        "password": "password",
-      });
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  //add building
-  static Future<Response> addBuildingName(
-      String token, String buildingName) async {
-    try {
-      print('${url}master/building/');
-      String apiUrl = '${url}master/building/';
-      Map<String, String> headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
       };
       Map<String, dynamic> requestBody = {
-        'building_name': buildingName,
-      };
-      String jsonBody = jsonEncode(requestBody);
-
-      http.Response response = await http.post(
-        Uri.parse(apiUrl),
-        headers: headers,
-        body: jsonBody,
-      );
-      print(response.body);
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  //get building name
-  static Future<Response> getBuildingInfo(String token) async {
-    try {
-      print('${url}master/building/');
-      String apiUrl = '${url}master/building/';
-      Map<String, String> headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-
-      http.Response response = await http.get(
-        Uri.parse(apiUrl),
-        headers: headers,
-      );
-      print(response.body);
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-//add floor
-  static Future<Response> createFloor(
-      String authToken, String floorName, String buildingId) async {
-    try {
-      print('${url}master/floor/');
-      String apiUrl = '${url}master/floor/';
-      Map<String, String> headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $authToken',
-      };
-      Map<String, dynamic> requestBody = {
-        'floor_name': floorName,
-        'building_id': buildingId,
-      };
-      String jsonBody = jsonEncode(requestBody);
-
-      http.Response response = await http.post(
-        Uri.parse(apiUrl),
-        headers: headers,
-        body: jsonBody,
-      );
-      print(response.body);
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-   //get floor name
-  static Future<Response> getFloorInfo(String token) async {
-    try {
-      print('${url}master/floor/');
-      String apiUrl = '${url}master/floor/';
-      Map<String, String> headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-
-      http.Response response = await http.get(
-        Uri.parse(apiUrl),
-        headers: headers,
-      );
-      print(response.body);
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-// static Future<Response> getFloorID(String token ,String ID) async {
-//     try {
-//       print('${url}master/floor/$ID');
-//       String apiUrl = '${url}master/floor/$ID';
-//       Map<String, String> headers = {
-//         'Content-Type': 'application/json',
-//         'Authorization': 'Bearer $token',
-//       };
-
-//       http.Response response = await http.get(
-//         Uri.parse(apiUrl),
-//         headers: headers,
-//       );
-//       print(response.body);
-//       return response;
-//     } catch (e) {
-//       rethrow;
-//     }
-//   }
-
-
-  //add floor
-  static Future<Response> createRoom(
-      String authToken, String roomName, String floorId) async {
-    try {
-      print('${url}master/room/');
-      String apiUrl = '${url}master/room/';
-      Map<String, String> headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $authToken',
-      };
-      Map<String, dynamic> requestBody = {
-        'room_number': roomName,
-        'floor_id': floorId,
-        
+        "emailId": emailId,
+        "password": password,
+        "deviceId": deviceID
       };
       print(requestBody);
       String jsonBody = jsonEncode(requestBody);
@@ -202,7 +36,187 @@ class RemoteServices {
     }
   }
 
-   //get room name
+//google login
+  static Future<Response> googleApiLogin(
+      String name, String emailId, String deviceID) async {
+    try {
+      print('${url}api/token/google');
+      String apiUrl = '${url}api/token/google';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+      Map<String, dynamic> requestBody = {
+        "name": name,
+        "emailId": emailId,
+        "mobileNo": "00000000",
+        "deviceId": deviceID
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+//Facebook login
+  static Future<Response> fbApiLogin(
+      String name, String emailId, String deviceID) async {
+    try {
+      print('${url}api/token/fb');
+      String apiUrl = '${url}api/token/fb';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+      Map<String, dynamic> requestBody = {
+        "name": name,
+        "emailId": emailId,
+        "mobileNo": "00000000",
+        "deviceId": deviceID
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //add building
+  static Future<Response> addBuildingName(
+      String token, String buildingName, int buildingID, int userId) async {
+    try {
+      print('${url}api/building');
+      String apiUrl = '${url}api/building';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+      Map<String, dynamic> requestBody = {
+        "buildingId": buildingID,
+        "userId": userId,
+        "name": buildingName,
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //get building name
+  static Future<Response> getAllDeviceByUserId(String token, int userId) async {
+    try {
+      print('${url}api/user/devices?id=$userId');
+      String apiUrl = '${url}api/user/devices?id=$userId';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      http.Response response = await http.get(
+        Uri.parse(apiUrl),
+        headers: headers,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  
+
+//add floor
+  static Future<Response> createFloor(String authToken, String floorName,
+      int buildingId, int floorId, int userId) async {
+    try {
+      print('${url}api/floor');
+      String apiUrl = '${url}api/floor';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
+      };
+      Map<String, dynamic> requestBody = {
+        "buildingId": buildingId,
+        "floorId": floorId,
+        "userId": userId,
+        "name": floorName
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  
+
+//add floor
+  static Future<Response> createRoom(String authToken, String roomName,
+      int buildingId, int floorId, int roomId, int userId) async {
+    try {
+      print('${url}api/room');
+      String apiUrl = '${url}api/room';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
+      };
+      Map<String, dynamic> requestBody = {
+        "roomId": roomId,
+        "floorId": floorId,
+        "buildingId": buildingId,
+        "userId": userId,
+        "name": roomName
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
+  
+  //get room name
   static Future<Response> getRoomInfo(String token) async {
     try {
       print('${url}master/room/');
@@ -223,7 +237,6 @@ class RemoteServices {
     }
   }
 
-
   //add floor
   static Future<Response> createDevice(
       String authToken, String deviceName, String roomId) async {
@@ -237,7 +250,6 @@ class RemoteServices {
       Map<String, dynamic> requestBody = {
         'device_sku': deviceName,
         'room_id': roomId,
-        
       };
       print(requestBody);
       String jsonBody = jsonEncode(requestBody);
@@ -254,8 +266,7 @@ class RemoteServices {
     }
   }
 
-
-   //get device name
+  //get device name
   static Future<Response> getDeviceInfo(String token) async {
     try {
       print('${url}master/device/');
@@ -275,7 +286,4 @@ class RemoteServices {
       rethrow;
     }
   }
-
-
-
 }

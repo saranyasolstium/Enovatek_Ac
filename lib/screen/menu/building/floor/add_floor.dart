@@ -3,7 +3,7 @@
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
-import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/menu/building/edit_building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -13,19 +13,43 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
-class AddBuilding extends StatefulWidget {
-  const AddBuilding({Key? key}) : super(key: key);
+class AddFloorName extends StatefulWidget {
+  final int? buildingID;
+  final String buildingName;
+
+  const AddFloorName(
+      {Key? key, required this.buildingID, required this.buildingName})
+      : super(key: key);
 
   @override
-  AddBuildingState createState() => AddBuildingState();
+  AddFloorNameState createState() => AddFloorNameState();
 }
 
-class AddBuildingState extends State<AddBuilding> {
-  TextEditingController buildingNameController = TextEditingController();
+class AddFloorNameState extends State<AddFloorName> {
+  TextEditingController floorNameController = TextEditingController();
+
+  bool isAssignedVisible = true;
+  bool isUnAssignedVisible = true;
+
+  void toggleAssignedVisibility() {
+    setState(() {
+      isUnAssignedVisible = false;
+      isAssignedVisible = !isAssignedVisible;
+    });
+  }
+
+  void toggleUnAssignedVisibility() {
+    setState(() {
+      isAssignedVisible = false;
+      isUnAssignedVisible = !isUnAssignedVisible;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    isAssignedVisible = false;
+    isUnAssignedVisible = true;
   }
 
   @override
@@ -40,7 +64,14 @@ class AddBuildingState extends State<AddBuilding> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, buildingRoute);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditBuildingScreen(
+                                buildingName: widget.buildingName,
+                                buildingID: widget.buildingID!,
+                              )),
+                    );
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
@@ -50,7 +81,7 @@ class AddBuildingState extends State<AddBuilding> {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'Add Building ',
+                  'Add Floor',
                   style: GoogleFonts.roboto(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -64,10 +95,10 @@ class AddBuildingState extends State<AddBuilding> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: TextFormField(
-                controller: buildingNameController,
+                controller: floorNameController,
                 maxLines: 1,
                 decoration: const InputDecoration(
-                  labelText: "Add building name",
+                  labelText: "Add floor name",
                   enabledBorder: UnderlineInputBorder(
                     borderSide:
                         BorderSide(color: ConstantColors.mainlyTextColor),
@@ -84,20 +115,19 @@ class AddBuildingState extends State<AddBuilding> {
             ),
             RoundedButton(
               onPressed: () async {
-                String buildingName = buildingNameController.text;
+                String floorName = floorNameController.text;
 
-                if (buildingName.isEmpty) {
+                if (floorName.isEmpty) {
                   SnackbarHelper.showSnackBar(
-                      context, "Please enter a building name");
+                      context, "Please enter a Floor name");
                   return;
                 }
-
                 String? authToken =
                     await SharedPreferencesHelper.instance.getAuthToken();
                 int? userId =
                     await SharedPreferencesHelper.instance.getUserID();
-                Response response = await RemoteServices.addBuildingName(
-                    authToken!, buildingName, 0, userId!);
+                Response response = await RemoteServices.createFloor(
+                    authToken!, floorName, widget.buildingID!, 0, userId!);
                 var data = jsonDecode(response.body);
 
                 if (response.statusCode == 200) {
@@ -105,7 +135,14 @@ class AddBuildingState extends State<AddBuilding> {
                     String message = data["message"];
                     SnackbarHelper.showSnackBar(context, message);
                   }
-                  Navigator.pushReplacementNamed(context, buildingRoute);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EditBuildingScreen(
+                              buildingName: widget.buildingName,
+                              buildingID: widget.buildingID!,
+                            )),
+                  );
                 } else {
                   if (data.containsKey("message")) {
                     String errorMessage = data["message"];

@@ -34,10 +34,7 @@ class IntroductionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
-    final isTablet = screenWidth >= 600; 
 
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,

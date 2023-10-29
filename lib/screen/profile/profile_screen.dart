@@ -41,18 +41,10 @@ class ProfileScreenState extends State<ProfileScreen> {
     getUserDataFromSharedPreferences();
   }
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  
   String? userName;
   String? userEmail;
-  Future<void> signOutGoogle() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      await _googleSignIn.signOut();
-      Navigator.pushNamed(context, loginRoute);
-    } catch (error) {
-      print(error);
-    }
-  }
+  
 
 // Function to validate an email address
   bool isValidEmail(String email) {
@@ -131,8 +123,7 @@ class ProfileScreenState extends State<ProfileScreen> {
             width: screenWidth * 0.05,
           ),
           onPressed: () {
-            signOutGoogle();
-            // Navigator.pop(context);
+             Navigator.pop(context);
           },
         ),
         title: Text(

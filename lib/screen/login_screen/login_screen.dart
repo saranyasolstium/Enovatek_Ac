@@ -7,15 +7,17 @@ import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/decoration.dart';
+import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_social_button/flutter_social_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:http/http.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -27,8 +29,52 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   User? _user;
+  String? deviceID;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> loginToken(String emailId, String password) async {
+    try {
+      deviceID = await SharedPreferencesHelper.instance.getDeviceId();
+      Response response =
+          await RemoteServices.login(emailId, password, deviceID!);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        String accessToken = data['accessToken'];
+        int loginId = data['loginId'];
+        Map<String, dynamic> profile = data['profile'];
+        String profileName = profile['name'];
+        String profileEmailId = profile['emailId'];
+        int userId=profile['userId'];
+        await SharedPreferencesHelper.instance.setAuthToken(accessToken);
+        await SharedPreferencesHelper.instance.setLoginID(loginId);
+        await SharedPreferencesHelper.instance.setUserID(userId);
+        await SharedPreferencesHelper.instance
+            .saveUserDataToSharedPreferences(profileName, profileEmailId);
+        Navigator.pushReplacementNamed(context, homedRoute);
+        SnackbarHelper.showSnackBar(context, "Login Successful");
+      } else {
+        var data = jsonDecode(response.body);
+
+        if (data.containsKey("message")) {
+          String errorMessage = data["message"];
+          SnackbarHelper.showSnackBar(context, errorMessage);
+        } else {
+          SnackbarHelper.showSnackBar(
+              context, "Login failed! Please try again!");
+        }
+      }
+    } catch (error) {
+      print(error);
+    }
+  }
 
   Future<void> signInWithGoogle() async {
     try {
@@ -55,14 +101,31 @@ class LoginScreenState extends State<LoginScreen> {
 
       print("User Name: ${_user!.displayName}");
       print("User Email: ${_user!.email}");
+
       print('Google Sign-In Successful');
       String? displayname = _user!.displayName;
       String? email = _user!.email;
-      await SharedPreferencesHelper.instance
-               .saveUserDataToSharedPreferences(displayname!, email!);
-      Navigator.pushNamed(context, profileRoute);
-
-      
+      deviceID = await SharedPreferencesHelper.instance.getDeviceId();
+      Response response =
+          await RemoteServices.googleApiLogin(displayname!, email!, deviceID!);
+      if (response.statusCode == 200) {
+        signOutGoogle();
+        var data = jsonDecode(response.body);
+        String accessToken = data['accessToken'];
+        int loginId = data['loginId'];
+        Map<String, dynamic> profile = data['profile'];
+        int userId=profile['userId'];
+        await SharedPreferencesHelper.instance.setUserID(userId);
+        await SharedPreferencesHelper.instance.setAuthToken(accessToken);
+        await SharedPreferencesHelper.instance.setLoginID(loginId);
+        await SharedPreferencesHelper.instance
+            .saveUserDataToSharedPreferences(displayname, email);
+        Navigator.pushReplacementNamed(context, homedRoute);
+        SnackbarHelper.showSnackBar(context, "Login Successful");
+      } else {
+        SnackbarHelper.showSnackBar(
+            context, "Login  failed! Please try again!");
+      }
     } catch (error) {
       print(error);
     }
@@ -75,29 +138,63 @@ class LoginScreenState extends State<LoginScreen> {
 
     if (loginResult.status == LoginStatus.success) {
       final userData = await FacebookAuth.instance.getUserData();
-
-      // Check if the 'email' key exists in the user data.
-      if (userData.containsKey('email')) {
+      if (userData.containsKey('email') && userData['email'] != null) {
         final userEmail = userData['email'];
         print("User Email: $userEmail");
       } else {
-        print("Email not found in user data.");
+        print("Email not found in user data or is null.");
       }
 
-      // You can also access other user information if needed.
-      print("User ID: ${userData['id']}");
       print("User Name: ${userData['name']}");
-              print("User Email: ${userData['email']}");
-              String displayname = userData['name'];
-              String email=userData['email'] ?? "";
-await SharedPreferencesHelper.instance
-               .saveUserDataToSharedPreferences(displayname, email);
-      Navigator.pushNamed(context, profileRoute);
+      print("User Email: ${userData['email']}");
+      String displayname = userData['name'];
+      String email = userData['email'] ?? "";
 
+      deviceID = await SharedPreferencesHelper.instance.getDeviceId();
+      Response response =
+          await RemoteServices.fbApiLogin(displayname, email, deviceID!);
+      signOutWithFacebook();
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        String accessToken = data['accessToken'];
+        int loginId = data['loginId'];
+        Map<String, dynamic> profile = data['profile'];
+        int userId=profile['userId'];
+        await SharedPreferencesHelper.instance.setUserID(userId);
+        await SharedPreferencesHelper.instance.setAuthToken(accessToken);
+        await SharedPreferencesHelper.instance.setLoginID(loginId);
+        await SharedPreferencesHelper.instance
+            .saveUserDataToSharedPreferences(displayname, email);
+        Navigator.pushReplacementNamed(context, profileRoute);
+        SnackbarHelper.showSnackBar(context, "Login Successful");
+      } else {
+        SnackbarHelper.showSnackBar(
+            context, "Login  failed! Please try again!");
+      }
     } else {
       // Handle login failure.
       print("Facebook login failed: ${loginResult.status}");
     }
+  }
+
+  Future<void> signOutWithFacebook() async {
+    await FacebookAuth.instance.logOut();
+    print("User Signed Out");
+  }
+
+  Future<void> signOutGoogle() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      await _googleSignIn.signOut();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  bool isEmailValid(String email) {
+    final emailRegExp = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
+    return emailRegExp.hasMatch(email);
   }
 
   @override
@@ -113,102 +210,118 @@ await SharedPreferencesHelper.instance
             SizedBox(
               height: screenHeight * 0.1,
             ),
-            Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.topCenter,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(ImgPath.pngLoginBg),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  width: MediaQuery.of(context).size.width,
-                  height: isTablet ? screenHeight * 0.45 : screenHeight * 0.5,
-                ),
-                Positioned.fill(
-                  top: -screenWidth * 0.3,
-                  child: Center(
-                      child: Text(
-                    'Welcome to',
-                    style: GoogleFonts.roboto(
-                        fontSize: screenWidth * 0.04,
-                        color: ConstantColors.black,
-                        fontWeight: FontWeight.w700),
-                  )),
-                ),
-                Positioned.fill(
-                  left: 50,
-                  right: 50,
-                  child: Center(
-                    child: Image.asset(
-                      ImgPath.pngName,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: isTablet ? screenHeight * 0.03 : screenHeight * 0.03,
-            ),
-            Container(
-              padding: EdgeInsets.only(
-                  left: screenWidth * 0.1, right: screenWidth * 0.1),
-              height: isTablet ? screenHeight * 0.09 : screenHeight * 0.07,
-              width: MediaQuery.of(context).size.width,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(screenWidth * 0.1),
-                  ),
-                ),
-                onPressed: () async {
-                  // User? user = await _signInWithGoogle();
-                  // if (user != null) {
-                  //   print('Google Sign-In Successful');
-                  //   Navigator.pushNamed(context, profileRoute);
-                  // }
-                  signInWithGoogle();
-                },
-                child: Text(
-                  "Continue with google",
-                  style: GoogleFonts.roboto(
-                    fontSize:
-                        isTablet ? screenWidth * 0.04 : screenWidth * 0.045,
-                  ),
+            Center(
+              child: Text(
+                'Welcome to',
+                style: GoogleFonts.roboto(
+                  fontSize: screenWidth * 0.04,
+                  color: ConstantColors.black,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
-            SizedBox(
-              height: isTablet ? screenHeight * 0.02 : screenHeight * 0.02,
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 40, right: 40, top: 20, bottom: 20),
+              child: Center(
+                child: Image.asset(ImgPath.pngName),
+              ),
             ),
-            Container(
-              padding: EdgeInsets.only(
-                  left: screenWidth * 0.1, right: screenWidth * 0.1),
-              height: isTablet ? screenHeight * 0.09 : screenHeight * 0.07,
-              width: MediaQuery.of(context).size.width,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(screenWidth * 0.1),
-                  ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: TextField(
+                controller: emailController,
+                style: GoogleFonts.roboto(
+                  color: ConstantColors.mainlyTextColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
                 ),
-                onPressed: () {
-                  // Navigator.pushNamed(context, profileRoute);
-                  signInWithFacebook();
-                },
-                child: Text(
-                  "Continue with Facebook",
-                  style: GoogleFonts.roboto(
-                    fontSize:
-                        isTablet ? screenWidth * 0.04 : screenWidth * 0.045,
+                decoration: InputDecorationStyle.textFieldDecoration(
+                    placeholder: "Email", context: context),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: TextField(
+                controller: passwordController,
+                style: GoogleFonts.roboto(
+                  color: ConstantColors.mainlyTextColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
+                ),
+                decoration: InputDecorationStyle.textFieldDecoration(
+                    placeholder: "Password", context: context),
+                obscureText: true,
+              ),
+            ),
+            RoundedButton(
+              onPressed: () {
+                if (emailController.text.isEmpty ||
+                    passwordController.text.isEmpty) {
+                  SnackbarHelper.showSnackBar(context,
+                      "Please fill in both email and password fields.");
+                } else if (!isEmailValid(emailController.text)) {
+                  SnackbarHelper.showSnackBar(context,
+                      "Invalid email format. Please enter a valid email.");
+                } else {
+                  loginToken(emailController.text, passwordController.text);
+                }
+              },
+              text: "Login",
+              backgroundColor: ConstantColors.borderButtonColor,
+              textColor: ConstantColors.whiteColor,
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            Padding(
+                padding: const EdgeInsets.only(left: 30, right: 60),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Don't have an account?   ",
+                        style: GoogleFonts.lato(
+                            color: ConstantColors.mainlyTextColor,
+                            fontSize: screenWidth * 0.037),
+                      ),
+                      TextSpan(
+                        text: 'Sign Up',
+                        style: GoogleFonts.lato(
+                            color: ConstantColors.blueColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: screenWidth * 0.035),
+                      ),
+                    ],
                   ),
+                )),
+            const SizedBox(
+              height: 30,
+            ),
+            Center(
+              child: Text(
+                'OR',
+                style: GoogleFonts.roboto(
+                  fontSize: screenWidth * 0.04,
+                  color: ConstantColors.black,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
-            SizedBox(
-              height: screenHeight * 0.05,
+            FlutterSocialButton(
+              onTap: () {
+                signInWithGoogle();
+              },
+              buttonType: ButtonType.google,
+              title: 'Google',
+            ),
+            FlutterSocialButton(
+              onTap: () {
+                signInWithFacebook();
+              },
+              buttonType: ButtonType.facebook,
+              title: 'Facebook',
             ),
             Padding(
                 padding: const EdgeInsets.only(left: 30, right: 60),

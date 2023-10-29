@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
@@ -11,30 +13,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
-class AddRoomName extends StatefulWidget {
-  final List<Map<String, dynamic>> floorList;
+class AddRoom extends StatefulWidget {
+  final int? buildingID;
+  final int? floorID;
 
-  const AddRoomName({Key? key, required this.floorList}) : super(key: key);
+  const AddRoom({Key? key, required this.buildingID, required this.floorID})
+      : super(key: key);
 
   @override
-  AddRoomNameState createState() => AddRoomNameState();
+  AddRoomState createState() => AddRoomState();
 }
 
-class AddRoomNameState extends State<AddRoomName> {
+class AddRoomState extends State<AddRoom> {
   TextEditingController roomNameController = TextEditingController();
-
-  List<String> floorNames = [];
-  List<String> floorIds = [];
-  String? selectedFloorId;
-
-  @override
-  void initState() {
-    super.initState();
-    for (final floor in widget.floorList) {
-      floorNames.add(floor['floor_name']);
-      floorIds.add(floor['id']);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +39,7 @@ class AddRoomNameState extends State<AddRoomName> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, buildingRoute);
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
@@ -71,35 +62,11 @@ class AddRoomNameState extends State<AddRoomName> {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
-              child: DropdownButton<String>(
-                isExpanded: true,
-                value: selectedFloorId,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedFloorId = newValue;
-                  });
-                },
-                items: floorNames.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final floorName = entry.value;
-                  final floorId = floorIds[index];
-                  return DropdownMenuItem<String>(
-                    value: floorId,
-                    child: Text(floorName),
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
               child: TextFormField(
                 controller: roomNameController,
                 maxLines: 1,
                 decoration: const InputDecoration(
-                  labelText: "Add Room name",
+                  labelText: "Add room name",
                   enabledBorder: UnderlineInputBorder(
                     borderSide:
                         BorderSide(color: ConstantColors.mainlyTextColor),
@@ -123,25 +90,27 @@ class AddRoomNameState extends State<AddRoomName> {
                       context, "Please enter a room name");
                   return;
                 }
-                if (selectedFloorId == null) {
-                  SnackbarHelper.showSnackBar(context, "Please select a floor");
-                  return;
-                }
-                print(selectedFloorId);
                 String? authToken =
                     await SharedPreferencesHelper.instance.getAuthToken();
-                Response response = await RemoteServices.createRoom(
-                    authToken!, roomName, selectedFloorId!);
-                print(response.statusCode);
-                if (response.statusCode == 201) {
-                  SnackbarHelper.showSnackBar(
-                      context, "room created successfully.'");
-                  Navigator.pushReplacementNamed(context, deviceAssignRoute);
+                int? userId =
+                    await SharedPreferencesHelper.instance.getUserID();
+                Response response = await RemoteServices.createRoom(authToken!,
+                    roomName, widget.buildingID!, widget.floorID!, 0, userId!);
+                var data = jsonDecode(response.body);
+
+                if (response.statusCode == 200) {
+                  if (data.containsKey("message")) {
+                    String message = data["message"];
+                    SnackbarHelper.showSnackBar(context, message);
+                  }
+                  Navigator.pushReplacementNamed(context, buildingRoute);
                 } else {
-                  SnackbarHelper.showSnackBar(
-                      context, "Failed to create the room.Please try again!");
+                  if (data.containsKey("message")) {
+                    String errorMessage = data["message"];
+                    SnackbarHelper.showSnackBar(context, errorMessage);
+                  }
                 }
-               },
+              },
               text: "Add",
               backgroundColor: ConstantColors.borderButtonColor,
               textColor: ConstantColors.whiteColor,

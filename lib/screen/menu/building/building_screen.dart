@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
-import 'package:enavatek_mobile/screen/home/build_row.dart';
-import 'package:enavatek_mobile/screen/menu/edit_building.dart';
+import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/menu/building/building.dart';
+import 'package:enavatek_mobile/screen/menu/building/edit_building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -21,34 +22,24 @@ class BuildingScreenState extends State<BuildingScreen> {
   @override
   void initState() {
     super.initState();
-    getBuildingName();
+    getAllDevice();
   }
 
-  List<BuildingRow> buildingList = [];
+  List<Building> buildings = [];
 
-  Future<void> getBuildingName() async {
+  Future<void> getAllDevice() async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-    Response response = await RemoteServices.getBuildingInfo(authToken!);
+    int? userId = await SharedPreferencesHelper.instance.getUserID();
+    Response response =
+        await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
     if (response.statusCode == 200) {
       String responseBody = response.body;
-      List<dynamic> buildingData = jsonDecode(responseBody);
-
-      if (buildingData.isNotEmpty) {
-        for (var data in buildingData) {
-          String id = data['id'];
-          String name = data['building_name'];
-
-          BuildingRow building = BuildingRow(id, name);
-          setState(() {
-            buildingList.add(building);
-          });
-        }
-      } else {
-        print('No building information available.');
-      }
+      setState(() {
+        buildings = (json.decode(responseBody) as List)
+            .map((data) => Building.fromJson(data))
+            .toList();
+      });
     } else {
-      print(
-          'Failed to get building information. Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
     }
   }
@@ -99,7 +90,9 @@ class BuildingScreenState extends State<BuildingScreen> {
                   ),
                 ),
                 MaterialButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, addBuildingRoute);
+                  },
                   color: ConstantColors.whiteColor,
                   textColor: Colors.white,
                   minWidth: isTablet ? 0.04 * screenWidth : 0.035 * screenWidth,
@@ -119,15 +112,15 @@ class BuildingScreenState extends State<BuildingScreen> {
                 ),
               ],
             ),
-             SizedBox(
+            SizedBox(
               height: screenHeight * 0.02,
             ),
             ListView.builder(
-              itemCount: buildingList.length,
+              itemCount: buildings.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                final building = buildingList[index];
+                final building = buildings[index];
 
                 return Container(
                   margin: EdgeInsets.only(
@@ -146,8 +139,7 @@ class BuildingScreenState extends State<BuildingScreen> {
                         bottom: isTablet ? 30 : 0,
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment
-                            .spaceBetween, 
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             building.name,
@@ -161,13 +153,15 @@ class BuildingScreenState extends State<BuildingScreen> {
                             children: [
                               MaterialButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
                                         builder: (context) =>
-                                             EditBuildingScreen(buildingName: building.name,buildingID: building.id,)
-                                      ),
-                                    );
+                                            EditBuildingScreen(
+                                              buildingName: building.name,
+                                              buildingID: building.buildingId,
+                                            )),
+                                  );
                                 },
                                 color: ConstantColors.whiteColor,
                                 textColor: Colors.white,
@@ -194,7 +188,9 @@ class BuildingScreenState extends State<BuildingScreen> {
                                   color: ConstantColors.lightBlueColor,
                                 ),
                               ),
-                              const SizedBox(width: 20,),
+                              const SizedBox(
+                                width: 20,
+                              ),
                               MaterialButton(
                                 onPressed: () {},
                                 color: ConstantColors.orangeColor,

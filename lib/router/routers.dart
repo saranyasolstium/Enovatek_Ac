@@ -1,9 +1,7 @@
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/add_device/add_device_screen.dart';
 import 'package:enavatek_mobile/screen/add_device/bluetooth_scan.dart';
-import 'package:enavatek_mobile/screen/add_device/device_assign/add_floor.dart';
 import 'package:enavatek_mobile/screen/add_device/device_assign/device_assigning.dart';
-import 'package:enavatek_mobile/screen/add_device/device_assign/edit_floor.dart';
 import 'package:enavatek_mobile/screen/add_device/device_name_screen.dart';
 import 'package:enavatek_mobile/screen/add_device/manual_add_device.dart';
 import 'package:enavatek_mobile/screen/add_device/wifi_password_screen.dart';
@@ -12,11 +10,10 @@ import 'package:enavatek_mobile/screen/device_details/add_schedule.dart';
 import 'package:enavatek_mobile/screen/device_details/device_details_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/schedule.dart';
 import 'package:enavatek_mobile/screen/home/add_building.dart';
-import 'package:enavatek_mobile/screen/home/building.dart';
 import 'package:enavatek_mobile/screen/home/home_screen.dart';
 import 'package:enavatek_mobile/screen/introduce/introduce_screen.dart';
 import 'package:enavatek_mobile/screen/login_screen/login_screen.dart';
-import 'package:enavatek_mobile/screen/menu/building.dart';
+import 'package:enavatek_mobile/screen/menu/building/building_screen.dart';
 import 'package:enavatek_mobile/screen/menu/calculate/calculate_saving.dart';
 import 'package:enavatek_mobile/screen/menu/calculate/saving_display.dart';
 import 'package:enavatek_mobile/screen/menu/menu.dart';
@@ -66,11 +63,7 @@ class Routers {
           type: PageTransitionType.rightToLeft,
         );
 
-        case homBuildingRoute:
-        return PageTransition(
-          child: const HomeBuildingScreen(),
-          type: PageTransitionType.rightToLeft,
-        );
+       
 
       case allDeviceRoute:
         return PageTransition(

@@ -1,4 +1,3 @@
-import 'package:enavatek_mobile/screen/device_details/schedule_list.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:flutter/material.dart';

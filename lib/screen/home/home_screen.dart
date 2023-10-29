@@ -2,11 +2,9 @@ import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
-import 'package:enavatek_mobile/screen/add_device/device_assign/add_floor.dart';
 import 'package:enavatek_mobile/screen/add_device/device_assign/device_assigning.dart';
-import 'package:enavatek_mobile/screen/add_device/device_assign/edit_floor.dart';
 import 'package:enavatek_mobile/screen/home/build_row.dart';
-import 'package:enavatek_mobile/services/mqtt_service.dart';
+import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -24,75 +22,40 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final mqttService = MqttService();
-  String? retrievedDeviceId;
   String? userName;
   String? buildingName;
   String? buildingID;
-  List<BuildingRow> buildingList = [];
+  List<Building> buildings = [];
 
   @override
   void initState() {
     super.initState();
-    //_initializeScreen();
     getUserDataFromSharedPreferences();
-    getAuthenticationToken();
-  }
-
-  Future<void> getAuthenticationToken() async {
-    Response response = await RemoteServices.authenticationToken();
-    print(response.statusCode);
-
-    print(response.body);
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      if (data.containsKey('access_token')) {
-        String accessToken = data['access_token'];
-        await SharedPreferencesHelper.instance.setAuthToken(accessToken);
-        print(accessToken);
-        getBuildingName();
-      } else {
-        print('Access token not found in the response');
-        return null;
-      }
-    } else {
-      print('Failed to get authentication');
-      return null;
-    }
-  }
-
-  Future<void> getBuildingName() async {
-    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-
-    Response response = await RemoteServices.getBuildingInfo(authToken!);
-
-    if (response.statusCode == 200) {
-      String responseBody = response.body;
-      List<dynamic> buildingData = jsonDecode(responseBody);
-
-      if (buildingData.isNotEmpty) {
-        for (var data in buildingData) {
-          String id = data['id'];
-          String name = data['building_name'];
-
-          BuildingRow building = BuildingRow(id, name);
-          setState(() {
-            buildingList.add(building);
-          });
-        }
-      } else {
-        print('No building information available.');
-      }
-    } else {
-      print(
-          'Failed to get building information. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-    }
+    getAllDevice();
   }
 
   Future<void> getUserDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    userName = prefs.getString('userName');
+    setState(() {
+      userName = prefs.getString('userName');
+    });
+  }
+
+  Future<void> getAllDevice() async {
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? userId = await SharedPreferencesHelper.instance.getUserID();
+    Response response =
+        await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
+    if (response.statusCode == 200) {
+      String responseBody = response.body;
+      setState(() {
+        buildings = (json.decode(responseBody) as List)
+            .map((data) => Building.fromJson(data))
+            .toList();
+      });
+    } else {
+      print('Response body: ${response.body}');
+    }
   }
 
   @override
@@ -184,26 +147,6 @@ class HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            // const SizedBox(height: 20,),
-            // buildingName!.isNotEmpty
-            //     ? Row(
-            //         children: [
-            //           Text(
-            //             buildingName ?? "",
-            //             style: GoogleFonts.roboto(
-            //               fontSize: screenWidth * 0.04,
-            //               color: ConstantColors.black,
-            //             ),
-            //           ),
-            //           const SizedBox(width: 10),
-            //            Icon(
-            //             Icons.arrow_forward_ios,
-            //             color: ConstantColors.mainlyTextColor,
-            //             size: screenWidth * 0.05,
-            //           ),
-            //         ],
-            //       )
-            //     : const SizedBox(height: 0),
             SizedBox(
               height: isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
             ),
@@ -218,13 +161,9 @@ class HomeScreenState extends State<HomeScreen> {
                   children: [
                     Padding(
                       padding: EdgeInsets.only(
-                        left:
-                            isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-                        right:
-                            isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-                        top: isTablet
-                            ? 0.03 * screenHeight
-                            : 0.03 * screenHeight,
+                        left: 0.05 * screenWidth,
+                        right: 0.05 * screenWidth,
+                        top: 0.03 * screenHeight,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -239,8 +178,7 @@ class HomeScreenState extends State<HomeScreen> {
                           const SizedBox(width: 20),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pushReplacementNamed(
-                                  context, addBuildingRoute);
+                              Navigator.pushNamed(context, buildingRoute);
                             },
                             child: Image.asset(
                               ImgPath.pngAdd,
@@ -267,19 +205,16 @@ class HomeScreenState extends State<HomeScreen> {
               height: 20,
             ),
             ListView.builder(
-              itemCount: buildingList.length,
+              itemCount: buildings.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                final building = buildingList[index];
+                final building = buildings[index];
 
                 return GestureDetector(
                   onTap: () async {
-                    print('Tapped on building: ${buildingList[index].name}');
-                    // String? authToken =
-                    //     await SharedPreferencesHelper.instance.getAuthToken();
-                    // Response response = await RemoteServices.getFloorID(
-                    //     authToken!, building.id);
+                    print('Tapped on building: ${building.name}');
+                    
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(0),
@@ -291,57 +226,27 @@ class HomeScreenState extends State<HomeScreen> {
                       ),
                       child: Column(
                         children: [
-                          SizedBox(
-                            height: 0.05 * screenWidth,
-                          ),
-                          Text(
-                            building.name,
-                            style: GoogleFonts.roboto(
-                              fontSize: screenWidth * 0.04,
-                              color: ConstantColors.mainlyTextColor,
-                            ),
-                          ),
                           Padding(
                             padding: EdgeInsets.only(
-                              left: isTablet
-                                  ? 0.05 * screenWidth
-                                  : 0.05 * screenWidth,
-                              right: isTablet
-                                  ? 0.05 * screenWidth
-                                  : 0.05 * screenWidth,
+                              left: 0.05 * screenWidth,
+                              right: 0.05 * screenWidth,
+                              top: 0.03 * screenHeight,
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Add Floor',
+                                  building.name,
                                   style: GoogleFonts.roboto(
                                     fontSize: screenWidth * 0.04,
                                     color: ConstantColors.mainlyTextColor,
                                   ),
                                 ),
                                 const SizedBox(width: 20),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DeviceAssigningScreen(
-                                          buildingId: building.id,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Image.asset(
-                                    ImgPath.pngAdd,
-                                    width: isTablet
-                                        ? 0.05 * screenWidth
-                                        : 0.05 * screenWidth,
-                                    height: isTablet
-                                        ? 0.05 * screenHeight
-                                        : 0.03 * screenHeight,
-                                  ),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: ConstantColors.mainlyTextColor,
+                                  size: 20,
                                 ),
                               ],
                             ),
@@ -577,7 +482,6 @@ class HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-
             SizedBox(
               height: isTablet ? 50 : 30,
             ),

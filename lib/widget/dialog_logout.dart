@@ -7,7 +7,6 @@ void showLogoutDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       final double screenWidth = MediaQuery.of(context).size.width;
-      final double screenHeight = MediaQuery.of(context).size.height;
       return AlertDialog(
         backgroundColor: ConstantColors.whiteColor,
         content: Text(
@@ -47,7 +46,7 @@ void showLogoutDialog(BuildContext context) {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 30,
               ),
               Padding(
