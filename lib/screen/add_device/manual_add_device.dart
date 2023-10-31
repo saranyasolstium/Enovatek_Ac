@@ -1,8 +1,10 @@
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/add_device/wifi_password_screen.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/decoration.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
+import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,8 +16,7 @@ class ManualAddDevice extends StatefulWidget {
 }
 
 class ManualAddDeviceState extends State<ManualAddDevice> {
-  TextEditingController passwordEditingController =
-      TextEditingController(text: '**** **** **** 1234');
+  TextEditingController deviceSerialNoTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +81,7 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 0),
               child: TextField(
-                controller: passwordEditingController,
+                controller: deviceSerialNoTextController,
                 style: GoogleFonts.roboto(
                   color: ConstantColors.mainlyTextColor,
                   fontWeight: FontWeight.w500,
@@ -92,11 +93,23 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
             const SizedBox(
               height: 30,
             ),
-             Center(
+            Center(
               child: RoundedButton(
-                 onPressed: (){
-                Navigator.pushNamed(context, wifiPasswordRoute);
-              },
+                onPressed: () {
+                  String deviceSerialNo = deviceSerialNoTextController.text;
+                  if (deviceSerialNo.isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WifiPasswordScreen(
+                                deviceSerialNo: deviceSerialNo,
+                              )),
+                    );
+                  } else {
+                    SnackbarHelper.showSnackBar(
+                        context, "Please enter a device serial no!");
+                  }
+                },
                 text: "Proceed",
                 backgroundColor: ConstantColors.borderButtonColor,
                 textColor: ConstantColors.whiteColor,

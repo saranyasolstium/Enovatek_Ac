@@ -1,15 +1,32 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class DeviceDetailScreen extends StatefulWidget {
-  const DeviceDetailScreen({Key? key}) : super(key: key);
+  final String deviceName;
+   final String power;
+  final String fanSpeed;
+  final String mode;
+  final int deviceId;
+
+  const DeviceDetailScreen(
+      {Key? key,
+      required this.deviceName,
+      required this.power,
+      required this.fanSpeed,
+      required this.mode,
+      required this.deviceId})
+      : super(key: key);
 
   @override
   DeviceDetailScreenState createState() => DeviceDetailScreenState();
@@ -18,27 +35,52 @@ class DeviceDetailScreen extends StatefulWidget {
 class DeviceDetailScreenState extends State<DeviceDetailScreen> {
   double progressValue = 24;
   double secondaryProgressValue = 0;
-  bool isAutoSelected = false;
-  bool isCoolSelected = false;
-  bool isDrySelected = false;
-  bool isFanSelected = false;
-  bool isHeatSelected = false;
+  int fanSpeedLevel = 1; // Initial fan speed level
+  String powerColor="off";
+  String modeNameToFind ="";
+  @override
+  void initState() {
+    super.initState();
+    fanSpeedLevel = int.tryParse(widget.fanSpeed) ?? 0;
+    powerColor=widget.power;
+  }
 
-  void increaseProgressValue() {
+
+  Future<void> increaseProgressValue() async {
     setState(() {
       if (progressValue < 30) {
         progressValue += 1;
       }
     });
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? loginId = await SharedPreferencesHelper.instance.getLoginID();
+    String temperature = '${progressValue.toStringAsFixed(0)}°C';
+
+    Response response = await RemoteServices.actionCommand(
+        authToken!, temperature, widget.deviceId, 4, loginId!);
+    var data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      print(data["message"]);
+    }
   }
 
-  void decreaseProgressValue() {
+  Future<void> decreaseProgressValue() async {
     setState(() {
       progressValue -= 1;
       if (progressValue < 16) {
         progressValue = 16;
       }
     });
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? loginId = await SharedPreferencesHelper.instance.getLoginID();
+    String temperature = '${progressValue.toStringAsFixed(0)}°C';
+
+    Response response = await RemoteServices.actionCommand(
+        authToken!, temperature, widget.deviceId, 4, loginId!);
+    var data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      print(data["message"]);
+    }
   }
 
   /// Returns semi-circular style circular progress bar.
@@ -147,16 +189,23 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
     );
   }
 
-  int selectedMode = -1; // Initially no mode selected
+  int selectedMode = 0; // Initially no mode selected
 
-  // List of mode data containing mode names and image paths
   final List<ModeData> modes = [
     ModeData('Auto', ImgPath.pngAutoNew),
     ModeData('Cool', ImgPath.pngCool),
-    ModeData('Dry',  ImgPath.pngCoolDry),
-    ModeData('Fan',  ImgPath.pngFan),
+    ModeData('Dry', ImgPath.pngCoolDry),
+    ModeData('Fan', ImgPath.pngFan),
     ModeData('Heat', ImgPath.pngSunny),
   ];
+
+  String getSelectedModeName(int selectedMode) {
+    if (selectedMode >= 0 && selectedMode < modes.length) {
+      return modes[selectedMode].modeName;
+    } else {
+      return '';
+    }
+  }
 
   Widget buildModeToggle(int mode, String modeName, String imagePath) {
     return Row(
@@ -174,29 +223,70 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
             Text(
               modeName,
               style: GoogleFonts.roboto(
-                  color: ConstantColors.mainlyTextColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15),
+                color: ConstantColors.mainlyTextColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
             ),
           ],
         ),
-        GFToggle(
-          onChanged: (val) {
+        Radio<int>(
+          value: mode,
+          groupValue: selectedMode,
+          onChanged: (value) async {
             setState(() {
-              if (val ?? false) {
-                selectedMode = mode;
-              } else {
-                selectedMode = -1; // Turn off all modes
-              }
+              selectedMode = value!;
             });
+            String modeName = getSelectedModeName(selectedMode);
+            print(modeName);
+            String? authToken =
+                await SharedPreferencesHelper.instance.getAuthToken();
+            int? loginId = await SharedPreferencesHelper.instance.getLoginID();
+            Response response = await RemoteServices.actionCommand(
+                authToken!, modeName, widget.deviceId, 2, loginId!);
+            var data = jsonDecode(response.body);
+            if (response.statusCode == 200) {
+              print(data["message"]);
+            }
           },
-          value: selectedMode == mode,
-          enabledThumbColor: Colors.white,
-          enabledTrackColor: Colors.lightBlue,
-          type: GFToggleType.ios,
         ),
       ],
     );
+  }
+
+  
+// Function to increase the fan speed level
+  Future<void> increaseFanSpeed() async {
+    if (fanSpeedLevel < 5) {
+      setState(() {
+        fanSpeedLevel++;
+      });
+      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+      int? loginId = await SharedPreferencesHelper.instance.getLoginID();
+      Response response = await RemoteServices.actionCommand(
+          authToken!, fanSpeedLevel.toString(), widget.deviceId, 3, loginId!);
+      var data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print(data["message"]);
+      }
+    }
+  }
+
+  // Function to decrease the fan speed level
+  Future<void> decreaseFanSpeed() async {
+    if (fanSpeedLevel > 1) {
+      setState(() {
+        fanSpeedLevel--;
+      });
+      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+      int? loginId = await SharedPreferencesHelper.instance.getLoginID();
+      Response response = await RemoteServices.actionCommand(
+          authToken!, fanSpeedLevel.toString(), widget.deviceId, 3, loginId!);
+      var data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print(data["message"]);
+      }
+    }
   }
 
   @override
@@ -222,7 +312,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
+                              Navigator.pushReplacementNamed(context, allDeviceRoute);
                             },
                             child: Image.asset(
                               ImgPath.pngArrowBack,
@@ -232,7 +322,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            'Devices',
+                            widget.deviceName,
                             style: GoogleFonts.roboto(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -261,14 +351,42 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                       ),
                     ),
                     MaterialButton(
-                      onPressed: () {},
-                      color: ConstantColors.greenColor,
+                      onPressed: () async {
+                        print(widget.power);
+                        String value;
+                        if (powerColor == 'ON') {
+                          value = "OFF";
+                        } else {
+                          value = "ON";
+                        }
+                        String? authToken = await SharedPreferencesHelper
+                            .instance
+                            .getAuthToken();
+                        int? loginId =
+                            await SharedPreferencesHelper.instance.getLoginID();
+                        Response response = await RemoteServices.actionCommand(
+                            authToken!, value, widget.deviceId, 1, loginId!);
+                        var data = jsonDecode(response.body);
+
+                        if (response.statusCode == 200) {
+                          print(data["message"]);
+
+                          setState(() {
+                            powerColor=value;
+                          });
+                        }
+                      },
+                      color: powerColor.toLowerCase() == 'off'
+                          ? ConstantColors.orangeColor
+                          : ConstantColors.greenColor,
                       textColor: Colors.white,
                       minWidth: 30,
                       height: 30,
-                      shape: const CircleBorder(
+                      shape: CircleBorder(
                         side: BorderSide(
-                          color: ConstantColors.greenColor,
+                          color: powerColor.toLowerCase() == 'off'
+                              ? ConstantColors.orangeColor
+                              : ConstantColors.greenColor,
                           width: 2,
                         ),
                       ),
@@ -390,7 +508,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                                 fontSize: 15),
                           ),
                           TextSpan(
-                            text: 'Level 7',
+                            text: 'Level $fanSpeedLevel',
                             style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
                                 fontSize: 13),
@@ -400,7 +518,9 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                     ),
                     const SizedBox(width: 80),
                     MaterialButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        decreaseFanSpeed();
+                      },
                       color: ConstantColors.whiteColor,
                       textColor: Colors.white,
                       minWidth: 40,
@@ -419,7 +539,9 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                       ),
                     ),
                     MaterialButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        increaseFanSpeed();
+                      },
                       color: ConstantColors.whiteColor,
                       textColor: Colors.white,
                       minWidth: 40,

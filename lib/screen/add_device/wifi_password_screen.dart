@@ -1,21 +1,30 @@
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/add_device/device_assign/device_assigning.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/decoration.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
+import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class WifiPasswordScreen extends StatefulWidget {
-  const WifiPasswordScreen({Key? key}) : super(key: key);
+  final String deviceSerialNo;
+  const WifiPasswordScreen({Key? key, required this.deviceSerialNo})
+      : super(key: key);
 
   @override
   WifiPasswordScreenState createState() => WifiPasswordScreenState();
 }
 
 class WifiPasswordScreenState extends State<WifiPasswordScreen> {
+  TextEditingController wifiNameTextController = TextEditingController();
+  TextEditingController passwordTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    print(widget.deviceSerialNo);
+
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: Padding(
@@ -67,6 +76,7 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
               ),
               child: TextField(
                 autocorrect: false,
+                controller: wifiNameTextController,
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
                     suffixIcon: const Icon(
@@ -87,6 +97,8 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 0),
               child: TextField(
+                controller: passwordTextController,
+                obscureText: true,
                 style: GoogleFonts.roboto(
                   color: ConstantColors.mainlyTextColor,
                   fontWeight: FontWeight.w500,
@@ -104,7 +116,22 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
                 height: 50,
                 child: RoundedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, deviceNameRoute);
+                    String wifiName = wifiNameTextController.text;
+                    String password = passwordTextController.text;
+                    if (wifiName.isNotEmpty && password.isNotEmpty) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DeviceAssigningScreen(
+                                  deviceSerialNo: widget.deviceSerialNo,
+                                  wifinName: wifiName,
+                                  password: password,
+                                )),
+                      );
+                    } else {
+                      SnackbarHelper.showSnackBar(
+                          context, "Filed cannot be empty");
+                    }
                   },
                   text: "Connect",
                   backgroundColor: ConstantColors.borderButtonColor,

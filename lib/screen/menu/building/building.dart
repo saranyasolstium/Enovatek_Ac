@@ -55,7 +55,7 @@ class Room {
   final String name;
   final List<Device> devices;
 
-  Room( {
+  Room({
     required this.roomId,
     required this.floorId,
     required this.name,
@@ -69,7 +69,7 @@ class Room {
 
     return Room(
       roomId: json['roomId'],
-      floorId:json['floorId'],
+      floorId: json['floorId'],
       name: json['name'],
       devices: deviceList,
     );
@@ -79,16 +79,49 @@ class Room {
 class Device {
   final int deviceId;
   final String deviceName;
+  final String displayName;
+  final int roomId;
+  final String power;
+  final String mode;
+  final String fanSpeed;
+  final String roomTemp;
+  final String humidity;
+  final String airQuality;
+  final String maintainenceReq;
+  final String filterCleaningReq;
+  final String noiseLevel;
 
   Device({
     required this.deviceId,
     required this.deviceName,
+    required this.displayName,
+    required this.roomId,
+    required this.power,
+    required this.mode,
+    required this.fanSpeed,
+    required this.roomTemp,
+    required this.humidity,
+    required this.airQuality,
+    required this.maintainenceReq,
+    required this.filterCleaningReq,
+    required this.noiseLevel,
   });
 
   factory Device.fromJson(Map<String, dynamic> json) {
     return Device(
       deviceId: json['deviceId'],
-      deviceName: json['deviceName'],
+      deviceName: json['deviceName'] ?? '',
+      displayName: json['displayName'] ?? '',
+      roomId: json['roomId'],
+      power: json['power'] ?? 'off',
+      mode: json['mode'] ?? '-',
+      fanSpeed: json['fanSpeed'] ?? '',
+      roomTemp: json['roomTemp'] ?? 'off',
+      humidity: json['humidity'] ?? '',
+      airQuality: json['airQuality'] ?? '',
+      maintainenceReq: json['maintainenceReq'] ?? '',
+      filterCleaningReq: json['filterCleaningReq'] ?? '',
+      noiseLevel: json['noiseLevel'] ?? '',
     );
   }
 }

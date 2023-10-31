@@ -13,6 +13,7 @@ import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
@@ -31,6 +32,8 @@ class ProfileScreenState extends State<ProfileScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
 
   late String imageUrl = "";
 
@@ -38,13 +41,11 @@ class ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     countryController.text = "+65";
     super.initState();
-    getUserDataFromSharedPreferences();
+    //getUserDataFromSharedPreferences();
   }
 
-  
   String? userName;
   String? userEmail;
-  
 
 // Function to validate an email address
   bool isValidEmail(String email) {
@@ -53,13 +54,13 @@ class ProfileScreenState extends State<ProfileScreen> {
     return regex.hasMatch(email);
   }
 
-  Future<void> getUserDataFromSharedPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userName = prefs.getString('userName');
-    userEmail = prefs.getString('userEmail');
-    nameController.text = userName ?? "";
-    emailController.text = userEmail ?? "";
-  }
+  // Future<void> getUserDataFromSharedPreferences() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   userName = prefs.getString('userName');
+  //   userEmail = prefs.getString('userEmail');
+  //   nameController.text = userName ?? "";
+  //   emailController.text = userEmail ?? "";
+  // }
 
   late File? pickedImage = null;
 
@@ -123,11 +124,11 @@ class ProfileScreenState extends State<ProfileScreen> {
             width: screenWidth * 0.05,
           ),
           onPressed: () {
-             Navigator.pop(context);
+            Navigator.pop(context);
           },
         ),
         title: Text(
-          'Create Profile',
+          'Registration',
           style: GoogleFonts.roboto(
             fontSize: screenWidth * 0.05,
             fontWeight: FontWeight.bold,
@@ -139,73 +140,94 @@ class ProfileScreenState extends State<ProfileScreen> {
         padding: EdgeInsets.all(screenWidth * 0.05),
         child: Column(
           children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      color: ConstantColors.inputColor,
-                      borderRadius: BorderRadius.circular(200)),
-                  width: screenHeight * 0.15,
-                  height: screenHeight * 0.15,
-                ),
-                pickedImage != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.file(
-                          pickedImage!,
-                          fit: BoxFit.cover,
-                          width: screenHeight * 0.15,
-                          height: screenHeight * 0.15,
-                        ),
-                      )
-                    : Positioned.fill(
-                        child: Center(
-                          child: Image.asset(
-                            ImgPath.pngPerson,
-                            height: screenHeight * 0.05,
-                            width: screenHeight * 0.05,
-                          ),
-                        ),
-                      ),
-                Positioned.fill(
-                  top: 5,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        left: isTablet ? 100 : 100, top: isTablet ? 200 : 110),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.topCenter,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            dialogBoxImagePicker(context);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: ConstantColors.lightBlueColor,
-                                borderRadius: BorderRadius.circular(50)),
-                            // width: isTablet ? 50 : 30,
-                            // height: isTablet ? 60 : 100,
-                          ),
-                        ),
-                        Positioned.fill(
-                          child: Center(
-                            child: Image.asset(
-                              ImgPath.pngEdit,
-                              height: isTablet ? 20 : 12,
-                              width: isTablet ? 20 : 12,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              ],
+            // Stack(
+            //   clipBehavior: Clip.none,
+            //   children: [
+            //     Container(
+            //       decoration: BoxDecoration(
+            //           color: ConstantColors.inputColor,
+            //           borderRadius: BorderRadius.circular(200)),
+            //       width: screenHeight * 0.15,
+            //       height: screenHeight * 0.15,
+            //     ),
+            //     pickedImage != null
+            //         ? ClipRRect(
+            //             borderRadius: BorderRadius.circular(100),
+            //             child: Image.file(
+            //               pickedImage!,
+            //               fit: BoxFit.cover,
+            //               width: screenHeight * 0.15,
+            //               height: screenHeight * 0.15,
+            //             ),
+            //           )
+            //         : Positioned.fill(
+            //             child: Center(
+            //               child: Image.asset(
+            //                 ImgPath.pngPerson,
+            //                 height: screenHeight * 0.05,
+            //                 width: screenHeight * 0.05,
+            //               ),
+            //             ),
+            //           ),
+            //     Positioned.fill(
+            //       top: 5,
+            //       child: Padding(
+            //         padding: EdgeInsets.only(
+            //             left: isTablet ? 100 : 100, top: isTablet ? 200 : 110),
+            //         child: Stack(
+            //           clipBehavior: Clip.none,
+            //           alignment: Alignment.topCenter,
+            //           children: [
+            //             GestureDetector(
+            //               onTap: () {
+            //                 dialogBoxImagePicker(context);
+            //               },
+            //               child: Container(
+            //                 decoration: BoxDecoration(
+            //                     color: ConstantColors.lightBlueColor,
+            //                     borderRadius: BorderRadius.circular(50)),
+            //                 // width: isTablet ? 50 : 30,
+            //                 // height: isTablet ? 60 : 100,
+            //               ),
+            //             ),
+            //             Positioned.fill(
+            //               child: Center(
+            //                 child: Image.asset(
+            //                   ImgPath.pngEdit,
+            //                   height: isTablet ? 20 : 12,
+            //                   width: isTablet ? 20 : 12,
+            //                 ),
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     )
+            //   ],
+            // ),
+
+           SizedBox(
+              height: screenHeight * 0.03,
             ),
-            const SizedBox(
-              height: 50,
+            Center(
+              child: Text(
+                'Register to',
+                style: GoogleFonts.roboto(
+                  fontSize: screenWidth * 0.04,
+                  color: ConstantColors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 40, right: 40, top: 20, bottom: 20),
+              child: Center(
+                child: Image.asset(ImgPath.pngName),
+              ),
+            ),
+             SizedBox(
+              height: screenHeight * 0.02,
             ),
             TextField(
               controller: nameController,
@@ -216,6 +238,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
               decoration: InputDecorationStyle.textFieldDecoration(
                   placeholder: "Your Name", context: context),
+              textInputAction: TextInputAction.next,
             ),
             SizedBox(
               height: isTablet ? 30 : 20,
@@ -228,8 +251,38 @@ class ProfileScreenState extends State<ProfileScreen> {
                 fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
               ),
               decoration: InputDecorationStyle.textFieldDecoration(
-                  placeholder: "Loremipsum@gmail.com", context: context),
-              //enabled: false,
+                  placeholder: "Email Id", context: context),
+              textInputAction: TextInputAction.next,
+            ),
+            SizedBox(
+              height: isTablet ? 30 : 20,
+            ),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              style: GoogleFonts.roboto(
+                color: ConstantColors.mainlyTextColor,
+                fontWeight: FontWeight.w500,
+                fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
+              ),
+              decoration: InputDecorationStyle.textFieldDecoration(
+                  placeholder: "password", context: context),
+              textInputAction: TextInputAction.next,
+            ),
+            SizedBox(
+              height: isTablet ? 30 : 20,
+            ),
+            TextField(
+              controller: confirmPasswordController,
+              obscureText: true,
+              style: GoogleFonts.roboto(
+                color: ConstantColors.mainlyTextColor,
+                fontWeight: FontWeight.w500,
+                fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
+              ),
+              decoration: InputDecorationStyle.textFieldDecoration(
+                  placeholder: "confirm password", context: context),
+              textInputAction: TextInputAction.next,
             ),
             SizedBox(
               height: isTablet ? 30 : 20,
@@ -247,6 +300,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(
                     width: isTablet ? 80 : 40,
                     child: TextField(
+                      enabled: false,
                       controller: countryController,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
@@ -270,6 +324,10 @@ class ProfileScreenState extends State<ProfileScreen> {
                       child: TextField(
                     controller: mobileController,
                     keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(8),
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    ],
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "Phone",
@@ -297,53 +355,76 @@ class ProfileScreenState extends State<ProfileScreen> {
             ),
             RoundedButton(
               onPressed: () async {
+                FocusScope.of(context).unfocus();
+
                 // Step 1: Check Validation
                 String name = nameController.text;
                 String email = emailController.text;
                 String mobile =
                     "${countryController.text} ${mobileController.text}";
+                String password = passwordController.text;
+                String confirmpassword = confirmPasswordController.text;
 
                 if (name.isEmpty) {
-                  // Show an error message for name validation
                   SnackbarHelper.showSnackBar(
                       context, "Please enter your name");
                   return;
                 }
 
                 if (email.isEmpty || !isValidEmail(email)) {
-                  // Show an error message for email validation
                   SnackbarHelper.showSnackBar(
                       context, "Please enter a valid email");
                   return;
                 }
+                if (password.isEmpty) {
+                  SnackbarHelper.showSnackBar(context, "Please enter password");
+                  return;
+                }
 
-                if (mobileController.text.isEmpty) {
+                if (confirmpassword.isEmpty) {
+                  SnackbarHelper.showSnackBar(
+                      context, "Please enter confirm password");
+                  return;
+                }
+                if (password != confirmpassword) {
+                  SnackbarHelper.showSnackBar(
+                      context, "Passwords do not match");
+                  return;
+                }
+
+                if (mobileController.text.isEmpty ||
+                    mobileController.text.length != 8) {
                   // Show an error message for mobile validation
                   SnackbarHelper.showSnackBar(
                       context, "Please enter a valid mobile number");
                   return;
                 }
                 try {
-                  Response response =
-                      await RemoteServices.login(email, name, mobile);
-                  print(response.statusCode);
-                  if (response.statusCode == 201 ||
-                      response.statusCode == 400) {
-                    await SharedPreferencesHelper.instance
-                        .saveUserDataToSharedPreferences(name, email);
+                  Response response = await RemoteServices.userSignUp(
+                      name, email, mobile, password);
+                  if (response.statusCode == 200) {
                     var data = jsonDecode(response.body);
-                Navigator.pushNamed(context, homedRoute);
-
-                    print(data);
+                    if (data.containsKey("message")) {
+                      String errorMessage = data["message"];
+                      SnackbarHelper.showSnackBar(context, errorMessage);
+                    } else {
+                      await SharedPreferencesHelper.instance
+                          .saveUserDataToSharedPreferences(name, email);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          homedRoute, (route) => false);
+                    }
                   } else {
-                    SnackbarHelper.showSnackBar(
-                        context, "Create profile failed! Please try again!");
+                    var data = jsonDecode(response.body);
+                    if (data.containsKey("message")) {
+                      String errorMessage = data["message"];
+                      SnackbarHelper.showSnackBar(context, errorMessage);
+                    }
                   }
                 } catch (e) {
                   print(e.toString());
                 }
               },
-              text: "Next",
+              text: "Register",
               backgroundColor: ConstantColors.borderButtonColor,
               textColor: ConstantColors.whiteColor,
             ),

@@ -1,6 +1,9 @@
+import 'package:enavatek_mobile/auth/authhelper.dart';
+import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 void showLogoutDialog(BuildContext context) {
   showDialog(
@@ -40,9 +43,7 @@ void showLogoutDialog(BuildContext context) {
                   },
                   child: Text(
                     "Cancel",
-                    style: GoogleFonts.roboto(
-                      fontSize: screenWidth * 0.035
-                    ),
+                    style: GoogleFonts.roboto(fontSize: screenWidth * 0.035),
                   ),
                 ),
               ),
@@ -65,13 +66,15 @@ void showLogoutDialog(BuildContext context) {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    AuthHelper authHelper =
+                        Provider.of<AuthHelper>(context, listen: false);
+                    authHelper.setLoggedIn(false);
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, loginRoute, (route) => false);
                   },
                   child: Text(
                     "Log out",
-                    style: GoogleFonts.roboto(
-                      fontSize: screenWidth * 0.035
-                    ),
+                    style: GoogleFonts.roboto(fontSize: screenWidth * 0.035),
                   ),
                 ),
               ),

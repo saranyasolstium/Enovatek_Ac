@@ -12,6 +12,9 @@ import 'package:enavatek_mobile/screen/menu/building/room/update_room.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/add_button.dart';
+import 'package:enavatek_mobile/widget/delete_button.dart';
+import 'package:enavatek_mobile/widget/edit_button.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -41,12 +44,12 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
 
   List<Building> buildings = [];
 
-  List<Room> rooms = [];
   List<Floor> floorsForBuilding = [];
-
+  String? authToken;
+  int? userId;
   Future<void> getAllDevice() async {
-    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-    int? userId = await SharedPreferencesHelper.instance.getUserID();
+    authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    userId = await SharedPreferencesHelper.instance.getUserID();
     Response response =
         await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
     if (response.statusCode == 200) {
@@ -58,8 +61,6 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
       setState(() {
         floorsForBuilding = getFloorsByBuildingId(widget.buildingID);
       });
-
-      getRoomsByBuildingId(widget.buildingID);
     } else {
       print('Response body: ${response.body}');
     }
@@ -72,19 +73,6 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
       }
     }
     return [];
-  }
-
-  List<Room> getRoomsByBuildingId(int targetBuildingId) {
-    for (var building in buildings) {
-      if (building.buildingId == targetBuildingId) {
-        for (var floor in building.floors) {
-          setState(() {
-            rooms.addAll(floor.rooms);
-          });
-        }
-      }
-    }
-    return rooms;
   }
 
   @override
@@ -180,12 +168,8 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                   return;
                 }
 
-                String? authToken =
-                    await SharedPreferencesHelper.instance.getAuthToken();
-                int? loginId =
-                    await SharedPreferencesHelper.instance.getLoginID();
                 Response response = await RemoteServices.addBuildingName(
-                    authToken!, buildingName, widget.buildingID, loginId!);
+                    authToken!, buildingName, widget.buildingID, userId!);
                 var data = jsonDecode(response.body);
 
                 if (response.statusCode == 200) {
@@ -220,7 +204,7 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                     Padding(
                       padding: EdgeInsets.only(
                           left: 0.05 * screenWidth,
-                          top: 0.03 * screenHeight,
+                          top: 0.01 * screenHeight,
                           right: 0.05 * screenWidth),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -232,27 +216,15 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                               color: ConstantColors.mainlyTextColor,
                             ),
                           ),
-                          const SizedBox(width: 20),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AddFloorName(
-                                        buildingName: widget.buildingName,
-                                        buildingID: widget.buildingID)),
-                              );
-                            },
-                            child: Image.asset(
-                              ImgPath.pngAdd,
-                              width: isTablet
-                                  ? 0.05 * screenWidth
-                                  : 0.05 * screenWidth,
-                              height: isTablet
-                                  ? 0.05 * screenHeight
-                                  : 0.03 * screenHeight,
-                            ),
-                          ),
+                          MaterialAddButton(onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddFloorName(
+                                      buildingName: widget.buildingName,
+                                      buildingID: widget.buildingID)),
+                            );
+                          }),
                         ],
                       ),
                     ),
@@ -298,94 +270,74 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                         ),
                                         Row(
                                           children: [
-                                            MaterialButton(
-                                              onPressed: () {
-                                                Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          UpdateFloor(
-                                                              buildingName: widget
-                                                                  .buildingName,
-                                                              floorName:
-                                                                  floor.name,
-                                                              buildingID: widget
-                                                                  .buildingID,
-                                                              floorID: floor
-                                                                  .floorId)),
-                                                );
-                                              },
-                                              color: ConstantColors.whiteColor,
-                                              textColor: Colors.white,
-                                              minWidth: isTablet
-                                                  ? 0.04 * screenWidth
-                                                  : 0.03 * screenWidth,
-                                              height: isTablet
-                                                  ? 0.04 * screenHeight
-                                                  : 0.03 * screenHeight,
-                                              shape: const CircleBorder(
-                                                side: BorderSide(
-                                                  color: ConstantColors
-                                                      .borderButtonColor,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                              child: Image.asset(
-                                                ImgPath.pngEdit,
-                                                width: isTablet
-                                                    ? 0.03 * screenWidth
-                                                    : 0.025 * screenWidth,
-                                                height: isTablet
-                                                    ? 0.03 * screenHeight
-                                                    : 0.02 * screenHeight,
-                                                color: ConstantColors
-                                                    .lightBlueColor,
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              width: 20,
-                                            ),
-                                            MaterialButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          AddRoom(
+                                            MaterialEditButton(onPressed: () {
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        UpdateFloor(
+                                                            buildingName: widget
+                                                                .buildingName,
+                                                            floorName:
+                                                                floor.name,
                                                             buildingID: widget
                                                                 .buildingID,
                                                             floorID:
-                                                                floor.floorId,
-                                                          )),
-                                                );
-                                              },
-                                              color: ConstantColors.whiteColor,
-                                              textColor: Colors.white,
-                                              minWidth: isTablet
-                                                  ? 0.04 * screenWidth
-                                                  : 0.03 * screenWidth,
-                                              height: isTablet
-                                                  ? 0.04 * screenHeight
-                                                  : 0.03 * screenHeight,
-                                              shape: const CircleBorder(
-                                                side: BorderSide(
-                                                  color: ConstantColors
-                                                      .borderButtonColor,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                              child: Image.asset(
-                                                ImgPath.pngPlus,
-                                                width: isTablet
-                                                    ? 0.03 * screenWidth
-                                                    : 0.025 * screenWidth,
-                                                height: isTablet
-                                                    ? 0.03 * screenHeight
-                                                    : 0.02 * screenHeight,
-                                                color: ConstantColors
-                                                    .lightBlueColor,
-                                              ),
+                                                                floor.floorId)),
+                                              );
+                                            }),
+                                            const SizedBox(
+                                              width: 20,
                                             ),
+                                            MaterialAddButton(onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        AddRoom(
+                                                          buildingID:
+                                                              widget.buildingID,
+                                                          buildingName: widget
+                                                              .buildingName,
+                                                          floorID:
+                                                              floor.floorId,
+                                                        )),
+                                              );
+                                            }),
+                                            const SizedBox(
+                                              width: 20,
+                                            ),
+                                            MaterialDeleteButton(
+                                                onPressed: () async {
+                                              Response response =
+                                                  await RemoteServices
+                                                      .deleteFloor(
+                                                          authToken!,
+                                                          floor.name,
+                                                          widget.buildingID,
+                                                          floor.floorId,
+                                                          userId!);
+                                              var data =
+                                                  jsonDecode(response.body);
+                                              if (response.statusCode == 200) {
+                                                if (data
+                                                    .containsKey("message")) {
+                                                  String message =
+                                                      data["message"];
+                                                  SnackbarHelper.showSnackBar(
+                                                      context, message);
+                                                }
+                                                getAllDevice();
+                                              } else {
+                                                if (data
+                                                    .containsKey("message")) {
+                                                  String errorMessage =
+                                                      data["message"];
+                                                  SnackbarHelper.showSnackBar(
+                                                      context, errorMessage);
+                                                }
+                                              }
+                                            }),
                                           ],
                                         ),
                                       ],
@@ -429,68 +381,73 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                                       ),
                                                       Row(
                                                         children: [
-                                                          MaterialButton(
-                                                            onPressed: () {
-                                                              Navigator
-                                                                  .pushReplacement(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (context) => UpdateRoom(
-                                                                        roomName:
-                                                                            room
-                                                                                .name,
-                                                                        buildingID:
-                                                                            widget
-                                                                                .buildingID,
-                                                                        floorID:
-                                                                            room
-                                                                                .floorId,
-                                                                        buildingName:
-                                                                            widget
-                                                                                .buildingName,
-                                                                        roonID:
-                                                                            room.roomId)),
-                                                              );
-                                                            },
-                                                            color:
-                                                                ConstantColors
-                                                                    .whiteColor,
-                                                            textColor:
-                                                                Colors.white,
-                                                            minWidth: isTablet
-                                                                ? 0.04 *
-                                                                    screenWidth
-                                                                : 0.03 *
-                                                                    screenWidth,
-                                                            height: isTablet
-                                                                ? 0.04 *
-                                                                    screenHeight
-                                                                : 0.03 *
-                                                                    screenHeight,
-                                                            shape:
-                                                                const CircleBorder(
-                                                              side: BorderSide(
-                                                                color: ConstantColors
-                                                                    .borderButtonColor,
-                                                                width: 2,
-                                                              ),
-                                                            ),
-                                                            child: Image.asset(
-                                                              ImgPath.pngEdit,
-                                                              width: isTablet
-                                                                  ? 0.03 *
-                                                                      screenWidth
-                                                                  : 0.025 *
-                                                                      screenWidth,
-                                                              height: isTablet
-                                                                  ? 0.03 *
-                                                                      screenHeight
-                                                                  : 0.02 *
-                                                                      screenHeight,
-                                                              color: ConstantColors
-                                                                  .lightBlueColor,
-                                                            ),
-                                                          ),
+                                                          MaterialEditButton(
+                                                              onPressed: () {
+                                                            Navigator
+                                                                .pushReplacement(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) => UpdateRoom(
+                                                                      roomName: room
+                                                                          .name,
+                                                                      buildingID:
+                                                                          widget
+                                                                              .buildingID,
+                                                                      floorID: room
+                                                                          .floorId,
+                                                                      buildingName:
+                                                                          widget
+                                                                              .buildingName,
+                                                                      roonID: room
+                                                                          .roomId)),
+                                                            );
+                                                          }),
+                                                          MaterialDeleteButton(
+                                                              onPressed:
+                                                                  () async {
+                                                            Response response =
+                                                                await RemoteServices.deleteRoom(
+                                                                    authToken!,
+                                                                    room.name,
+                                                                    widget
+                                                                        .buildingID,
+                                                                    floor
+                                                                        .floorId,
+                                                                    room.roomId,
+                                                                    userId!);
+                                                            var data =
+                                                                jsonDecode(
+                                                                    response
+                                                                        .body);
+
+                                                            if (response
+                                                                    .statusCode ==
+                                                                200) {
+                                                              if (data.containsKey(
+                                                                  "message")) {
+                                                                String message =
+                                                                    data[
+                                                                        "message"];
+                                                                SnackbarHelper
+                                                                    .showSnackBar(
+                                                                        context,
+                                                                        message);
+                                                              }
+                                                              getAllDevice();
+                                                            } else {
+                                                              if (data.containsKey(
+                                                                  "message")) {
+                                                                String
+                                                                    errorMessage =
+                                                                    data[
+                                                                        "message"];
+                                                                SnackbarHelper
+                                                                    .showSnackBar(
+                                                                        context,
+                                                                        errorMessage);
+                                                              }
+                                                            }
+                                                          }),
                                                         ],
                                                       ),
                                                     ],

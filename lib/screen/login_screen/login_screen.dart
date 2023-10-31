@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:enavatek_mobile/auth/authhelper.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
@@ -18,6 +19,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -52,13 +54,16 @@ class LoginScreenState extends State<LoginScreen> {
         Map<String, dynamic> profile = data['profile'];
         String profileName = profile['name'];
         String profileEmailId = profile['emailId'];
-        int userId=profile['userId'];
+        int userId = profile['userId'];
         await SharedPreferencesHelper.instance.setAuthToken(accessToken);
         await SharedPreferencesHelper.instance.setLoginID(loginId);
         await SharedPreferencesHelper.instance.setUserID(userId);
         await SharedPreferencesHelper.instance
             .saveUserDataToSharedPreferences(profileName, profileEmailId);
-        Navigator.pushReplacementNamed(context, homedRoute);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(homedRoute, (route) => false);
+        AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
+        authHelper.setLoggedIn(true);
         SnackbarHelper.showSnackBar(context, "Login Successful");
       } else {
         var data = jsonDecode(response.body);
@@ -109,18 +114,21 @@ class LoginScreenState extends State<LoginScreen> {
       Response response =
           await RemoteServices.googleApiLogin(displayname!, email!, deviceID!);
       if (response.statusCode == 200) {
+        AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
         signOutGoogle();
         var data = jsonDecode(response.body);
         String accessToken = data['accessToken'];
         int loginId = data['loginId'];
         Map<String, dynamic> profile = data['profile'];
-        int userId=profile['userId'];
+        int userId = profile['userId'];
         await SharedPreferencesHelper.instance.setUserID(userId);
         await SharedPreferencesHelper.instance.setAuthToken(accessToken);
         await SharedPreferencesHelper.instance.setLoginID(loginId);
         await SharedPreferencesHelper.instance
             .saveUserDataToSharedPreferences(displayname, email);
-        Navigator.pushReplacementNamed(context, homedRoute);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(homedRoute, (route) => false);
+        authHelper.setLoggedIn(true);
         SnackbarHelper.showSnackBar(context, "Login Successful");
       } else {
         SnackbarHelper.showSnackBar(
@@ -160,13 +168,16 @@ class LoginScreenState extends State<LoginScreen> {
         String accessToken = data['accessToken'];
         int loginId = data['loginId'];
         Map<String, dynamic> profile = data['profile'];
-        int userId=profile['userId'];
+        int userId = profile['userId'];
         await SharedPreferencesHelper.instance.setUserID(userId);
         await SharedPreferencesHelper.instance.setAuthToken(accessToken);
         await SharedPreferencesHelper.instance.setLoginID(loginId);
         await SharedPreferencesHelper.instance
             .saveUserDataToSharedPreferences(displayname, email);
-        Navigator.pushReplacementNamed(context, profileRoute);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(homedRoute, (route) => false);
+        AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
+        authHelper.setLoggedIn(true);
         SnackbarHelper.showSnackBar(context, "Login Successful");
       } else {
         SnackbarHelper.showSnackBar(
@@ -238,6 +249,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
                 decoration: InputDecorationStyle.textFieldDecoration(
                     placeholder: "Email", context: context),
+                textInputAction: TextInputAction.next,
               ),
             ),
             Padding(
@@ -256,6 +268,7 @@ class LoginScreenState extends State<LoginScreen> {
             ),
             RoundedButton(
               onPressed: () {
+                FocusScope.of(context).unfocus();
                 if (emailController.text.isEmpty ||
                     passwordController.text.isEmpty) {
                   SnackbarHelper.showSnackBar(context,
@@ -274,28 +287,33 @@ class LoginScreenState extends State<LoginScreen> {
             const SizedBox(
               height: 30,
             ),
-            Padding(
-                padding: const EdgeInsets.only(left: 30, right: 60),
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "Don't have an account?   ",
-                        style: GoogleFonts.lato(
-                            color: ConstantColors.mainlyTextColor,
-                            fontSize: screenWidth * 0.037),
-                      ),
-                      TextSpan(
-                        text: 'Sign Up',
-                        style: GoogleFonts.lato(
-                            color: ConstantColors.blueColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: screenWidth * 0.035),
-                      ),
-                    ],
-                  ),
-                )),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, profileRoute);
+              },
+              child: Padding(
+                  padding: const EdgeInsets.only(left: 30, right: 60),
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Don't have an account?   ",
+                          style: GoogleFonts.lato(
+                              color: ConstantColors.mainlyTextColor,
+                              fontSize: screenWidth * 0.037),
+                        ),
+                        TextSpan(
+                          text: 'Sign Up',
+                          style: GoogleFonts.lato(
+                              color: ConstantColors.blueColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.035),
+                        ),
+                      ],
+                    ),
+                  )),
+            ),
             const SizedBox(
               height: 30,
             ),

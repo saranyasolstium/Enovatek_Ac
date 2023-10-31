@@ -1,9 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
-import 'package:enavatek_mobile/screen/add_device/device_assign/device_assigning.dart';
-import 'package:enavatek_mobile/screen/home/build_row.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
@@ -32,6 +32,7 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
     getUserDataFromSharedPreferences();
     getAllDevice();
+    getActionType();
   }
 
   Future<void> getUserDataFromSharedPreferences() async {
@@ -53,6 +54,15 @@ class HomeScreenState extends State<HomeScreen> {
             .map((data) => Building.fromJson(data))
             .toList();
       });
+    } else {
+      print('Response body: ${response.body}');
+    }
+  }
+
+ Future<void> getActionType() async {
+    Response response =await RemoteServices.getActiontype();
+    if (response.statusCode == 200) {
+     
     } else {
       print('Response body: ${response.body}');
     }
@@ -210,11 +220,17 @@ class HomeScreenState extends State<HomeScreen> {
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 final building = buildings[index];
+                List<Device> deviceList = building.floors
+                    .expand((floor) => floor.rooms)
+                    .expand((room) => room.devices)
+                    .toList();
 
                 return GestureDetector(
                   onTap: () async {
                     print('Tapped on building: ${building.name}');
-                    
+                    if (deviceList.isNotEmpty) {
+                      Navigator.pushNamed(context, allDeviceRoute);
+                    }
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(0),
@@ -243,238 +259,218 @@ class HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 20),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: ConstantColors.mainlyTextColor,
-                                  size: 20,
+                                GestureDetector(
+                                  onTap: () async {
+                                    await SharedPreferencesHelper.instance
+                                        .saveBuildingData(
+                                            building.buildingId, building.name);
+                                    Navigator.pushNamed(
+                                        context, addDeviceRoute);
+                                  },
+                                  child: Image.asset(
+                                    ImgPath.pngAdd,
+                                    width: isTablet
+                                        ? 0.05 * screenWidth
+                                        : 0.05 * screenWidth,
+                                    height: isTablet
+                                        ? 0.05 * screenHeight
+                                        : 0.03 * screenHeight,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-
                           SizedBox(
                             height: isTablet
                                 ? 0.05 * screenWidth
                                 : 0.05 * screenWidth,
                           ),
-
                           const Divider(
                             height: 1,
                             thickness: 1,
                             color: ConstantColors.mainlyTextColor,
                           ),
-                          const SizedBox(
-                            height: 100,
-                          )
-                          // Padding(
-                          //   padding: EdgeInsets.fromLTRB(
-                          //     isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-                          //     isTablet ? 0.05 * screenHeight : 0.03 * screenHeight,
-                          //     isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-                          //     0,
-                          //   ),
-                          //   child: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //     children: [
-                          //       RichText(
-                          //         text: TextSpan(
-                          //           children: [
-                          //             TextSpan(
-                          //               text: 'Device (10),\n ',
-                          //               style: GoogleFonts.roboto(
-                          //                 color: ConstantColors.mainlyTextColor,
-                          //                 fontWeight: FontWeight.bold,
-                          //                 fontSize: screenWidth * 0.035,
-                          //               ),
-                          //             ),
-                          //             TextSpan(
-                          //               text: 'Energy consumption: 1256 wh',
-                          //               style: GoogleFonts.roboto(
-                          //                 color: ConstantColors.mainlyTextColor,
-                          //                 fontSize: screenWidth * 0.035,
-                          //               ),
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       ),
-                          //       const SizedBox(width: 20),
-                          //       Icon(Icons.arrow_forward_ios,
-                          //           color: ConstantColors.mainlyTextColor,
-                          //           size: isTablet
-                          //               ? 0.05 * screenWidth
-                          //               : 0.05 * screenWidth),
-                          //     ],
-                          //   ),
-                          // ),
-                          // Padding(
-                          //   padding: EdgeInsets.fromLTRB(
-                          //     isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-                          //     isTablet ? 0.05 * screenHeight : 0.03 * screenHeight,
-                          //     isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-                          //     isTablet ? 0.05 * screenWidth : 0.02 * screenWidth,
-                          //   ),
-                          //   child: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //     children: [
-                          //       RichText(
-                          //         text: TextSpan(
-                          //           children: [
-                          //             WidgetSpan(
-                          //               child: Center(
-                          //                 child: Image.asset(
-                          //                   ImgPath.pngThermometer,
-                          //                   width: isTablet
-                          //                       ? 0.05 * screenWidth
-                          //                       : 0.03 * screenWidth,
-                          //                   height: isTablet
-                          //                       ? 0.05 * screenHeight
-                          //                       : 0.02 * screenHeight,
-                          //                 ),
-                          //               ),
-                          //             ),
-                          //             TextSpan(
-                          //               text: 'Temp\n',
-                          //               style: GoogleFonts.roboto(
-                          //                 color: ConstantColors.mainlyTextColor,
-                          //                 fontSize: screenWidth * 0.035,
-                          //               ),
-                          //             ),
-                          //             TextSpan(
-                          //               text: '    24° C',
-                          //               style: GoogleFonts.roboto(
-                          //                 color: ConstantColors.mainlyTextColor,
-                          //                 fontSize: screenWidth * 0.035,
-                          //                 fontWeight: FontWeight.bold,
-                          //               ),
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       ),
-                          //       RichText(
-                          //         text: TextSpan(
-                          //           children: [
-                          //             WidgetSpan(
-                          //               child: Image.asset(
-                          //                 ImgPath.pngAutoNew,
-                          //                 width: isTablet
-                          //                     ? 0.05 * screenWidth
-                          //                     : 0.03 * screenWidth,
-                          //                 height: isTablet
-                          //                     ? 0.05 * screenHeight
-                          //                     : 0.02 * screenHeight,
-                          //               ),
-                          //             ),
-                          //             TextSpan(
-                          //               text: ' Mobile\n',
-                          //               style: GoogleFonts.roboto(
-                          //                 color: ConstantColors.mainlyTextColor,
-                          //                 fontSize: screenWidth * 0.035,
-                          //               ),
-                          //             ),
-                          //             TextSpan(
-                          //               text: '    Cool',
-                          //               style: GoogleFonts.roboto(
-                          //                 color: ConstantColors.mainlyTextColor,
-                          //                 fontSize: screenWidth * 0.035,
-                          //                 fontWeight: FontWeight.bold,
-                          //               ),
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       ),
-                          //       MaterialButton(
-                          //         onPressed: () {},
-                          //         color: ConstantColors.whiteColor,
-                          //         textColor: Colors.white,
-                          //         minWidth: isTablet
-                          //             ? 0.05 * screenWidth
-                          //             : 0.05 * screenWidth,
-                          //         height: isTablet
-                          //             ? 0.05 * screenHeight
-                          //             : 0.04 * screenHeight,
-                          //         shape: const CircleBorder(
-                          //           side: BorderSide(
-                          //             color: ConstantColors.borderButtonColor,
-                          //             width: 2,
-                          //           ),
-                          //         ),
-                          //         child: Image.asset(
-                          //           ImgPath.pngPlus,
-                          //           width: isTablet
-                          //               ? 0.05 * screenWidth
-                          //               : 0.03 * screenWidth,
-                          //           height: isTablet
-                          //               ? 0.05 * screenHeight
-                          //               : 0.03 * screenHeight,
-                          //         ),
-                          //       ),
-                          //       MaterialButton(
-                          //         onPressed: () {},
-                          //         color: ConstantColors.whiteColor,
-                          //         textColor: Colors.white,
-                          //         minWidth: isTablet
-                          //             ? 0.05 * screenWidth
-                          //             : 0.04 * screenWidth,
-                          //         height: isTablet
-                          //             ? 0.05 * screenHeight
-                          //             : 0.04 * screenHeight,
-                          //         shape: const CircleBorder(
-                          //           side: BorderSide(
-                          //             color: ConstantColors.borderButtonColor,
-                          //             width: 2,
-                          //           ),
-                          //         ),
-                          //         child: Image.asset(
-                          //           ImgPath.pngRemove,
-                          //           width: isTablet
-                          //               ? 0.05 * screenWidth
-                          //               : 0.03 * screenWidth,
-                          //           height: isTablet
-                          //               ? 0.05 * screenHeight
-                          //               : 0.03 * screenHeight,
-                          //         ),
-                          //       ),
-                          //       MaterialButton(
-                          //         onPressed: () async {
-                          //           try {
-                          //             await mqttService.connectWithRetry(5);
-                          //             print('Connected to MQTT broker');
-                          //             mqttService.publish(
-                          //                 retrievedDeviceId!, 'POWER', 'ON');
-
-                          //             mqttService.subscribe(retrievedDeviceId!,
-                          //                 (message) {
-                          //               print('Received MQTT message: $message');
-                          //             });
-                          //           } catch (e) {
-                          //             print('Error connecting to MQTT broker: $e');
-                          //           }
-                          //         },
-                          //         color: ConstantColors.greenColor,
-                          //         textColor: Colors.white,
-                          //         minWidth: isTablet
-                          //             ? 0.05 * screenWidth
-                          //             : 0.05 * screenWidth,
-                          //         height: isTablet
-                          //             ? 0.05 * screenHeight
-                          //             : 0.04 * screenHeight,
-                          //         shape: const CircleBorder(
-                          //           side: BorderSide(
-                          //             color: ConstantColors.greenColor,
-                          //             width: 2,
-                          //           ),
-                          //         ),
-                          //         child: Icon(
-                          //           Icons.power_settings_new,
-                          //           size: isTablet
-                          //               ? 0.05 * screenWidth
-                          //               : 0.05 * screenWidth,
-                          //           color: ConstantColors.whiteColor,
-                          //         ),
-                          //       )
-                          //     ],
-                          //   ),
-                          // ),
+                          deviceList.isEmpty
+                              ? Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 30),
+                                  child: Text(
+                                    'No device assigned',
+                                    style: GoogleFonts.roboto(
+                                      fontSize: screenWidth * 0.04,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                )
+                              // : const SizedBox(
+                              //     height: 100,
+                              //   )
+                              : Column(children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20, right: 10, top: 15),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    'Device (${deviceList.length}),\n',
+                                                style: GoogleFonts.roboto(
+                                                    color: ConstantColors
+                                                        .mainlyTextColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    'Energy consumption: 1256 wh',
+                                                style: GoogleFonts.roboto(
+                                                    color: ConstantColors
+                                                        .mainlyTextColor,
+                                                    fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 20),
+                                        const Icon(
+                                          Icons.arrow_forward_ios,
+                                          color: ConstantColors.mainlyTextColor,
+                                          size: 20,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(15),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          RichText(
+                                            text: TextSpan(
+                                              children: [
+                                                WidgetSpan(
+                                                  child: Image.asset(
+                                                    ImgPath.pngThermometer,
+                                                    width: 12,
+                                                    height: 12,
+                                                  ),
+                                                ),
+                                                TextSpan(
+                                                  text: 'Temp\n',
+                                                  style: GoogleFonts.roboto(
+                                                    color: ConstantColors
+                                                        .mainlyTextColor,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                                TextSpan(
+                                                  text: '    24° C',
+                                                  style: GoogleFonts.roboto(
+                                                    color: ConstantColors
+                                                        .mainlyTextColor,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          RichText(
+                                            text: TextSpan(
+                                              children: [
+                                                WidgetSpan(
+                                                  child: Image.asset(
+                                                    ImgPath.pngAutoNew,
+                                                    width: 12,
+                                                    height: 12,
+                                                  ),
+                                                ),
+                                                TextSpan(
+                                                  text: ' Mobile\n',
+                                                  style: GoogleFonts.roboto(
+                                                    color: ConstantColors
+                                                        .mainlyTextColor,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                                TextSpan(
+                                                  text: '    Cool',
+                                                  style: GoogleFonts.roboto(
+                                                    color: ConstantColors
+                                                        .mainlyTextColor,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          MaterialButton(
+                                            onPressed: () {},
+                                            color: ConstantColors.whiteColor,
+                                            textColor: Colors.white,
+                                            minWidth: 30,
+                                            height: 30,
+                                            shape: const CircleBorder(
+                                              side: BorderSide(
+                                                color: ConstantColors
+                                                    .borderButtonColor,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            child: Image.asset(
+                                              ImgPath.pngPlus,
+                                              height: 15,
+                                              width: 15,
+                                            ),
+                                          ),
+                                          MaterialButton(
+                                            onPressed: () {},
+                                            color: ConstantColors.whiteColor,
+                                            textColor: Colors.white,
+                                            minWidth: 30,
+                                            height: 30,
+                                            shape: const CircleBorder(
+                                              side: BorderSide(
+                                                color: ConstantColors
+                                                    .borderButtonColor,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            child: Image.asset(
+                                              ImgPath.pngRemove,
+                                              height: 15,
+                                              width: 15,
+                                            ),
+                                          ),
+                                          MaterialButton(
+                                            onPressed: () {},
+                                            color: ConstantColors.greenColor,
+                                            textColor: Colors.white,
+                                            minWidth: 30,
+                                            height: 30,
+                                            shape: const CircleBorder(
+                                              side: BorderSide(
+                                                color:
+                                                    ConstantColors.greenColor,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            child: const Icon(
+                                                Icons.power_settings_new,
+                                                size: 20,
+                                                color:
+                                                    ConstantColors.whiteColor),
+                                          )
+                                        ]),
+                                  ),
+                                ]),
                         ],
                       ),
                     ),

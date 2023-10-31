@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
@@ -7,6 +9,7 @@ import 'package:enavatek_mobile/screen/menu/building/edit_building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
@@ -70,7 +73,8 @@ class BuildingScreenState extends State<BuildingScreen> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              homedRoute, (route) => false);
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
@@ -192,7 +196,36 @@ class BuildingScreenState extends State<BuildingScreen> {
                                 width: 20,
                               ),
                               MaterialButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  String? authToken =
+                                      await SharedPreferencesHelper.instance
+                                          .getAuthToken();
+                                  int? userId = await SharedPreferencesHelper
+                                      .instance
+                                      .getUserID();
+                                  Response response =
+                                      await RemoteServices.deleteBuilding(
+                                          authToken!,
+                                          building.name,
+                                          building.buildingId,
+                                          userId!);
+                                  var data = jsonDecode(response.body);
+
+                                  if (response.statusCode == 200) {
+                                    if (data.containsKey("message")) {
+                                      String message = data["message"];
+                                      SnackbarHelper.showSnackBar(
+                                          context, message);
+                                    }
+                                    getAllDevice();
+                                  } else {
+                                    if (data.containsKey("message")) {
+                                      String errorMessage = data["message"];
+                                      SnackbarHelper.showSnackBar(
+                                          context, errorMessage);
+                                    }
+                                  }
+                                },
                                 color: ConstantColors.orangeColor,
                                 textColor: Colors.white,
                                 minWidth: isTablet
@@ -217,6 +250,7 @@ class BuildingScreenState extends State<BuildingScreen> {
                                       : 0.025 * screenHeight,
                                 ),
                               ),
+                            
                             ],
                           ),
                         ],

@@ -9,10 +9,10 @@ import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/add_schedule.dart';
 import 'package:enavatek_mobile/screen/device_details/device_details_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/schedule.dart';
-import 'package:enavatek_mobile/screen/home/add_building.dart';
 import 'package:enavatek_mobile/screen/home/home_screen.dart';
 import 'package:enavatek_mobile/screen/introduce/introduce_screen.dart';
 import 'package:enavatek_mobile/screen/login_screen/login_screen.dart';
+import 'package:enavatek_mobile/screen/menu/building/add_building.dart';
 import 'package:enavatek_mobile/screen/menu/building/building_screen.dart';
 import 'package:enavatek_mobile/screen/menu/calculate/calculate_saving.dart';
 import 'package:enavatek_mobile/screen/menu/calculate/saving_display.dart';
@@ -71,11 +71,11 @@ class Routers {
           type: PageTransitionType.rightToLeft,
         );
 
-      case deviceDetailRoute:
-        return PageTransition(
-          child: const DeviceDetailScreen(),
-          type: PageTransitionType.rightToLeft,
-        );
+      // case deviceDetailRoute:
+      //   return PageTransition(
+      //     child: const DeviceDetailScreen(),
+      //     type: PageTransitionType.rightToLeft,
+      //   );
 
       case addDeviceRoute:
         return PageTransition(
@@ -95,17 +95,17 @@ class Routers {
           type: PageTransitionType.rightToLeft,
         );
 
-      case wifiPasswordRoute:
-        return PageTransition(
-          child: const WifiPasswordScreen(),
-          type: PageTransitionType.rightToLeft,
-        );
+      // case wifiPasswordRoute:
+      //   return PageTransition(
+      //     child: const WifiPasswordScreen(),
+      //     type: PageTransitionType.rightToLeft,
+      //   );
 
-      case deviceNameRoute:
-        return PageTransition(
-          child: const DeviceNameScreen(),
-          type: PageTransitionType.rightToLeft,
-        );
+      // case deviceNameRoute:
+      //   return PageTransition(
+      //     child: const DeviceNameScreen(),
+      //     type: PageTransitionType.rightToLeft,
+      //   );
 
       case notificationRoute:
         return PageTransition(
@@ -159,11 +159,11 @@ class Routers {
           type: PageTransitionType.rightToLeft,
         );
 
-        case deviceAssignRoute:
-        return PageTransition(
-          child: const DeviceAssigningScreen(buildingId: '1'),
-          type: PageTransitionType.rightToLeft,
-        );
+        // case deviceAssignRoute:
+        // return PageTransition(
+        //   child: const DeviceAssigningScreen(buildingId: '1'),
+        //   type: PageTransitionType.rightToLeft,
+        // );
 
         // case addFloorNameRoute:
         // return PageTransition(

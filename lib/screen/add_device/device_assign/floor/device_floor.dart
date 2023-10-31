@@ -3,7 +3,7 @@
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
-import 'package:enavatek_mobile/screen/menu/building/edit_building.dart';
+import 'package:enavatek_mobile/screen/add_device/device_assign/device_assigning.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -13,19 +13,25 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
-class AddFloorName extends StatefulWidget {
-  final int? buildingID;
-  final String buildingName;
+class DeviceAddFloor extends StatefulWidget {
+  final String deviceSerialNo;
+  final String wifinName;
+  final String password;
+  final int buildingId;
 
-  const AddFloorName(
-      {Key? key, required this.buildingID, required this.buildingName})
-      : super(key: key);
+  const DeviceAddFloor({
+    Key? key,
+    required this.deviceSerialNo,
+    required this.wifinName,
+    required this.password,
+    required this.buildingId,
+  }) : super(key: key);
 
   @override
-  AddFloorNameState createState() => AddFloorNameState();
+  DeviceAddFloorState createState() => DeviceAddFloorState();
 }
 
-class AddFloorNameState extends State<AddFloorName> {
+class DeviceAddFloorState extends State<DeviceAddFloor> {
   TextEditingController floorNameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -34,9 +40,10 @@ class AddFloorNameState extends State<AddFloorName> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => EditBuildingScreen(
-                      buildingName: widget.buildingName,
-                      buildingID: widget.buildingID!,
+                builder: (context) => DeviceAssigningScreen(
+                      deviceSerialNo: widget.deviceSerialNo,
+                      password: widget.password,
+                      wifinName: widget.wifinName,
                     )),
           );
 
@@ -55,9 +62,10 @@ class AddFloorNameState extends State<AddFloorName> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => EditBuildingScreen(
-                                    buildingName: widget.buildingName,
-                                    buildingID: widget.buildingID!,
+                              builder: (context) => DeviceAssigningScreen(
+                                    deviceSerialNo: widget.deviceSerialNo,
+                                    password: widget.password,
+                                    wifinName: widget.wifinName,
                                   )),
                         );
                       },
@@ -115,7 +123,7 @@ class AddFloorNameState extends State<AddFloorName> {
                     int? userId =
                         await SharedPreferencesHelper.instance.getUserID();
                     Response response = await RemoteServices.createFloor(
-                        authToken!, floorName, widget.buildingID!, 0, userId!);
+                        authToken!, floorName, widget.buildingId, 0, userId!);
                     var data = jsonDecode(response.body);
 
                     if (response.statusCode == 200) {
@@ -126,9 +134,10 @@ class AddFloorNameState extends State<AddFloorName> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => EditBuildingScreen(
-                                  buildingName: widget.buildingName,
-                                  buildingID: widget.buildingID!,
+                            builder: (context) => DeviceAssigningScreen(
+                                  deviceSerialNo: widget.deviceSerialNo,
+                                  password: widget.password,
+                                  wifinName: widget.wifinName,
                                 )),
                       );
                     } else {

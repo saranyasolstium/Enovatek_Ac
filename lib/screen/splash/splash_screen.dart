@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:io';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
@@ -5,6 +7,7 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -78,19 +81,27 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToInitialScreen() async {
-    // Check if the device ID is already in shared preferences
-    String? retrievedDeviceId =
-        await SharedPreferencesHelper.instance.getDeviceId();
-    if (retrievedDeviceId == null) {
-      await saveDeviceIdToSharedPreferences();
-    }
+  SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    Timer(
-      const Duration(seconds: 3),
-      () => Navigator.pushReplacementNamed(
-        context,
-        introduceRoute,
-      ),
-    );
+  // Check if the user is logged in
+  bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  // Check if the app has been launched before
+  bool hasBeenLaunched = prefs.getBool('hasBeenLaunched') ?? false;
+
+  if (!hasBeenLaunched) {
+    await prefs.setBool('hasBeenLaunched', true);
+    Navigator.pushReplacementNamed(context, introduceRoute);
+  } else {
+    // The app has been launched before
+    if (isLoggedIn) {
+      Navigator.pushReplacementNamed(context, homedRoute);
+    } else {
+      Navigator.pushReplacementNamed(context, loginRoute);
+    }
   }
 }
+
+
+  }
+

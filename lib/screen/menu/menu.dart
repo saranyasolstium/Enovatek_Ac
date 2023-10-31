@@ -25,9 +25,11 @@ class MenuScreenState extends State<MenuScreen> {
 
   Future<void> getUserDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    userName = prefs.getString('userName');
-    userEmail = prefs.getString('userEmail');
-    print('userName');
+    setState(() {
+      userName = prefs.getString('userName');
+      userEmail = prefs.getString('userEmail');
+    });
+
   }
 
   @override
@@ -97,7 +99,9 @@ class MenuScreenState extends State<MenuScreen> {
                     ),
                   ],
                 ),
-                SizedBox(width: 10,),
+                SizedBox(
+                  width: 10,
+                ),
                 Expanded(
                   child: RichText(
                     text: TextSpan(

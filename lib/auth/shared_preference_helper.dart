@@ -3,7 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPreferencesHelper {
   SharedPreferencesHelper._privateConstructor();
 
-  static final SharedPreferencesHelper instance = SharedPreferencesHelper._privateConstructor();
+  static final SharedPreferencesHelper instance =
+      SharedPreferencesHelper._privateConstructor();
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
@@ -19,11 +20,12 @@ class SharedPreferencesHelper {
     return prefs.getString('deviceId');
   }
 
-  Future<void> saveUserDataToSharedPreferences(String userName, String userEmail) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('userName', userName);
-  await prefs.setString('userEmail', userEmail);
-}
+  Future<void> saveUserDataToSharedPreferences(
+      String userName, String userEmail) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userName', userName);
+    await prefs.setString('userEmail', userEmail);
+  }
 
 // Method to set the authentication token in shared preferences
   Future<void> setAuthToken(String authToken) async {
@@ -44,7 +46,7 @@ class SharedPreferencesHelper {
 
   Future<int?> getLoginID() async {
     final SharedPreferences prefs = await _prefs;
-    return prefs.getInt('userId');
+    return prefs.getInt('loginid');
   }
 
   Future<void> setUserID(int userId) async {
@@ -57,16 +59,19 @@ class SharedPreferencesHelper {
     return prefs.getInt('userId');
   }
 
-  Future<void> saveBuildingData(String buildingID, String buildingName) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('buildingID', buildingID);
-  await prefs.setString('buildingName', buildingName);
-}
-Future<String?> getBuildingID() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('buildingID');
-}
 
+  Future<void> saveBuildingData(int buildingID, String buildingName) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('buildingID', buildingID);
+    await prefs.setString('buildingName', buildingName);
+  }
 
-
+  Future<int?> getBuildingID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('buildingID');
+  }
+  Future<String?> getBuildingName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('buildingName');
+  }
 }
