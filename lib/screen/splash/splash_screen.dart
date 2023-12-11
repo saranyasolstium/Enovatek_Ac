@@ -70,6 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } catch (e) {
       print('Error getting device ID: $e');
     }
+    print(deviceId);
 
     return deviceId;
   }
@@ -82,7 +83,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _navigateToInitialScreen() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-
+saveDeviceIdToSharedPreferences();
   // Check if the user is logged in
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 

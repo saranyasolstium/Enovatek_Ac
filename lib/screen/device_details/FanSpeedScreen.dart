@@ -2,51 +2,50 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
-import 'package:enavatek_mobile/router/route_constant.dart';
-import 'package:enavatek_mobile/screen/device_details/FanSpeedScreen.dart';
-import 'package:enavatek_mobile/screen/device_details/mode_screen.dart';
-import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
-import 'package:enavatek_mobile/screen/device_details/timer/timer_screen.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
-import 'package:enavatek_mobile/widget/advanced_feature.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-class DeviceDetailScreen extends StatefulWidget {
+enum FanMode { Auto, Low, Mild, High }
+
+class FanSpeedScreen extends StatefulWidget {
   final String deviceName;
   final String power;
-  final String fanSpeed;
   final String mode;
   final int deviceId;
 
-  const DeviceDetailScreen(
+  const FanSpeedScreen(
       {Key? key,
       required this.deviceName,
       required this.power,
-      required this.fanSpeed,
       required this.mode,
       required this.deviceId})
       : super(key: key);
 
   @override
-  DeviceDetailScreenState createState() => DeviceDetailScreenState();
+  FanSpeedScreenState createState() => FanSpeedScreenState();
 }
 
-class DeviceDetailScreenState extends State<DeviceDetailScreen> {
+class FanSpeedScreenState extends State<FanSpeedScreen> {
   double progressValue = 24;
   double secondaryProgressValue = 0;
-  int fanSpeedLevel = 1; // Initial fan speed level
   String powerColor = "off";
-  String modeNameToFind = "";
+
+  FanMode selectedFanMode = FanMode.Auto;
+
+  void selectMode(FanMode mode) {
+    setState(() {
+      selectedFanMode = mode;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    fanSpeedLevel = int.tryParse(widget.fanSpeed) ?? 0;
     powerColor = widget.power;
   }
 
@@ -192,119 +191,10 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
     );
   }
 
-  int selectedMode = 0; // Initially no mode selected
-
-  final List<ModeData> modes = [
-    ModeData('Auto', ImgPath.pngAutoNew),
-    ModeData('Cool', ImgPath.pngCool),
-    ModeData('Dry', ImgPath.pngCoolDry),
-    ModeData('Fan', ImgPath.pngFan),
-    ModeData('Heat', ImgPath.pngSunny),
-  ];
-
-  String getSelectedModeName(int selectedMode) {
-    if (selectedMode >= 0 && selectedMode < modes.length) {
-      return modes[selectedMode].modeName;
-    } else {
-      return '';
-    }
-  }
-
-  Widget buildModeToggle(int mode, String modeName, String imagePath) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Image.asset(
-              imagePath,
-              height: 12,
-              width: 12,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              modeName,
-              style: GoogleFonts.roboto(
-                color: ConstantColors.mainlyTextColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-              ),
-            ),
-          ],
-        ),
-        Radio<int>(
-          value: mode,
-          groupValue: selectedMode,
-          onChanged: (value) async {
-            setState(() {
-              selectedMode = value!;
-            });
-            String modeName = getSelectedModeName(selectedMode);
-            print(modeName);
-            String? authToken =
-                await SharedPreferencesHelper.instance.getAuthToken();
-            int? loginId = await SharedPreferencesHelper.instance.getLoginID();
-            Response response = await RemoteServices.actionCommand(
-                authToken!, modeName, widget.deviceId, 2, loginId!);
-            var data = jsonDecode(response.body);
-            if (response.statusCode == 200) {
-              print(data["message"]);
-            }
-          },
-        ),
-      ],
-    );
-  }
-
-// Function to increase the fan speed level
-  Future<void> increaseFanSpeed() async {
-    if (fanSpeedLevel < 5) {
-      setState(() {
-        fanSpeedLevel++;
-      });
-      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-      int? loginId = await SharedPreferencesHelper.instance.getLoginID();
-      Response response = await RemoteServices.actionCommand(
-          authToken!, fanSpeedLevel.toString(), widget.deviceId, 3, loginId!);
-      var data = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        print(data["message"]);
-      }
-    }
-  }
-
-  // Function to decrease the fan speed level
-  Future<void> decreaseFanSpeed() async {
-    if (fanSpeedLevel > 1) {
-      setState(() {
-        fanSpeedLevel--;
-      });
-      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-      int? loginId = await SharedPreferencesHelper.instance.getLoginID();
-      Response response = await RemoteServices.actionCommand(
-          authToken!, fanSpeedLevel.toString(), widget.deviceId, 3, loginId!);
-      var data = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        print(data["message"]);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
-    void showAdvancedDialog(BuildContext context) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const ShowAdvancedDialog();
-        },
-      );
-    }
-
     return Scaffold(
         backgroundColor: ConstantColors.darkBackgroundColor,
         appBar: PreferredSize(
@@ -326,8 +216,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushReplacementNamed(
-                                    context, allDeviceRoute);
+                                Navigator.pop(context);
                               },
                               child: Image.asset(
                                 ImgPath.pngArrowBack,
@@ -454,54 +343,33 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                         children: <Widget>[
                           MaterialButton(
                             onPressed: () async {
-                              print(widget.power);
-                              String value;
-                              if (powerColor == 'ON') {
-                                value = "OFF";
-                              } else {
-                                value = "ON";
-                              }
-                              String? authToken = await SharedPreferencesHelper
-                                  .instance
-                                  .getAuthToken();
-                              int? loginId = await SharedPreferencesHelper
-                                  .instance
-                                  .getLoginID();
-                              Response response =
-                                  await RemoteServices.actionCommand(authToken!,
-                                      value, widget.deviceId, 1, loginId!);
-                              var data = jsonDecode(response.body);
-
-                              if (response.statusCode == 200) {
-                                print(data["message"]);
-
-                                setState(() {
-                                  powerColor = value;
-                                });
-                              }
+                              selectMode(FanMode.Auto);
                             },
-                            color: powerColor.toLowerCase() == 'off'
-                                ? ConstantColors.orangeColor
-                                : ConstantColors.greenColor,
+                            color: selectedFanMode == FanMode.Auto
+                                ? ConstantColors.borderButtonColor
+                                : ConstantColors.modeDefault,
                             textColor: Colors.white,
                             minWidth: 40,
                             height: 40,
                             shape: CircleBorder(
                               side: BorderSide(
-                                color: powerColor.toLowerCase() == 'off'
-                                    ? ConstantColors.orangeColor
-                                    : ConstantColors.greenColor,
+                                color: selectedFanMode == FanMode.Auto
+                                    ? ConstantColors.borderButtonColor
+                                    : ConstantColors.modeDefault,
                                 width: 2,
                               ),
                             ),
-                            child: const Icon(Icons.power_settings_new,
-                                size: 25, color: ConstantColors.whiteColor),
+                            child: Image.asset(
+                              ImgPath.pngFanAuto,
+                              width: 50,
+                              height: 50,
+                            ),
                           ),
                           const SizedBox(
                             height: 5,
                           ),
                           Text(
-                            'Switch',
+                            'Auto',
                             style: GoogleFonts.roboto(
                                 fontSize: screenWidth * 0.03,
                                 color: ConstantColors.black,
@@ -511,73 +379,83 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                       ),
                     ),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ModeScreen(
-                                      deviceName: widget.deviceName,
-                                      mode: widget.mode,
-                                      power: widget.power,
-                                      deviceId: widget.deviceId,
-                                    )),
-                          );
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            Image.asset(
-                              ImgPath.pngMode,
+                      child: Column(
+                        children: <Widget>[
+                          MaterialButton(
+                            onPressed: () async {
+                              selectMode(FanMode.Low);
+                            },
+                            color: selectedFanMode == FanMode.Low
+                                ? ConstantColors.borderButtonColor
+                                : ConstantColors.modeDefault,
+                            textColor: Colors.white,
+                            minWidth: 40,
+                            height: 40,
+                            shape: CircleBorder(
+                              side: BorderSide(
+                                color: selectedFanMode == FanMode.Low
+                                    ? ConstantColors.borderButtonColor
+                                    : ConstantColors.modeDefault,
+                                width: 2,
+                              ),
+                            ),
+                            child: Image.asset(
+                              ImgPath.pngFanLow,
                               width: 50,
                               height: 50,
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              'Mode',
-                              style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.03,
-                                  color: ConstantColors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            'Low',
+                            style: GoogleFonts.roboto(
+                                fontSize: screenWidth * 0.03,
+                                color: ConstantColors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => FanSpeedScreen(
-                                      deviceName: widget.deviceName,
-                                      mode: widget.mode,
-                                      power: widget.power,
-                                      deviceId: widget.deviceId,
-                                    )),
-                          );
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            Image.asset(
-                              ImgPath.pngfanSpeed,
+                      child: Column(
+                        children: <Widget>[
+                          MaterialButton(
+                            onPressed: () async {
+                              selectMode(FanMode.Mild);
+                            },
+                            color: selectedFanMode == FanMode.Mild
+                                ? ConstantColors.borderButtonColor
+                                : ConstantColors.modeDefault,
+                            textColor: Colors.white,
+                            minWidth: 40,
+                            height: 40,
+                            shape: CircleBorder(
+                              side: BorderSide(
+                                color: selectedFanMode == FanMode.Mild
+                                    ? ConstantColors.borderButtonColor
+                                    : ConstantColors.modeDefault,
+                                width: 2,
+                              ),
+                            ),
+                            child: Image.asset(
+                              ImgPath.pngFanMild,
                               width: 50,
                               height: 50,
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              'Fan Speed',
-                              style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.03,
-                                  color: ConstantColors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            'Mid',
+                            style: GoogleFonts.roboto(
+                                fontSize: screenWidth * 0.03,
+                                color: ConstantColors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -585,93 +463,117 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                 Row(
                   children: <Widget>[
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const TimerScreen()),
-                          );
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            Image.asset(
-                              ImgPath.pngTimer,
+                      child: Column(
+                        children: <Widget>[
+                          MaterialButton(
+                            onPressed: () async {
+                              selectMode(FanMode.High);
+                            },
+                            color: selectedFanMode == FanMode.High
+                                ? ConstantColors.borderButtonColor
+                                : ConstantColors.modeDefault,
+                            textColor: Colors.white,
+                            minWidth: 40,
+                            height: 40,
+                            shape: CircleBorder(
+                              side: BorderSide(
+                                color: selectedFanMode == FanMode.High
+                                    ? ConstantColors.borderButtonColor
+                                    : ConstantColors.modeDefault,
+                                width: 2,
+                              ),
+                            ),
+                            child: Image.asset(
+                              ImgPath.pngFanHigh,
                               width: 50,
                               height: 50,
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              'Timer',
-                              style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.03,
-                                  color: ConstantColors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            'High',
+                            style: GoogleFonts.roboto(
+                                fontSize: screenWidth * 0.03,
+                                color: ConstantColors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PowerStatisticsScreen(
-                                      
-                                    )),
-                          );
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            Image.asset(
-                              ImgPath.pngPowerStatistics,
+                        child: Visibility(
+                      visible: false,
+                      child: Column(
+                        children: <Widget>[
+                          MaterialButton(
+                            onPressed: () async {},
+                            color: ConstantColors.modeDefault,
+                            textColor: Colors.white,
+                            minWidth: 40,
+                            height: 40,
+                            shape: const CircleBorder(
+                              side: BorderSide(
+                                color: ConstantColors.modeDefault,
+                                width: 2,
+                              ),
+                            ),
+                            child: Image.asset(
+                              ImgPath.pngModeDry,
                               width: 50,
                               height: 50,
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              'Power Statistics',
-                              style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.03,
-                                  color: ConstantColors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            'Wind',
+                            style: GoogleFonts.roboto(
+                                fontSize: screenWidth * 0.03,
+                                color: ConstantColors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
-                    ),
+                    )),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          showAdvancedDialog(context);
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            Image.asset(
-                              ImgPath.pngAdvancedMenu,
+                        child: Visibility(
+                      visible: false,
+                      child: Column(
+                        children: <Widget>[
+                          MaterialButton(
+                            onPressed: () async {},
+                            color: ConstantColors.modeDefault,
+                            textColor: Colors.white,
+                            minWidth: 40,
+                            height: 40,
+                            shape: const CircleBorder(
+                              side: BorderSide(
+                                color: ConstantColors.modeDefault,
+                                width: 2,
+                              ),
+                            ),
+                            child: Image.asset(
+                              ImgPath.pngModeDry,
                               width: 50,
                               height: 50,
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              'Advanced Feature',
-                              style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.03,
-                                  color: ConstantColors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            'Wind',
+                            style: GoogleFonts.roboto(
+                                fontSize: screenWidth * 0.03,
+                                color: ConstantColors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
-                    ),
+                    )),
                   ],
                 ),
               ],
@@ -679,11 +581,4 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
           ),
         ));
   }
-}
-
-class ModeData {
-  final String modeName;
-  final String imagePath;
-
-  ModeData(this.modeName, this.imagePath);
 }

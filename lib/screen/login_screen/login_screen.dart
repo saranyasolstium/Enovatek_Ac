@@ -11,6 +11,7 @@ import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/decoration.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_social_button/flutter_social_button.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,6 +21,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -45,6 +47,7 @@ class LoginScreenState extends State<LoginScreen> {
   Future<void> loginToken(String emailId, String password) async {
     try {
       deviceID = await SharedPreferencesHelper.instance.getDeviceId();
+      print(deviceID);
       Response response =
           await RemoteServices.login(emailId, password, deviceID!);
       if (response.statusCode == 200) {
@@ -208,6 +211,16 @@ class LoginScreenState extends State<LoginScreen> {
     return emailRegExp.hasMatch(email);
   }
 
+  void _launchURL(String webURL) async {
+    print(webURL);
+    String encodedURL = Uri.encodeFull(webURL);
+    if (await canLaunch(encodedURL)) {
+      await launch(encodedURL);
+    } else {
+      throw 'Could not launch $encodedURL';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -359,6 +372,11 @@ class LoginScreenState extends State<LoginScreen> {
                             color: ConstantColors.blueColor,
                             fontWeight: FontWeight.bold,
                             fontSize: screenWidth * 0.035),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            _launchURL(
+                                'https://enovatekenergy.com/contact-us/');
+                          },
                       ),
                       TextSpan(
                         text: ' and ',
@@ -372,6 +390,11 @@ class LoginScreenState extends State<LoginScreen> {
                             color: ConstantColors.blueColor,
                             fontWeight: FontWeight.bold,
                             fontSize: screenWidth * 0.035),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            _launchURL(
+                                'https://enovatekenergy.com/contact-us/');
+                          },
                       ),
                     ],
                   ),

@@ -203,6 +203,7 @@ class HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
+                    
                     SizedBox(
                       height:
                           isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,

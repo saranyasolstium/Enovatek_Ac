@@ -2,10 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Enavatek Mobile</string>
+	<string>Enovatek</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -14,15 +16,40 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>enavatek_mobile</string>
+	<key>FacebookClientToken</key>
+	<string>cf3b1f68744a661bf7947f6611573692</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb710218861129853</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FacebookAppID</key>
+	<string>710218861129853</string>
+	<key>FacebookDisplayName</key>
+	<string>Enavatek</string>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone Access Required</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Motion Usage Required</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Please allow access to photo library so you can easily upload your photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Please allow access to photo library so you can easily upload your photos.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -43,35 +70,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>CFBundleURLTypes</key>
-
-<!-- Initialize Facebook App ID -->
-<array>
-  <dict>
-    <key>CFBundleURLSchemes</key>
-    <array>
-      <string>fb710218861129853</string>
-    </array>
-  </dict>
-</array>
-<key>FacebookAppID</key>
-<string>710218861129853</string>
-<key>FacebookDisplayName</key>
-<string>Enavatek</string>
-<!-- Initialize Image Picker -->
-<key>NSMicrophoneUsageDescription</key>
-<string>Microphone Access Required</string>
-<key>NSMotionUsageDescription</key>
-<string>Motion Usage Required</string>
-<key>NSPhotoLibraryAddUsageDescription</key>
-<string>Please allow access to photo library so you can easily upload your photos.</string>
-<key>NSPhotoLibraryUsageDescription</key>
-<string>Please allow access to photo library so you can easily upload your photos.</string>
-
-
 </dict>
 </plist>

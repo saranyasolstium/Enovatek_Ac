@@ -18,6 +18,7 @@ class ImgPath {
   static String pngPlus = "assets/plus_icon.png";
   static String pngAirConditioner = "assets/airconditioner_icon.png";
   static String pngWifi = "assets/wifi_icon.png";
+  static String pngTimericon = "assets/timerIcon.png";
 
   static String pngAutoNew = "assets/autonew_icon.png";
   static String pngBuildIcon = "assets/build_icon.png";
@@ -42,4 +43,31 @@ class ImgPath {
   static String pngCelTower = "assets/cell_tower_icon.jpg";
   static String pngUpload = "assets/upload_icon.png";
   static String pngDelete = "assets/delete_icon.png";
+
+  static String pngTower = "assets/tower_icon.png";
+  static String pngAdvancedMenu = "assets/advanced_menu_icon.png";
+  static String pngfanSpeed = "assets/fan_speed_icon.png";
+  static String pngTimer = "assets/timer_icon.png";
+  static String pngPowerStatistics = "assets/power_statistics_icon.png";
+  static String pngMode = "assets/mode_icon.png";
+  static String pngVector = "assets/vector_icon.png";
+  static String pngSolarPlane = "assets/solar_plane.png";
+
+  static String pngModeCool = "assets/mode_cool.png";
+  static String pngModeAuto = "assets/mode_auto.png";
+  static String pngModeSunny = "assets/mode_sunny.png";
+  static String pngModeHumidity = "assets/mode_humidity.png";
+  static String pngModeDry = "assets/mode_dry.png";
+
+  static String pngFanAuto = "assets/fan_auto.png";
+  static String pngFanLow = "assets/fan_low.png";
+  static String pngFanMild = "assets/fan_mild.png";
+  static String pngFanHigh = "assets/fan_high.png";
+
+  static String pngAround = "assets/around_icon.png";
+  static String pngDisplay = "assets/display_icon.png";
+  static String pngEco = "assets/eco_icon.png";
+  static String pngSleep = "assets/sleep_icon.png";
+  static String pngStrongWind = "assets/strong_wind_icon.png";
+  static String pngUpDown = "assets/up_down_icon.png";
 }
