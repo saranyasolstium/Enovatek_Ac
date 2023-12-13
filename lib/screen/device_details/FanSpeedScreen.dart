@@ -10,7 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-enum FanMode { Auto, Low, Mild, High }
+enum FanMode { Auto, Low, Mid, High }
 
 class FanSpeedScreen extends StatefulWidget {
   final String deviceName;
@@ -47,6 +47,15 @@ class FanSpeedScreenState extends State<FanSpeedScreen> {
   void initState() {
     super.initState();
     powerColor = widget.power;
+    if (widget.mode == "Low") {
+      selectedFanMode = FanMode.Low;
+    } else if (widget.mode == "Mid") {
+      selectedFanMode = FanMode.Mid;
+    } else if (widget.mode == "High") {
+      selectedFanMode = FanMode.High;
+    } else {
+      selectedFanMode = FanMode.Auto;
+    }
   }
 
   Future<void> increaseProgressValue() async {
@@ -124,6 +133,7 @@ class FanSpeedScreenState extends State<FanSpeedScreen> {
                     animationDuration: 100,
                     animationType: AnimationType.linear,
                     cornerStyle: CornerStyle.startCurve,
+                    color: ConstantColors.darkBlueColor,
                   ),
                 ],
               ),
@@ -189,6 +199,28 @@ class FanSpeedScreenState extends State<FanSpeedScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> executeFanModeCommand(String modeName) async {
+    print(modeName);
+
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? loginId = await SharedPreferencesHelper.instance.getLoginID();
+
+    Response response = await RemoteServices.actionCommand(
+      authToken!,
+      modeName,
+      widget.deviceId,
+      3,
+      loginId!,
+    );
+
+    var data = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      print(data["message"]);
+      await SharedPreferencesHelper.instance.setFanMode(modeName);
+    }
   }
 
   @override
@@ -327,8 +359,9 @@ class FanSpeedScreenState extends State<FanSpeedScreen> {
         ),
         bottomNavigationBar: BottomAppBar(
           color: ConstantColors.darkBackgroundColor,
+          height: 250,
+          padding: EdgeInsets.zero,
           child: Container(
-            height: 250,
             decoration: const BoxDecoration(
               color: ConstantColors.whiteColor,
               borderRadius: BorderRadius.vertical(top: Radius.circular(40.0)),
@@ -344,6 +377,7 @@ class FanSpeedScreenState extends State<FanSpeedScreen> {
                           MaterialButton(
                             onPressed: () async {
                               selectMode(FanMode.Auto);
+                              executeFanModeCommand('Auto');
                             },
                             color: selectedFanMode == FanMode.Auto
                                 ? ConstantColors.borderButtonColor
@@ -384,6 +418,7 @@ class FanSpeedScreenState extends State<FanSpeedScreen> {
                           MaterialButton(
                             onPressed: () async {
                               selectMode(FanMode.Low);
+                              executeFanModeCommand('Low');
                             },
                             color: selectedFanMode == FanMode.Low
                                 ? ConstantColors.borderButtonColor
@@ -423,9 +458,10 @@ class FanSpeedScreenState extends State<FanSpeedScreen> {
                         children: <Widget>[
                           MaterialButton(
                             onPressed: () async {
-                              selectMode(FanMode.Mild);
+                              selectMode(FanMode.Mid);
+                              executeFanModeCommand('Mid');
                             },
-                            color: selectedFanMode == FanMode.Mild
+                            color: selectedFanMode == FanMode.Mid
                                 ? ConstantColors.borderButtonColor
                                 : ConstantColors.modeDefault,
                             textColor: Colors.white,
@@ -433,7 +469,7 @@ class FanSpeedScreenState extends State<FanSpeedScreen> {
                             height: 40,
                             shape: CircleBorder(
                               side: BorderSide(
-                                color: selectedFanMode == FanMode.Mild
+                                color: selectedFanMode == FanMode.Mid
                                     ? ConstantColors.borderButtonColor
                                     : ConstantColors.modeDefault,
                                 width: 2,
@@ -468,6 +504,7 @@ class FanSpeedScreenState extends State<FanSpeedScreen> {
                           MaterialButton(
                             onPressed: () async {
                               selectMode(FanMode.High);
+                              executeFanModeCommand('High');
                             },
                             color: selectedFanMode == FanMode.High
                                 ? ConstantColors.borderButtonColor

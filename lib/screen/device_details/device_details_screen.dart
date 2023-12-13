@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -48,6 +50,12 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
     super.initState();
     fanSpeedLevel = int.tryParse(widget.fanSpeed) ?? 0;
     powerColor = widget.power;
+    setMode();
+  }
+
+  Future<void> setMode() async {
+    await SharedPreferencesHelper.instance.setMode(widget.mode);
+    await SharedPreferencesHelper.instance.setFanMode(widget.fanSpeed);
   }
 
   Future<void> increaseProgressValue() async {
@@ -125,6 +133,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                     animationDuration: 100,
                     animationType: AnimationType.linear,
                     cornerStyle: CornerStyle.startCurve,
+                    color: ConstantColors.darkBlueColor,
                   ),
                 ],
               ),
@@ -192,109 +201,9 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
     );
   }
 
-  int selectedMode = 0; // Initially no mode selected
-
-  final List<ModeData> modes = [
-    ModeData('Auto', ImgPath.pngAutoNew),
-    ModeData('Cool', ImgPath.pngCool),
-    ModeData('Dry', ImgPath.pngCoolDry),
-    ModeData('Fan', ImgPath.pngFan),
-    ModeData('Heat', ImgPath.pngSunny),
-  ];
-
-  String getSelectedModeName(int selectedMode) {
-    if (selectedMode >= 0 && selectedMode < modes.length) {
-      return modes[selectedMode].modeName;
-    } else {
-      return '';
-    }
-  }
-
-  Widget buildModeToggle(int mode, String modeName, String imagePath) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Image.asset(
-              imagePath,
-              height: 12,
-              width: 12,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              modeName,
-              style: GoogleFonts.roboto(
-                color: ConstantColors.mainlyTextColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-              ),
-            ),
-          ],
-        ),
-        Radio<int>(
-          value: mode,
-          groupValue: selectedMode,
-          onChanged: (value) async {
-            setState(() {
-              selectedMode = value!;
-            });
-            String modeName = getSelectedModeName(selectedMode);
-            print(modeName);
-            String? authToken =
-                await SharedPreferencesHelper.instance.getAuthToken();
-            int? loginId = await SharedPreferencesHelper.instance.getLoginID();
-            Response response = await RemoteServices.actionCommand(
-                authToken!, modeName, widget.deviceId, 2, loginId!);
-            var data = jsonDecode(response.body);
-            if (response.statusCode == 200) {
-              print(data["message"]);
-            }
-          },
-        ),
-      ],
-    );
-  }
-
-// Function to increase the fan speed level
-  Future<void> increaseFanSpeed() async {
-    if (fanSpeedLevel < 5) {
-      setState(() {
-        fanSpeedLevel++;
-      });
-      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-      int? loginId = await SharedPreferencesHelper.instance.getLoginID();
-      Response response = await RemoteServices.actionCommand(
-          authToken!, fanSpeedLevel.toString(), widget.deviceId, 3, loginId!);
-      var data = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        print(data["message"]);
-      }
-    }
-  }
-
-  // Function to decrease the fan speed level
-  Future<void> decreaseFanSpeed() async {
-    if (fanSpeedLevel > 1) {
-      setState(() {
-        fanSpeedLevel--;
-      });
-      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-      int? loginId = await SharedPreferencesHelper.instance.getLoginID();
-      Response response = await RemoteServices.actionCommand(
-          authToken!, fanSpeedLevel.toString(), widget.deviceId, 3, loginId!);
-      var data = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        print(data["message"]);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     void showAdvancedDialog(BuildContext context) {
       showDialog(
@@ -302,6 +211,37 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
         builder: (BuildContext context) {
           return const ShowAdvancedDialog();
         },
+      );
+    }
+
+    Future<void> navigateToModeScreen() async {
+      String? mode = await SharedPreferencesHelper.instance.getMode();
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ModeScreen(
+            deviceName: widget.deviceName,
+            mode: mode!,
+            power: widget.power,
+            deviceId: widget.deviceId,
+          ),
+        ),
+      );
+    }
+
+    Future<void> navigateToFanModeScreen() async {
+      String? mode = await SharedPreferencesHelper.instance.getFanMode();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FanSpeedScreen(
+            deviceName: widget.deviceName,
+            mode: mode!,
+            power: widget.power,
+            deviceId: widget.deviceId,
+          ),
+        ),
       );
     }
 
@@ -373,7 +313,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
           ),
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+          // padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
           child: Column(
             children: [
               Center(
@@ -437,12 +377,13 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
           ),
         ),
         bottomNavigationBar: BottomAppBar(
+          height: 250,
+          padding: EdgeInsets.zero,
           color: ConstantColors.darkBackgroundColor,
           child: Container(
-            height: 250,
             decoration: const BoxDecoration(
               color: ConstantColors.whiteColor,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(40.0)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -513,16 +454,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ModeScreen(
-                                      deviceName: widget.deviceName,
-                                      mode: widget.mode,
-                                      power: widget.power,
-                                      deviceId: widget.deviceId,
-                                    )),
-                          );
+                          navigateToModeScreen();
                         },
                         child: Column(
                           children: <Widget>[
@@ -548,16 +480,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => FanSpeedScreen(
-                                      deviceName: widget.deviceName,
-                                      mode: widget.mode,
-                                      power: widget.power,
-                                      deviceId: widget.deviceId,
-                                    )),
-                          );
+                          navigateToFanModeScreen();
                         },
                         child: Column(
                           children: <Widget>[
@@ -620,9 +543,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PowerStatisticsScreen(
-                                      
-                                    )),
+                                builder: (context) => PowerStatisticsScreen()),
                           );
                         },
                         child: Column(
@@ -679,11 +600,4 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
           ),
         ));
   }
-}
-
-class ModeData {
-  final String modeName;
-  final String imagePath;
-
-  ModeData(this.modeName, this.imagePath);
 }

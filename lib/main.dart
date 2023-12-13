@@ -1,7 +1,6 @@
 
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/router/routers.dart';
-import 'package:enavatek_mobile/value/branding_color.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -79,7 +78,6 @@ class Enavatek extends StatelessWidget {
           fontFamily: GoogleFonts.nunito(
             fontWeight: FontWeight.w500,
           ).fontFamily,
-          primarySwatch: brandingColor,
         ),
         onGenerateRoute: Routers.onGenerateRoute,
         initialRoute: splashRoute,

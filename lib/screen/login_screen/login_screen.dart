@@ -279,6 +279,19 @@ class LoginScreenState extends State<LoginScreen> {
                 obscureText: true,
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.only(right: 30),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Text(
+                  'Forgot password',
+                  style: GoogleFonts.lato(
+                      color: ConstantColors.blueColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: screenWidth * 0.035),
+                ),
+              ),
+            ),
             RoundedButton(
               onPressed: () {
                 FocusScope.of(context).unfocus();
@@ -340,19 +353,53 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            FlutterSocialButton(
-              onTap: () {
-                signInWithGoogle();
-              },
-              buttonType: ButtonType.google,
-              title: 'Google',
+            Container(
+              padding: const EdgeInsets.all(20.0),
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  signInWithGoogle();
+                },
+                icon: const Icon(
+                  FontAwesomeIcons.google,
+                  color: Colors.white,
+                ),
+                label: const Text(
+                  'Google',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(20),
+                  backgroundColor: googleColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
             ),
-            FlutterSocialButton(
-              onTap: () {
-                signInWithFacebook();
-              },
-              buttonType: ButtonType.facebook,
-              title: 'Facebook',
+            Container(
+              padding: const EdgeInsets.all(20.0),
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  signInWithFacebook();
+                },
+                icon: const Icon(
+                  FontAwesomeIcons.facebook,
+                  color: Colors.white,
+                ),
+                label: const Text(
+                  'Facebook',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(20),
+                  backgroundColor: facebookColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
             ),
             Padding(
                 padding: const EdgeInsets.only(left: 30, right: 60),

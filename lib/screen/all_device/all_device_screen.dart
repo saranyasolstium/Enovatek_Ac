@@ -80,6 +80,42 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
     }
     return DeviceLocation(null, null); // Device not found
   }
+Future<void> increaseProgressValue(int deviceId,int progressValue ) async {
+    setState(() {
+      if (progressValue < 30) {
+        progressValue += 1;
+      }
+    });
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? loginId = await SharedPreferencesHelper.instance.getLoginID();
+    String temperature = '${progressValue.toStringAsFixed(0)}°C';
+
+    Response response = await RemoteServices.actionCommand(
+        authToken!, temperature, deviceId, 4, loginId!);
+    var data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      print(data["message"]);
+    }
+  }
+
+  Future<void> decreaseProgressValue(int deviceId,int progressValue) async {
+    setState(() {
+      progressValue -= 1;
+      if (progressValue < 16) {
+        progressValue = 16;
+      }
+    });
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? loginId = await SharedPreferencesHelper.instance.getLoginID();
+    String temperature = '${progressValue.toStringAsFixed(0)}°C';
+
+    Response response = await RemoteServices.actionCommand(
+        authToken!, temperature, deviceId, 4, loginId!);
+    var data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      print(data["message"]);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +209,7 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
                       child: Container(
                           decoration: BoxDecoration(
                               color: ConstantColors.whiteColor,
-                              borderRadius: BorderRadius.circular(50)),
+                              borderRadius: BorderRadius.circular(10)),
                           height: 150,
                           child: Column(children: [
                             Padding(
@@ -247,7 +283,7 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
                                                     10), // Adjust the width as needed
                                           ),
                                           TextSpan(
-                                            text: "24 c",
+                                            text: device.roomTemp,
                                             style: GoogleFonts.roboto(
                                               color: ConstantColors
                                                   .mainlyTextColor,
@@ -293,7 +329,9 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
                                     ),
                                     const SizedBox(width: 12),
                                     MaterialButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        //increaseProgressValue(device.deviceId, int.parse(device.roomTemp));
+                                      },
                                       color: ConstantColors.whiteColor,
                                       textColor: Colors.white,
                                       minWidth: 30,

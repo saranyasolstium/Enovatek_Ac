@@ -60,6 +60,27 @@ class SharedPreferencesHelper {
   }
 
 
+  Future<void> setMode(String mode) async {
+    final SharedPreferences prefs = await _prefs;
+    await prefs.setString('mode', mode);
+  }
+
+  Future<String?> getMode() async {
+    final SharedPreferences prefs = await _prefs;
+    return prefs.getString('mode');
+  }
+
+  Future<void> setFanMode(String mode) async {
+    final SharedPreferences prefs = await _prefs;
+    await prefs.setString('fan', mode);
+  }
+
+  Future<String?> getFanMode() async {
+    final SharedPreferences prefs = await _prefs;
+    return prefs.getString('fan');
+  }
+
+
   Future<void> saveBuildingData(int buildingID, String buildingName) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('buildingID', buildingID);
@@ -74,4 +95,6 @@ class SharedPreferencesHelper {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('buildingName');
   }
+
+ 
 }

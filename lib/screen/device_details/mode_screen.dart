@@ -10,7 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-enum Mode { Auto, Cool, Hot, Wet, Wind }
+enum Mode { Auto, Cold, Hot, Wet, Wind }
 
 class ModeScreen extends StatefulWidget {
   final String deviceName;
@@ -35,7 +35,7 @@ class ModeScreenState extends State<ModeScreen> {
   double secondaryProgressValue = 0;
   String powerColor = "off";
 
-  Mode selectedMode = Mode.Auto;
+  late Mode selectedMode;
 
   void selectMode(Mode mode) {
     setState(() {
@@ -47,6 +47,21 @@ class ModeScreenState extends State<ModeScreen> {
   void initState() {
     super.initState();
     powerColor = widget.power;
+    print(widget.mode);
+    if (widget.mode == "Cold") {
+      selectedMode = Mode.Cold;
+    } else if (widget.mode == "Hot") {
+      selectedMode = Mode.Hot;
+    }
+    else if (widget.mode == "Wet") {
+      selectedMode = Mode.Wet;
+    }
+    else if (widget.mode == "Wind") {
+      selectedMode = Mode.Wind;
+    }
+    else{
+      selectedMode=Mode.Auto;
+    }
   }
 
   Future<void> increaseProgressValue() async {
@@ -124,6 +139,7 @@ class ModeScreenState extends State<ModeScreen> {
                     animationDuration: 100,
                     animationType: AnimationType.linear,
                     cornerStyle: CornerStyle.startCurve,
+                    color: ConstantColors.darkBlueColor,
                   ),
                 ],
               ),
@@ -191,10 +207,31 @@ class ModeScreenState extends State<ModeScreen> {
     );
   }
 
+  Future<void> executeModeCommand(String modeName) async {
+    print(modeName);
+
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? loginId = await SharedPreferencesHelper.instance.getLoginID();
+
+    Response response = await RemoteServices.actionCommand(
+      authToken!,
+      modeName,
+      widget.deviceId,
+      2,
+      loginId!,
+    );
+
+    var data = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      print(data["message"]);
+      await SharedPreferencesHelper.instance.setMode(modeName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
         backgroundColor: ConstantColors.darkBackgroundColor,
         appBar: PreferredSize(
@@ -327,11 +364,12 @@ class ModeScreenState extends State<ModeScreen> {
         ),
         bottomNavigationBar: BottomAppBar(
           color: ConstantColors.darkBackgroundColor,
+          height: 250,
+          padding: EdgeInsets.zero,
           child: Container(
-            height: 250,
             decoration: const BoxDecoration(
               color: ConstantColors.whiteColor,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(40.0)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -344,6 +382,7 @@ class ModeScreenState extends State<ModeScreen> {
                           MaterialButton(
                             onPressed: () async {
                               selectMode(Mode.Auto);
+                              executeModeCommand('Auto');
                             },
                             color: selectedMode == Mode.Auto
                                 ? ConstantColors.borderButtonColor
@@ -383,9 +422,10 @@ class ModeScreenState extends State<ModeScreen> {
                         children: <Widget>[
                           MaterialButton(
                             onPressed: () async {
-                              selectMode(Mode.Cool);
+                              selectMode(Mode.Cold);
+                              executeModeCommand('Cold');
                             },
-                            color: selectedMode == Mode.Cool
+                            color: selectedMode == Mode.Cold
                                 ? ConstantColors.borderButtonColor
                                 : ConstantColors.modeDefault,
                             textColor: Colors.white,
@@ -393,7 +433,7 @@ class ModeScreenState extends State<ModeScreen> {
                             height: 40,
                             shape: CircleBorder(
                               side: BorderSide(
-                                color: selectedMode == Mode.Cool
+                                color: selectedMode == Mode.Cold
                                     ? ConstantColors.borderButtonColor
                                     : ConstantColors.modeDefault,
                                 width: 2,
@@ -424,6 +464,7 @@ class ModeScreenState extends State<ModeScreen> {
                           MaterialButton(
                             onPressed: () async {
                               selectMode(Mode.Hot);
+                              executeModeCommand('Hot');
                             },
                             color: selectedMode == Mode.Hot
                                 ? ConstantColors.borderButtonColor
@@ -468,6 +509,7 @@ class ModeScreenState extends State<ModeScreen> {
                           MaterialButton(
                             onPressed: () async {
                               selectMode(Mode.Wet);
+                              executeModeCommand('Wet');
                             },
                             color: selectedMode == Mode.Wet
                                 ? ConstantColors.borderButtonColor
@@ -508,6 +550,7 @@ class ModeScreenState extends State<ModeScreen> {
                           MaterialButton(
                             onPressed: () async {
                               selectMode(Mode.Wind);
+                              executeModeCommand('Wind');
                             },
                             color: selectedMode == Mode.Wind
                                 ? ConstantColors.borderButtonColor
