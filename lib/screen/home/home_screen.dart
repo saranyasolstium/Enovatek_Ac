@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/add_device/add_device_screen.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
@@ -35,6 +36,13 @@ class HomeScreenState extends State<HomeScreen> {
     getActionType();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  
+    getAllDevice();
+  }
+
   Future<void> getUserDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -59,10 +67,9 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
- Future<void> getActionType() async {
-    Response response =await RemoteServices.getActiontype();
+  Future<void> getActionType() async {
+    Response response = await RemoteServices.getActiontype();
     if (response.statusCode == 200) {
-     
     } else {
       print('Response body: ${response.body}');
     }
@@ -203,7 +210,6 @@ class HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    
                     SizedBox(
                       height:
                           isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
@@ -228,7 +234,7 @@ class HomeScreenState extends State<HomeScreen> {
 
                 return GestureDetector(
                   onTap: () async {
-                    print('Tapped on building: ${building.name}');
+                    print('Tapped on building: ${building.buildingId}');
                     if (deviceList.isNotEmpty) {
                       Navigator.pushNamed(context, allDeviceRoute);
                     }
@@ -262,11 +268,16 @@ class HomeScreenState extends State<HomeScreen> {
                                 const SizedBox(width: 20),
                                 GestureDetector(
                                   onTap: () async {
-                                    await SharedPreferencesHelper.instance
-                                        .saveBuildingData(
-                                            building.buildingId, building.name);
-                                    Navigator.pushNamed(
-                                        context, addDeviceRoute);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => AddDeviceScreen(
+                                                buildingID: building.buildingId,
+                                                buildingName: building.name,
+                                              )),
+                                    );
+                                    // Navigator.pushNamed(
+                                    //     context, addDeviceRoute);
                                   },
                                   child: Image.asset(
                                     ImgPath.pngAdd,
@@ -487,7 +498,14 @@ class HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(0),
                 child: RoundedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, addDeviceRoute);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AddDeviceScreen(
+                                buildingID: 0,
+                                buildingName: "",
+                              )),
+                    );
                   },
                   text: "Add Device",
                   backgroundColor: ConstantColors.borderButtonColor,

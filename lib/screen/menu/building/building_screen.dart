@@ -28,6 +28,12 @@ class BuildingScreenState extends State<BuildingScreen> {
     getAllDevice();
   }
 
+ @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    getAllDevice();
+  }
+
   List<Building> buildings = [];
 
   Future<void> getAllDevice() async {
@@ -35,14 +41,26 @@ class BuildingScreenState extends State<BuildingScreen> {
     int? userId = await SharedPreferencesHelper.instance.getUserID();
     Response response =
         await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
+
     if (response.statusCode == 200) {
-      String responseBody = response.body;
-      setState(() {
-        buildings = (json.decode(responseBody) as List)
-            .map((data) => Building.fromJson(data))
-            .toList();
-      });
+      var data = jsonDecode(response.body);
+
+      if (data is Map && data.containsKey("message")) {
+        String message = data["message"];
+        print(message);
+        setState(() {
+          buildings = [];
+        });
+      } else if (data is List) {
+        setState(() {
+          buildings = data.map((data) => Building.fromJson(data)).toList();
+        });
+      }
     } else {
+      print(response.statusCode);
+      setState(() {
+        buildings = [];
+      });
       print('Response body: ${response.body}');
     }
   }
@@ -88,14 +106,14 @@ class BuildingScreenState extends State<BuildingScreen> {
                         style: GoogleFonts.roboto(
                             fontSize: screenWidth * 0.05,
                             fontWeight: FontWeight.bold,
-                            color: ConstantColors.black),
+                            color:  Colors.black),
                       ),
                     ],
                   ),
                 ),
                 MaterialButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, addBuildingRoute);
+                    Navigator.pushNamed(context, addBuildingRoute);
                   },
                   color: ConstantColors.whiteColor,
                   textColor: Colors.white,
@@ -250,7 +268,6 @@ class BuildingScreenState extends State<BuildingScreen> {
                                       : 0.025 * screenHeight,
                                 ),
                               ),
-                            
                             ],
                           ),
                         ],

@@ -16,12 +16,16 @@ class DeviceAssigningScreen extends StatefulWidget {
   final String deviceSerialNo;
   final String wifinName;
   final String password;
+  final int buildingID;
+  final String buildingName;
 
   const DeviceAssigningScreen(
       {Key? key,
       required this.deviceSerialNo,
       required this.wifinName,
-      required this.password})
+      required this.password,
+      required this.buildingID,
+      required this.buildingName})
       : super(key: key);
 
   @override
@@ -31,8 +35,6 @@ class DeviceAssigningScreen extends StatefulWidget {
 class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
   List<Building> buildings = [];
   List<Floor> floorsForBuilding = [];
-  String? buildName;
-  int? buildingID;
 
   @override
   void initState() {
@@ -41,12 +43,8 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
   }
 
   Future<void> getAllDevice() async {
-    String? newBuildingName =
-        await SharedPreferencesHelper.instance.getBuildingName();
-    buildingID = await SharedPreferencesHelper.instance.getBuildingID();
-    setState(() {
-      buildName = newBuildingName;
-    });
+   
+   
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
     Response response =
@@ -58,7 +56,7 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
           .map((data) => Building.fromJson(data))
           .toList();
       setState(() {
-        floorsForBuilding = getFloorsByBuildingId(buildingID!);
+        floorsForBuilding = getFloorsByBuildingId(widget.buildingID!);
       });
     } else {
       print('Response body: ${response.body}');
@@ -108,7 +106,7 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
               height: 50,
             ),
             Text(
-              buildName ?? 'Lorem ipsum building',
+              widget.buildingName ?? 'Lorem ipsum building',
               style: GoogleFonts.roboto(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -141,7 +139,7 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => DeviceAddFloor(
-                                        buildingId: buildingID!,
+                                        buildingId: widget.buildingID!,
                                         deviceSerialNo: widget.deviceSerialNo,
                                         password: widget.password,
                                         wifinName: widget.wifinName,
@@ -201,7 +199,7 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                                                     widget.deviceSerialNo,
                                                 password: widget.password,
                                                 wifinName: widget.wifinName,
-                                                buildingID: buildingID,
+                                                buildingID: widget.buildingID,
                                                 floorID: floor.floorId,
                                               )),
                                     );
@@ -240,7 +238,8 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                                 : ListView.builder(
                                     padding: EdgeInsets.zero,
                                     shrinkWrap: true,
-                                    physics:const NeverScrollableScrollPhysics(),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     itemCount: floor.rooms.length,
                                     itemBuilder:
                                         (BuildContext context, int index) {

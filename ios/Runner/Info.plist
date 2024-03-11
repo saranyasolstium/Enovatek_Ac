@@ -56,6 +56,12 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
+	<!-- Info.plist -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to find nearby WiFi networks</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location to find nearby WiFi networks</string>
+
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
@@ -70,5 +76,6 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	
 </dict>
 </plist>

@@ -1,11 +1,16 @@
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/add_device/manual_add_device.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddDeviceScreen extends StatefulWidget {
-  const AddDeviceScreen({Key? key}) : super(key: key);
+  final int buildingID;
+  final String buildingName;
+  const AddDeviceScreen(
+      {Key? key, required this.buildingID, required this.buildingName})
+      : super(key: key);
 
   @override
   AddDeviceScreenState createState() => AddDeviceScreenState();
@@ -69,7 +74,8 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                   color: ConstantColors.whiteColor,
                   borderRadius: BorderRadius.circular(30)),
               child: Padding(
-                padding: const EdgeInsets.only(left:20,right: 10,bottom: 20,top: 20),
+                padding: const EdgeInsets.only(
+                    left: 20, right: 10, bottom: 20, top: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -116,7 +122,8 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                     color: ConstantColors.whiteColor,
                     borderRadius: BorderRadius.circular(30)),
                 child: Padding(
-                padding: const EdgeInsets.only(left:20,right: 10,bottom: 20,top: 20),
+                  padding: const EdgeInsets.only(
+                      left: 20, right: 10, bottom: 20, top: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -157,14 +164,22 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, manualAddDeviceRoute);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ManualAddDevice(
+                            buildingID: widget.buildingID,
+                            buildingName: widget.buildingName,
+                          )),
+                );
               },
               child: Container(
                 decoration: BoxDecoration(
                     color: ConstantColors.whiteColor,
                     borderRadius: BorderRadius.circular(30)),
                 child: Padding(
-                padding: const EdgeInsets.only(left:20,right: 10,bottom: 20,top: 20),
+                  padding: const EdgeInsets.only(
+                      left: 20, right: 10, bottom: 20, top: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

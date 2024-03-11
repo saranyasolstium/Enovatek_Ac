@@ -77,11 +77,11 @@ class Routers {
       //     type: PageTransitionType.rightToLeft,
       //   );
 
-      case addDeviceRoute:
-        return PageTransition(
-          child: const AddDeviceScreen(),
-          type: PageTransitionType.rightToLeft,
-        );
+      // case addDeviceRoute:
+      //   return PageTransition(
+      //     child: const AddDeviceScreen(),
+      //     type: PageTransitionType.rightToLeft,
+      //   );
 
       case blueToothScanRoute:
         return PageTransition(
@@ -89,11 +89,11 @@ class Routers {
           type: PageTransitionType.rightToLeft,
         );
 
-      case manualAddDeviceRoute:
-        return PageTransition(
-          child: const ManualAddDevice(),
-          type: PageTransitionType.rightToLeft,
-        );
+      // case manualAddDeviceRoute:
+      //   return PageTransition(
+      //     child: const ManualAddDevice(),
+      //     type: PageTransitionType.rightToLeft,
+      //   );
 
       // case wifiPasswordRoute:
       //   return PageTransition(

@@ -44,6 +44,8 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
                       deviceSerialNo: widget.deviceSerialNo,
                       password: widget.password,
                       wifinName: widget.wifinName,
+                      buildingID: widget.buildingId,
+                      buildingName: "",
                     )),
           );
 
@@ -66,6 +68,8 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
                                     deviceSerialNo: widget.deviceSerialNo,
                                     password: widget.password,
                                     wifinName: widget.wifinName,
+                                    buildingID: widget.buildingId,
+                                    buildingName: "",
                                   )),
                         );
                       },
@@ -138,6 +142,8 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
                                   deviceSerialNo: widget.deviceSerialNo,
                                   password: widget.password,
                                   wifinName: widget.wifinName,
+                                  buildingID: widget.buildingId,
+                                  buildingName: "",
                                 )),
                       );
                     } else {

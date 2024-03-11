@@ -193,7 +193,7 @@ class CustomListTile extends StatelessWidget {
       child: Container(
           decoration: BoxDecoration(
               color: ConstantColors.whiteColor,
-              borderRadius: BorderRadius.circular(50)),
+              borderRadius: BorderRadius.circular(10)),
           child: Column(children: [
             Padding(
               padding: const EdgeInsets.only(left: 15, right: 15, top: 10),

@@ -1,4 +1,7 @@
-import 'package:enavatek_mobile/router/route_constant.dart';
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
+import 'package:enavatek_mobile/screen/add_device/add_building.dart';
 import 'package:enavatek_mobile/screen/add_device/device_assign/device_assigning.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -10,7 +13,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 class WifiPasswordScreen extends StatefulWidget {
   final String deviceSerialNo;
-  const WifiPasswordScreen({Key? key, required this.deviceSerialNo})
+  final int buildingID;
+  final String buildingName;
+  const WifiPasswordScreen(
+      {Key? key,
+      required this.deviceSerialNo,
+      required this.buildingID,
+      required this.buildingName})
       : super(key: key);
 
   @override
@@ -115,19 +124,33 @@ class WifiPasswordScreenState extends State<WifiPasswordScreen> {
                 width: 150,
                 height: 50,
                 child: RoundedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     String wifiName = wifiNameTextController.text;
                     String password = passwordTextController.text;
                     if (wifiName.isNotEmpty && password.isNotEmpty) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DeviceAssigningScreen(
-                                  deviceSerialNo: widget.deviceSerialNo,
-                                  wifinName: wifiName,
-                                  password: password,
-                                )),
-                      );
+                      if (widget.buildingID == 0) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DeviceAddBuildingScreen(
+                                    deviceSerialNo: widget.deviceSerialNo,
+                                    wifinName: wifiName,
+                                    password: password,
+                                  )),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DeviceAssigningScreen(
+                                    buildingID: widget.buildingID,
+                                    buildingName: widget.buildingName,
+                                    deviceSerialNo: widget.deviceSerialNo,
+                                    wifinName: wifiName,
+                                    password: password,
+                                  )),
+                        );
+                      }
                     } else {
                       SnackbarHelper.showSnackBar(
                           context, "Filed cannot be empty");

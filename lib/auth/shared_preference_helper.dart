@@ -81,20 +81,20 @@ class SharedPreferencesHelper {
   }
 
 
-  Future<void> saveBuildingData(int buildingID, String buildingName) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('buildingID', buildingID);
-    await prefs.setString('buildingName', buildingName);
-  }
+  // Future<void> saveBuildingData(int buildingID, String buildingName) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   await prefs.setInt('buildingID', buildingID);
+  //   await prefs.setString('buildingName', buildingName);
+  // }
 
-  Future<int?> getBuildingID() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('buildingID');
-  }
-  Future<String?> getBuildingName() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('buildingName');
-  }
+  // Future<int?> getBuildingID() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   return prefs.getInt('buildingID');
+  // }
+  // Future<String?> getBuildingName() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString('buildingName');
+  // }
 
  
 }

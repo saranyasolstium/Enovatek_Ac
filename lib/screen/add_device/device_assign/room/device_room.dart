@@ -25,7 +25,7 @@ class DeviceAddRoom extends StatefulWidget {
     required this.deviceSerialNo,
     required this.wifinName,
     required this.password,
-    required this.floorID, 
+    required this.floorID,
     required this.buildingID,
   }) : super(key: key);
 
@@ -47,6 +47,8 @@ class DeviceAddRoomState extends State<DeviceAddRoom> {
                       deviceSerialNo: widget.deviceSerialNo,
                       password: widget.password,
                       wifinName: widget.wifinName,
+                      buildingID: widget.buildingID!,
+                      buildingName: "",
                     )),
           );
           return false;
@@ -68,6 +70,8 @@ class DeviceAddRoomState extends State<DeviceAddRoom> {
                                     deviceSerialNo: widget.deviceSerialNo,
                                     password: widget.password,
                                     wifinName: widget.wifinName,
+                                    buildingID: widget.buildingID!,
+                                    buildingName: "",
                                   )),
                         );
                       },
@@ -145,6 +149,8 @@ class DeviceAddRoomState extends State<DeviceAddRoom> {
                                   deviceSerialNo: widget.deviceSerialNo,
                                   password: widget.password,
                                   wifinName: widget.wifinName,
+                                  buildingID: widget.buildingID!,
+                                  buildingName: "",
                                 )),
                       );
                     } else {

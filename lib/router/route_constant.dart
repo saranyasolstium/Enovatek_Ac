@@ -11,9 +11,9 @@ const String allDeviceRoute="allDevice";
 //const String deviceDetailRoute="deviceDetail";
 
 //Add Device Route
-const String addDeviceRoute="addDevice";
+//const String addDeviceRoute="addDevice";
 const String blueToothScanRoute="blueToothScan";
-const String manualAddDeviceRoute="manualAdd";
+//const String manualAddDeviceRoute="manualAdd";
 //const String wifiPasswordRoute="wifiPassword";
 //const String  deviceNameRoute="deviceName";
 //const String deviceAssignRoute='deviceAssign';

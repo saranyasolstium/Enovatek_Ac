@@ -1,4 +1,5 @@
 import 'package:enavatek_mobile/auth/authhelper.dart';
+import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:flutter/material.dart';
@@ -65,10 +66,11 @@ void showLogoutDialog(BuildContext context) {
                       style: BorderStyle.solid,
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     AuthHelper authHelper =
                         Provider.of<AuthHelper>(context, listen: false);
                     authHelper.setLoggedIn(false);
+                   
                     Navigator.pushNamedAndRemoveUntil(
                         context, loginRoute, (route) => false);
                   },

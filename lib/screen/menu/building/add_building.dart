@@ -14,6 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
 class AddBuilding extends StatefulWidget {
+  
   const AddBuilding({Key? key}) : super(key: key);
 
   @override
@@ -40,7 +41,8 @@ class AddBuildingState extends State<AddBuilding> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, buildingRoute);
+                    //Navigator.pushReplacementNamed(context, buildingRoute);
+                    Navigator.pop(context);
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
@@ -105,7 +107,8 @@ class AddBuildingState extends State<AddBuilding> {
                     String message = data["message"];
                     SnackbarHelper.showSnackBar(context, message);
                   }
-                  Navigator.pushReplacementNamed(context, buildingRoute);
+                 // Navigator.pushReplacementNamed(context, buildingRoute);
+                 Navigator.pop(context);
                 } else {
                   if (data.containsKey("message")) {
                     String errorMessage = data["message"];

@@ -1,4 +1,3 @@
-import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/add_device/wifi_password_screen.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -9,7 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ManualAddDevice extends StatefulWidget {
-  const ManualAddDevice({Key? key}) : super(key: key);
+  final int buildingID;
+  final String buildingName;
+  const ManualAddDevice(
+      {Key? key, required this.buildingID, required this.buildingName})
+      : super(key: key);
 
   @override
   ManualAddDeviceState createState() => ManualAddDeviceState();
@@ -102,6 +105,8 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => WifiPasswordScreen(
+                                buildingID: widget.buildingID,
+                                buildingName: widget.buildingName,
                                 deviceSerialNo: deviceSerialNo,
                               )),
                     );
