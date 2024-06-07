@@ -41,26 +41,19 @@ class BuildingScreenState extends State<BuildingScreen> {
     int? userId = await SharedPreferencesHelper.instance.getUserID();
     Response response =
         await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
-
     if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-
-      if (data is Map && data.containsKey("message")) {
-        String message = data["message"];
-        print(message);
+      Map<String, dynamic> responseBody = json.decode(response.body);
+      if (responseBody.containsKey("buildings")) {
+        List<dynamic> buildingsJson = responseBody["buildings"];
         setState(() {
-          buildings = [];
+          buildings =
+              buildingsJson.map((data) => Building.fromJson(data)).toList();
         });
-      } else if (data is List) {
-        setState(() {
-          buildings = data.map((data) => Building.fromJson(data)).toList();
-        });
+      } else {
+        print("Response doesn't contain 'buildings' key.");
       }
     } else {
-      print(response.statusCode);
-      setState(() {
-        buildings = [];
-      });
+      print('Response status code: ${response.statusCode}');
       print('Response body: ${response.body}');
     }
   }

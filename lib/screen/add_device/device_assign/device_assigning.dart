@@ -42,21 +42,20 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
     getAllDevice();
   }
 
-  Future<void> getAllDevice() async {
-   
-   
-    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-    int? userId = await SharedPreferencesHelper.instance.getUserID();
+   Future<void> getAllDevice() async {
+    String?authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int?userId = await SharedPreferencesHelper.instance.getUserID();
     Response response =
         await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
     if (response.statusCode == 200) {
       String responseBody = response.body;
 
-      buildings = (json.decode(responseBody) as List)
-          .map((data) => Building.fromJson(data))
-          .toList();
+      Map<String, dynamic> jsonData = json.decode(responseBody);
+      List<dynamic> buildingsData = jsonData['buildings'];
+
+      buildings = buildingsData.map((data) => Building.fromJson(data)).toList();
       setState(() {
-        floorsForBuilding = getFloorsByBuildingId(widget.buildingID!);
+        floorsForBuilding = getFloorsByBuildingId(widget.buildingID);
       });
     } else {
       print('Response body: ${response.body}');

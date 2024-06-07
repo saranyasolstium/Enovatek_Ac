@@ -41,7 +41,6 @@ dependencies:
   flutter_swiper_view: ^1.1.8
   page_transition: ^2.0.9
   getwidget: ^3.1.1
-  syncfusion_flutter_gauges: ^22.2.8
   flutter_time_picker_spinner: ^2.0.0
   flutter_number_picker: ^1.0.4
   device_preview: ^1.1.0
@@ -57,8 +56,9 @@ dependencies:
   http: ^1.1.0
   flutter_social_button: ^1.1.4+1
   date_picker_timeline: ^1.2.5
-  syncfusion_flutter_charts: ^22.2.12
+  syncfusion_flutter_charts: ^25.2.7
   url_launcher: ^6.1.14
+  syncfusion_flutter_gauges: ^25.2.7
 
 
 dev_dependencies:

@@ -76,15 +76,13 @@ class RequestScreenState extends State<RequestScreen> {
                   padding: const EdgeInsets.only(left: 0.0, right: 0.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
+                      foregroundColor: isPendingVisible
+                          ? ConstantColors.whiteColor
+                          : ConstantColors.lightBlueColor, backgroundColor: isPendingVisible
+                          ? ConstantColors.lightBlueColor
+                          : ConstantColors.whiteColor, shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      primary: isPendingVisible
-                          ? ConstantColors.lightBlueColor
-                          : ConstantColors.whiteColor,
-                      onPrimary: isPendingVisible
-                          ? ConstantColors.whiteColor
-                          : ConstantColors.lightBlueColor,
                       side: const BorderSide(
                         color: ConstantColors.borderButtonColor,
                         width: 1.0,
@@ -106,15 +104,13 @@ class RequestScreenState extends State<RequestScreen> {
                   padding: const EdgeInsets.only(left: 0.0, right: 0.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
+                      foregroundColor: isClosedVisible
+                          ? ConstantColors.whiteColor
+                          : ConstantColors.lightBlueColor, backgroundColor: isClosedVisible
+                          ? ConstantColors.lightBlueColor
+                          : ConstantColors.whiteColor, shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      primary: isClosedVisible
-                          ? ConstantColors.lightBlueColor
-                          : ConstantColors.whiteColor,
-                      onPrimary: isClosedVisible
-                          ? ConstantColors.whiteColor
-                          : ConstantColors.lightBlueColor,
                       side: const BorderSide(
                         color: ConstantColors.borderButtonColor,
                         width: 1.0,

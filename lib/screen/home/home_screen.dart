@@ -50,22 +50,28 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> getAllDevice() async {
+ Future<void> getAllDevice() async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
     Response response =
         await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
     if (response.statusCode == 200) {
-      String responseBody = response.body;
-      setState(() {
-        buildings = (json.decode(responseBody) as List)
-            .map((data) => Building.fromJson(data))
-            .toList();
-      });
+      Map<String, dynamic> responseBody = json.decode(response.body);
+      if (responseBody.containsKey("buildings")) {
+        List<dynamic> buildingsJson = responseBody["buildings"];
+        setState(() {
+          buildings =
+              buildingsJson.map((data) => Building.fromJson(data)).toList();
+        });
+      } else {
+        print("Response doesn't contain 'buildings' key.");
+      }
     } else {
+      print('Response status code: ${response.statusCode}');
       print('Response body: ${response.body}');
     }
   }
+
 
   Future<void> getActionType() async {
     Response response = await RemoteServices.getActiontype();

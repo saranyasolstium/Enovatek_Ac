@@ -100,15 +100,13 @@ class EditFloorNameState extends State<EditFloorName> {
                   padding: const EdgeInsets.only(left: 0.0, right: 0.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
+                      foregroundColor: isUnAssignedVisible
+                          ? ConstantColors.whiteColor
+                          : ConstantColors.lightBlueColor, backgroundColor: isUnAssignedVisible
+                          ? ConstantColors.lightBlueColor
+                          : ConstantColors.whiteColor, shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      primary: isUnAssignedVisible
-                          ? ConstantColors.lightBlueColor
-                          : ConstantColors.whiteColor,
-                      onPrimary: isUnAssignedVisible
-                          ? ConstantColors.whiteColor
-                          : ConstantColors.lightBlueColor,
                       side: const BorderSide(
                         color: ConstantColors.borderButtonColor,
                         width: 1.0,
@@ -133,15 +131,13 @@ class EditFloorNameState extends State<EditFloorName> {
                   padding: const EdgeInsets.only(left: 0.0, right: 0.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
+                      foregroundColor: isAssignedVisible
+                          ? ConstantColors.whiteColor
+                          : ConstantColors.lightBlueColor, backgroundColor: isAssignedVisible
+                          ? ConstantColors.lightBlueColor
+                          : ConstantColors.whiteColor, shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      primary: isAssignedVisible
-                          ? ConstantColors.lightBlueColor
-                          : ConstantColors.whiteColor,
-                      onPrimary: isAssignedVisible
-                          ? ConstantColors.whiteColor
-                          : ConstantColors.lightBlueColor,
                       side: const BorderSide(
                         color: ConstantColors.borderButtonColor,
                         width: 1.0,
@@ -221,11 +217,9 @@ class EditFloorNameState extends State<EditFloorName> {
                     ),
                     trailing: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
+                        foregroundColor: ConstantColors.whiteColor, backgroundColor: ConstantColors.lightBlueColor, shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
-                        primary: ConstantColors.lightBlueColor,
-                        onPrimary: ConstantColors.whiteColor,
                         side: const BorderSide(
                           color: ConstantColors.borderButtonColor,
                           width: 1.0,
@@ -273,11 +267,9 @@ class EditFloorNameState extends State<EditFloorName> {
                     ),
                     trailing: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
+                        foregroundColor: ConstantColors.whiteColor, backgroundColor: ConstantColors.lightBlueColor, shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
-                        primary: ConstantColors.lightBlueColor,
-                        onPrimary: ConstantColors.whiteColor,
                         side: const BorderSide(
                           color: ConstantColors.borderButtonColor,
                           width: 1.0,

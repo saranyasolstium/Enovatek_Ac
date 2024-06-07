@@ -386,11 +386,9 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
+                    foregroundColor: ConstantColors.whiteColor, backgroundColor: ConstantColors.borderButtonColor, shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    primary: ConstantColors.borderButtonColor,
-                    onPrimary: ConstantColors.whiteColor,
                     side: const BorderSide(
                       color: ConstantColors.borderButtonColor,
                       width: 1.0,

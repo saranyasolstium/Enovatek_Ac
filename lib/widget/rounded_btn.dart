@@ -29,11 +29,9 @@ class RoundedButton extends StatelessWidget {
       padding: const EdgeInsets.all(0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
+          foregroundColor: textColor, backgroundColor: backgroundColor, shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(screenHeight * 0.1),
           ),
-          primary: backgroundColor,
-          onPrimary: textColor,
           side: const BorderSide(
             color: ConstantColors.borderButtonColor,
             width: 1.0,

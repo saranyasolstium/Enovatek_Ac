@@ -10,12 +10,12 @@ class Building {
   });
 
   factory Building.fromJson(Map<String, dynamic> json) {
-    List<Floor> floorList = (json['floor'] as List<dynamic>)
+    List<Floor> floorList = (json['floors'] as List<dynamic>)
         .map((floorData) => Floor.fromJson(floorData))
         .toList();
 
     return Building(
-      buildingId: json['buildingId'],
+      buildingId: json['building_id'],
       name: json['name'],
       floors: floorList,
     );
@@ -36,7 +36,7 @@ class Floor {
   });
 
   factory Floor.fromJson(Map<String, dynamic> json) {
-    List<Room> roomList = (json['room'] as List<dynamic>)
+    List<Room> roomList = (json['rooms'] as List<dynamic>)
         .map((roomData) => Room.fromJson(roomData))
         .toList();
 
@@ -125,3 +125,4 @@ class Device {
     );
   }
 }
+

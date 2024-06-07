@@ -31,43 +31,42 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen> {
     });
   }
 
-  Widget Chart() {
+ Widget buildChart() {
     return Container(
-        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-        child: SfCartesianChart(
-          primaryXAxis: CategoryAxis(
-            labelRotation: 0,
-            labelIntersectAction: AxisLabelIntersectAction.multipleRows,
+      padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+      child: SfCartesianChart(
+        primaryXAxis: CategoryAxis(
+          labelRotation: 0,
+          labelIntersectAction: AxisLabelIntersectAction.multipleRows,
+        ),
+        title: ChartTitle(
+          text: 'Historical Data',
+          backgroundColor: Colors.white,
+          borderColor: Colors.black,
+          alignment: ChartAlignment.center,
+          textStyle: const TextStyle(
+            color: Colors.black,
+            fontFamily: 'Roboto',
+            fontStyle: FontStyle.normal,
+            fontSize: 20,
           ),
-          title: ChartTitle(
-              text: 'Historical Data',
-              backgroundColor: Colors.white,
-              borderColor: Colors.black,
-              //  borderWidth: 1,
-              // Aligns the chart title to left
-              alignment: ChartAlignment.center,
-              textStyle: const TextStyle(
-                color: Colors.black,
-                fontFamily: 'Roboto',
-                fontStyle: FontStyle.normal,
-                fontSize: 20,
-              )),
-          series: <ChartSeries>[
-            // Renders line chart
-
-            ColumnSeries<ChartDataInfo, String>(
-              dataSource: indexChart,
-              pointColorMapper: (ChartDataInfo data, _) => data.color,
-              xValueMapper: (ChartDataInfo data, _) => data.year,
-              yValueMapper: (ChartDataInfo data, _) => data.value,
-              enableTooltip: true,
-              dataLabelSettings: const DataLabelSettings(
-                isVisible: true,
-                angle: 0,
-              ),
+        ),
+        series: <CartesianSeries>[
+          // Change the series type to ColumnSeries
+          ColumnSeries<ChartDataInfo, String>(
+            dataSource: indexChart,
+            pointColorMapper: (ChartDataInfo data, _) => data.color,
+            xValueMapper: (ChartDataInfo data, _) => data.year,
+            yValueMapper: (ChartDataInfo data, _) => data.value,
+            enableTooltip: true,
+            dataLabelSettings: const DataLabelSettings(
+              isVisible: true,
+              angle: 0,
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -311,7 +310,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 10),
-                  Chart(),
+                  buildChart(),
                   const SizedBox(height: 30),
                 ],
               ),

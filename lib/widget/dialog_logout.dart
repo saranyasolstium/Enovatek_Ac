@@ -28,11 +28,9 @@ void showLogoutDialog(BuildContext context) {
                 padding: const EdgeInsets.only(left: 0.0, right: 0.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
+                    foregroundColor: ConstantColors.whiteColor, backgroundColor: ConstantColors.lightBlueColor, shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    primary: ConstantColors.lightBlueColor,
-                    onPrimary: ConstantColors.whiteColor,
                     side: const BorderSide(
                       color: ConstantColors.borderButtonColor,
                       width: 1.0,
@@ -55,11 +53,9 @@ void showLogoutDialog(BuildContext context) {
                 padding: const EdgeInsets.only(left: 0.0, right: 0.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
+                    foregroundColor: ConstantColors.lightBlueColor, backgroundColor: ConstantColors.whiteColor, shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    primary: ConstantColors.whiteColor,
-                    onPrimary: ConstantColors.lightBlueColor,
                     side: const BorderSide(
                       color: ConstantColors.borderButtonColor,
                       width: 1.0,
