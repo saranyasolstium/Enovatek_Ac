@@ -59,6 +59,7 @@ dependencies:
   syncfusion_flutter_charts: ^25.2.7
   url_launcher: ^6.1.14
   syncfusion_flutter_gauges: ^25.2.7
+  get: ^4.6.6
 
 
 dev_dependencies:

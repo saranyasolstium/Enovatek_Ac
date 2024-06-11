@@ -30,26 +30,29 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
   }
 
   Future<void> getAllDevice() async {
-    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-    int? userId = await SharedPreferencesHelper.instance.getUserID();
-    Response response =
-        await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
-    if (response.statusCode == 200) {
-      String responseBody = response.body;
-
-      buildings = (json.decode(responseBody) as List)
-          .map((data) => Building.fromJson(data))
-          .toList();
-      //List<Device> alldevices = getAllDevices(buildings);
-
+  String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+  int? userId = await SharedPreferencesHelper.instance.getUserID();
+  
+  Response response = await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
+  
+  if (response.statusCode == 200) {
+    String responseBody = response.body;
+    Map<String, dynamic> jsonData = json.decode(responseBody);
+    
+    if (jsonData.containsKey("buildings")) {
+      List<dynamic> buildingList = jsonData["buildings"];
+      buildings = buildingList.map((data) => Building.fromJson(data)).toList();
       setState(() {
         devices = getAllDevices(buildings);
       });
       print(devices.length);
     } else {
-      print('Response body: ${response.body}');
+      print('Response body does not contain buildings');
     }
+  } else {
+    print('Response body: ${response.body}');
   }
+}
 
   List<Device> getAllDevices(List<Building> buildings) {
     List<Device> allDevices = [];
@@ -66,7 +69,7 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
   }
 
   DeviceLocation findFloorAndRoomNameByDeviceId(
-      List<Building> buildings, int deviceId) {
+      List<Building> buildings, String deviceId) {
     for (final building in buildings) {
       for (final floor in building.floors) {
         for (final room in floor.rooms) {
@@ -80,7 +83,7 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
     }
     return DeviceLocation(null, null); // Device not found
   }
-Future<void> increaseProgressValue(int deviceId,int progressValue ) async {
+Future<void> increaseProgressValue(String deviceId,int progressValue ) async {
     setState(() {
       if (progressValue < 30) {
         progressValue += 1;
@@ -98,7 +101,7 @@ Future<void> increaseProgressValue(int deviceId,int progressValue ) async {
     }
   }
 
-  Future<void> decreaseProgressValue(int deviceId,int progressValue) async {
+  Future<void> decreaseProgressValue(String deviceId,int progressValue) async {
     setState(() {
       progressValue -= 1;
       if (progressValue < 16) {

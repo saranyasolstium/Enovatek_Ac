@@ -77,7 +77,7 @@ class Room {
 }
 
 class Device {
-  final int deviceId;
+  final String deviceId;
   final String deviceName;
   final String displayName;
   final int roomId;

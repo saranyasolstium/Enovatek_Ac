@@ -54,7 +54,6 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
         await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
     if (response.statusCode == 200) {
       String responseBody = response.body;
-print('havish');
 
       Map<String, dynamic> jsonData = json.decode(responseBody);
       List<dynamic> buildingsData = jsonData['buildings'];

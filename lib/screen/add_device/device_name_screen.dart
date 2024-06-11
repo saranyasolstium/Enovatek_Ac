@@ -33,6 +33,8 @@ class DeviceNameScreen extends StatefulWidget {
 
 class DeviceNameScreenState extends State<DeviceNameScreen> {
   TextEditingController displayNameController = TextEditingController();
+  TextEditingController deviceIDController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -108,6 +110,21 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
             const SizedBox(
               height: 30,
             ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 0),
+              child: TextField(
+                controller: deviceIDController,
+                style: GoogleFonts.roboto(
+                  color: ConstantColors.mainlyTextColor,
+                  fontWeight: FontWeight.w500,
+                ),
+                decoration: InputDecorationStyle.textFieldDecoration(
+                    placeholder: "Device ID", context: context),
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
             Center(
               child: SizedBox(
                 width: 150,
@@ -115,12 +132,15 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
                 child: RoundedButton(
                   onPressed: () async {
                     String displayname = displayNameController.text;
+                    String deviceId = deviceIDController.text;
+
                     if (displayname.isNotEmpty) {
                       String? authToken =
                           await SharedPreferencesHelper.instance.getAuthToken();
                       int? userId =
                           await SharedPreferencesHelper.instance.getUserID();
                       Response response = await RemoteServices.createDevice(
+                          deviceId,
                           authToken!,
                           displayname,
                           widget.deviceSerialNo,

@@ -16,7 +16,7 @@ class ModeScreen extends StatefulWidget {
   final String deviceName;
   final String power;
   final String mode;
-  final int deviceId;
+  final String deviceId;
 
   const ModeScreen(
       {Key? key,

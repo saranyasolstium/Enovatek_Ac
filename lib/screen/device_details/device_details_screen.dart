@@ -24,7 +24,7 @@ class DeviceDetailScreen extends StatefulWidget {
   final String power;
   final String fanSpeed;
   final String mode;
-  final int deviceId;
+  final String deviceId;
 
   const DeviceDetailScreen(
       {Key? key,
@@ -543,7 +543,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PowerStatisticsScreen()),
+                                builder: (context) => PowerStatisticsScreen(deviceId: widget.deviceId,)),
                           );
                         },
                         child: Column(

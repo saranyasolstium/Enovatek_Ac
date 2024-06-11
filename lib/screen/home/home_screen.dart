@@ -52,6 +52,7 @@ class HomeScreenState extends State<HomeScreen> {
 
  Future<void> getAllDevice() async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    print(authToken);
     int? userId = await SharedPreferencesHelper.instance.getUserID();
     Response response =
         await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
