@@ -27,11 +27,11 @@ class CircularBar extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             SizedBox(
-              width: 150,
-              height: 150,
+              width: 120,
+              height: 120,
               child: CircularProgressIndicator(
                 strokeWidth: 12,
-                value: value / 10, // Adjust max value if necessary
+                value: value / 5, // Adjust max value if necessary
                 valueColor: AlwaysStoppedAnimation<Color>(color),
                 backgroundColor: Colors.grey,
               ),

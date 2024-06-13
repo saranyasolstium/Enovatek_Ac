@@ -56,7 +56,6 @@ dependencies:
   http: ^1.1.0
   flutter_social_button: ^1.1.4+1
   date_picker_timeline: ^1.2.5
-  syncfusion_flutter_charts: ^25.2.7
   url_launcher: ^6.1.14
   syncfusion_flutter_gauges: ^25.2.7
   get: ^4.6.6

@@ -431,8 +431,8 @@ class RemoteServices {
   static Future<Response> powerusages(String authToken,
       String deviceId, String type, String typeValue,String consumptionType) async {
     try {
-      print('${url}api/user/power_usages');
-      String apiUrl = '${url}api/user/power_usages';
+      print('${url}api/user/consumption_data');
+      String apiUrl = '${url}api/user/consumption_data';
       Map<String, String> headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $authToken',

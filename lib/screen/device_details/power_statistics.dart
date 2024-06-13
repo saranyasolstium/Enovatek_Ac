@@ -1,18 +1,14 @@
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
-import 'package:enavatek_mobile/model/device_ac_dc_data.dart';
-import 'package:enavatek_mobile/screen/device_details/chart.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/circular_bar.dart';
-import 'package:enavatek_mobile/widget/meterAcbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -30,6 +26,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   DateTime _selectedDate = DateTime.now();
   TabController? _tabController;
   String? totalPower = "", acPower = "", dcPower = "";
+  double? acValue = 0,
+      dcValue = 0,
+      acVoltage = 0,
+      dcVoltgae = 0,
+      acCurrent = 0,
+      dcCurrent = 0,
+      acEngery = 0,
+      dcEngery = 0;
 
   @override
   void initState() {
@@ -66,13 +70,41 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
 
     final response = await RemoteServices.powerusages(
-        authToken!, widget.deviceId, "day", "12-06-2024", "power");
+        authToken!, widget.deviceId, "day", "12-06-2024", "all");
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       setState(() {
-        totalPower = responseData['total_power'];
+        //totalPower = responseData['total_power'];
         acPower = responseData['ac_power'];
         dcPower = responseData['dc_power'];
+        String acPowerValueStr = acPower!.replaceAll(RegExp(r'[^0-9.]'), '');
+        String dcPowerValueStr = dcPower!.replaceAll(RegExp(r'[^0-9.]'), '');
+        String acVoltageStr =
+            responseData['ac_voltage'].replaceAll(RegExp(r'[^0-9.]'), '');
+        String dcVoltageStr =
+            responseData['dc_voltage'].replaceAll(RegExp(r'[^0-9.]'), '');
+        String acCurrentStr =
+            responseData['ac_current'].replaceAll(RegExp(r'[^0-9.]'), '');
+        String dcCurrentStr =
+            responseData['dc_current'].replaceAll(RegExp(r'[^0-9.]'), '');
+        String acEngeryStr =
+            responseData['ac_energy'].replaceAll(RegExp(r'[^0-9.]'), '');
+        String dcEngeryStr =
+            responseData['dc_energy'].replaceAll(RegExp(r'[^0-9.]'), '');
+
+        acValue = double.parse(acPowerValueStr);
+        dcValue = double.parse(dcPowerValueStr);
+        acVoltage = double.parse(acVoltageStr);
+        dcVoltgae = double.parse(dcVoltageStr);
+        acCurrent = double.parse(acCurrentStr);
+        dcCurrent = double.parse(dcCurrentStr);
+        acEngery = double.parse(acEngeryStr);
+        dcEngery = double.parse(dcEngeryStr);
+
+// Calculate total power
+        double total = acValue! + dcValue!;
+
+        totalPower = '$total W';
       });
 
       print('Total Power: $totalPower');
@@ -426,21 +458,93 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             const SizedBox(
               height: 20,
             ),
-            const CircularBar(
-              label: 'AC Power',
-              value: 1,
-              unit: "kw.h",
-              color: Colors.orange,
+            Row(
+              children: [
+                Expanded(
+                  child: CircularBar(
+                    label: 'AC Power',
+                    value: acValue!,
+                    unit: "kw.h",
+                    color: Colors.orange,
+                  ),
+                ),
+                SizedBox(width: 20),
+                Expanded(
+                  child: CircularBar(
+                    label: 'DC Power',
+                    value: dcValue!,
+                    unit: "kw.h",
+                    color: Colors.orange,
+                  ),
+                ),
+              ],
             ),
+            const SizedBox(height: 20),
 
-             const SizedBox(
-              height: 20,
+            Row(
+              children: [
+                Expanded(
+                  child: CircularBar(
+                    label: 'AC Voltage',
+                    value: acVoltage!,
+                    unit: "V",
+                    color: Colors.blueAccent,
+                  ),
+                ),
+                SizedBox(width: 20), // Adjust the spacing between the bars
+                Expanded(
+                  child: CircularBar(
+                    label: 'DC Voltage',
+                    value: dcVoltgae!,
+                    unit: "V",
+                    color: Colors.blueAccent,
+                  ),
+                ),
+              ],
             ),
-            const CircularBar(
-              label: 'DC Power',
-              value: .24,
-              unit: "kw.h",
-              color: Colors.green,
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: CircularBar(
+                    label: 'AC Current',
+                    value: acCurrent!,
+                    unit: "A",
+                    color: Colors.green,
+                  ),
+                ),
+                SizedBox(width: 20), // Adjust the spacing between the bars
+                Expanded(
+                  child: CircularBar(
+                    label: 'DC Current',
+                    value: dcCurrent!,
+                    unit: "A",
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: CircularBar(
+                    label: 'AC Engery',
+                    value: acEngery!,
+                    unit: "kWh",
+                    color: Colors.redAccent,
+                  ),
+                ),
+                SizedBox(width: 20), // Adjust the spacing between the bars
+                Expanded(
+                  child: CircularBar(
+                    label: 'DC Engery',
+                    value: dcEngery!,
+                    unit: "kWh",
+                    color: Colors.redAccent,
+                  ),
+                ),
+              ],
             ),
 
             // Container(
