@@ -9,6 +9,8 @@ import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/add_schedule.dart';
 import 'package:enavatek_mobile/screen/device_details/device_details_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/schedule.dart';
+import 'package:enavatek_mobile/screen/enginner_access/enginner_home.dart';
+import 'package:enavatek_mobile/screen/enginner_access/enginner_menu.dart';
 import 'package:enavatek_mobile/screen/home/home_screen.dart';
 import 'package:enavatek_mobile/screen/introduce/introduce_screen.dart';
 import 'package:enavatek_mobile/screen/login_screen/login_screen.dart';
@@ -57,13 +59,17 @@ class Routers {
           type: PageTransitionType.rightToLeft,
         );
 
-        case addBuildingRoute:
+      case enginnerHomeRounte:
+        return PageTransition(
+          child: const EnginnerHomeScreen(),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case addBuildingRoute:
         return PageTransition(
           child: const AddBuilding(),
           type: PageTransitionType.rightToLeft,
         );
-
-       
 
       case allDeviceRoute:
         return PageTransition(
@@ -117,7 +123,11 @@ class Routers {
           child: const MenuScreen(),
           type: PageTransitionType.rightToLeft,
         );
-
+      case enginnerMenuRoute:
+        return PageTransition(
+          child: const EnginnerMenuScreen(),
+          type: PageTransitionType.rightToLeft,
+        );
       case calculateRoute:
         return PageTransition(
           child: const CalculateSavingScreen(),
@@ -141,41 +151,41 @@ class Routers {
           child: const RequestScreen(),
           type: PageTransitionType.rightToLeft,
         );
-         case buildingRoute:
+      case buildingRoute:
         return PageTransition(
           child: const BuildingScreen(),
           type: PageTransitionType.rightToLeft,
         );
 
-         case scheduleRoute:
+      case scheduleRoute:
         return PageTransition(
           child: const SheduleScreen(),
           type: PageTransitionType.rightToLeft,
         );
 
-        case addScheduleRoute:
+      case addScheduleRoute:
         return PageTransition(
           child: const AddSheduleScreen(),
           type: PageTransitionType.rightToLeft,
         );
 
-        // case deviceAssignRoute:
-        // return PageTransition(
-        //   child: const DeviceAssigningScreen(buildingId: '1'),
-        //   type: PageTransitionType.rightToLeft,
-        // );
+      // case deviceAssignRoute:
+      // return PageTransition(
+      //   child: const DeviceAssigningScreen(buildingId: '1'),
+      //   type: PageTransitionType.rightToLeft,
+      // );
 
-        // case addFloorNameRoute:
-        // return PageTransition(
-        //   child: const AddFloorName(),
-        //   type: PageTransitionType.rightToLeft,
-        // );
+      // case addFloorNameRoute:
+      // return PageTransition(
+      //   child: const AddFloorName(),
+      //   type: PageTransitionType.rightToLeft,
+      // );
 
-        // case editFloorNameRoute:
-        // return PageTransition(
-        //   child: const EditFloorName(),
-        //   type: PageTransitionType.rightToLeft,
-        // );
+      // case editFloorNameRoute:
+      // return PageTransition(
+      //   child: const EditFloorName(),
+      //   type: PageTransitionType.rightToLeft,
+      // );
 
       default:
         return MaterialPageRoute(builder: (_) => Container());

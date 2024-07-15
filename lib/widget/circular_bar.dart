@@ -31,7 +31,8 @@ class CircularBar extends StatelessWidget {
               height: 120,
               child: CircularProgressIndicator(
                 strokeWidth: 12,
-                value: value / 5, // Adjust max value if necessary
+                value: value / 300, // Adjust max value if necessary
+
                 valueColor: AlwaysStoppedAnimation<Color>(color),
                 backgroundColor: Colors.grey,
               ),

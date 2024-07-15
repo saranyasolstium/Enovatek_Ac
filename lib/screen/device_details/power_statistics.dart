@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
@@ -7,8 +8,9 @@ import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/circular_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:intl/intl.dart';
+import 'package:horizontal_date_picker_flutter/horizontal_date_picker_flutter.dart';
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -32,14 +34,17 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       dcVoltgae = 0,
       acCurrent = 0,
       dcCurrent = 0,
-      acEngery = 0,
-      dcEngery = 0;
+      acEnergy = 0,
+      dcEnergy = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    powerusages();
+    DateTime currentDate = DateTime.now();
+    String formattedDate =
+        "${currentDate.day}-${currentDate.month}-${currentDate.year}";
+    powerusages("day", formattedDate);
   }
 
   @override
@@ -48,33 +53,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     super.dispose();
   }
 
-  // List<DeviceRealTimeData> acDcData = [];
-  // Future<void> fetchDeviceRealTimeData() async {
-  //   String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-  //   int? userId = await SharedPreferencesHelper.instance.getUserID();
-
-  //   final response = await RemoteServices.fetchDeviceRealTimeData(authToken!);
-  //   if (response.statusCode == 200) {
-  //     final Map<String, dynamic> responseData = json.decode(response.body);
-  //     final DeviceRealTimeData deviceData =
-  //         DeviceRealTimeData.fromJson(responseData);
-  //     acDcData.add(deviceData);
-
-  //     print('Device ID: ${deviceData.deviceId}');
-  //     print('AC Voltage: ${deviceData.meterAC.voltage.value}');
-  //   } else {
-  //     throw Exception('Failed to load device real-time data');
-  //   }
-  // }
-  Future<void> powerusages() async {
+  Future<void> powerusages(String periodType, String periodValue) async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
 
     final response = await RemoteServices.powerusages(
-        authToken!, widget.deviceId, "day", "12-06-2024", "all");
+        authToken!, widget.deviceId, periodType, periodValue, "all");
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
+
       setState(() {
-        //totalPower = responseData['total_power'];
+        totalPower = responseData['total_power'];
         acPower = responseData['ac_power'];
         dcPower = responseData['dc_power'];
         String acPowerValueStr = acPower!.replaceAll(RegExp(r'[^0-9.]'), '');
@@ -87,9 +75,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             responseData['ac_current'].replaceAll(RegExp(r'[^0-9.]'), '');
         String dcCurrentStr =
             responseData['dc_current'].replaceAll(RegExp(r'[^0-9.]'), '');
-        String acEngeryStr =
+        String acEnergyStr =
             responseData['ac_energy'].replaceAll(RegExp(r'[^0-9.]'), '');
-        String dcEngeryStr =
+        String dcEnergyStr =
             responseData['dc_energy'].replaceAll(RegExp(r'[^0-9.]'), '');
 
         acValue = double.parse(acPowerValueStr);
@@ -98,79 +86,60 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         dcVoltgae = double.parse(dcVoltageStr);
         acCurrent = double.parse(acCurrentStr);
         dcCurrent = double.parse(dcCurrentStr);
-        acEngery = double.parse(acEngeryStr);
-        dcEngery = double.parse(dcEngeryStr);
-
-// Calculate total power
-        double total = acValue! + dcValue!;
-
-        totalPower = '$total W';
+        acEnergy = double.parse(acEnergyStr);
+        dcEnergy = double.parse(dcEnergyStr);
       });
 
       print('Total Power: $totalPower');
       print('AC Power: $acPower');
       print('DC Power: $dcPower');
     } else {
-      throw Exception('Failed to load device real-time data');
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      if (responseData.containsKey('message') &&
+          responseData['message'] == 'No record(s) found') {
+        setState(() {
+          totalPower = "0W";
+          acPower = "0W";
+          dcPower = "0W";
+          acValue = 0;
+          dcValue = 0;
+          acVoltage = 0;
+          dcVoltgae = 0;
+          acCurrent = 0;
+          dcCurrent = 0;
+          acEnergy = 0;
+          dcEnergy = 0;
+        });
+      }
     }
   }
 
-  // Widget buildChart() {
-  //   return Container(
-  //     padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-  //     child: SfCartesianChart(
-  //       primaryXAxis: const CategoryAxis(
-  //         labelRotation: 0,
-  //         labelIntersectAction: AxisLabelIntersectAction.multipleRows,
-  //       ),
-  //       title: const ChartTitle(
-  //         text: 'Historical Data',
-  //         backgroundColor: Colors.white,
-  //         borderColor: Colors.black,
-  //         alignment: ChartAlignment.center,
-  //         textStyle: TextStyle(
-  //           color: Colors.black,
-  //           fontFamily: 'Roboto',
-  //           fontStyle: FontStyle.normal,
-  //           fontSize: 20,
-  //         ),
-  //       ),
-  //       series: <CartesianSeries>[
-  //         // Change the series type to ColumnSeries
-  //         ColumnSeries<ChartDataInfo, String>(
-  //           dataSource: indexChart,
-  //           pointColorMapper: (ChartDataInfo data, _) => data.color,
-  //           xValueMapper: (ChartDataInfo data, _) => data.year,
-  //           yValueMapper: (ChartDataInfo data, _) => data.value,
-  //           enableTooltip: true,
-  //           dataLabelSettings: const DataLabelSettings(
-  //             isVisible: true,
-  //             angle: 0,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget _buildDatePicker(BuildContext context, String mode) {
     List<Widget> dateWidgets = [];
+
     switch (mode) {
       case 'day':
-        return SizedBox(
-          height: 100,
-          child: DatePicker(
-            _selectedDate,
-            selectionColor: ConstantColors.iconColr,
-            selectedTextColor: Colors.white,
-            initialSelectedDate: _selectedDate,
-            onDateChange: (date) {
-              setState(() {
-                _selectedDate = date;
-              });
-            },
+        return Center(
+            child: EasyDateTimeLine(
+          initialDate: DateTime.now(),
+          onDateChange: (selectedDate) {
+            String formattedDate =
+                DateFormat('dd-MM-yyyy').format(selectedDate);
+            print(selectedDate);
+            powerusages("day", formattedDate);
+          },
+          activeColor: const Color(0xff116A7B),
+          dayProps: const EasyDayProps(
+            landScapeMode: true,
+            activeDayStyle: DayStyle(
+              borderRadius: 48.0,
+            ),
+            dayStructure: DayStructure.monthDayNumDayStr,
           ),
-        );
+          headerProps: const EasyHeaderProps(showHeader: false),
+        ));
+
       case 'month':
         int currentMonthIndex = _selectedDate.month - 1;
         double initialScrollOffset = currentMonthIndex * 100.0;
@@ -205,46 +174,52 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         );
     }
 
-    return Column(
-      children: dateWidgets,
-    );
+    return SizedBox.shrink();
   }
 
   Widget _buildDateItem(
       BuildContext context, DateTime date, String displayText, String type) {
     bool isSelected = false;
     if (type == 'month') {
-      print('Month: ${date.month}');
-      print(DateTime.now().month);
-      isSelected = date.month == DateTime.now().month;
-      print(isSelected);
+      isSelected = date.month == _selectedDate.month;
     } else if (type == 'year') {
       isSelected = date.year == _selectedDate.year;
     }
 
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedDate = date;
-        });
-      },
-      child: Container(
-        width: 100,
-        height: 50,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: isSelected ? ConstantColors.iconColr : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          displayText,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontWeight: FontWeight.bold,
+        onTap: () {
+          setState(() {
+            _selectedDate = date;
+            if (type == 'month') {
+              String monthName = DateFormat('MMMM').format(_selectedDate);
+              print(monthName);
+
+              powerusages("month", monthName);
+            } else {
+              String year = DateFormat('yyyy').format(_selectedDate);
+              print(year);
+              powerusages("year", year);
+            }
+          });
+        },
+        child: Center(
+          child: Container(
+            width: 120,
+            height: 60,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: isSelected ? const Color(0xff116A7B) : Colors.transparent,
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Text(
+              displayText,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   @override
@@ -294,6 +269,59 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
         child: Column(
           children: [
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: <Widget>[
+                  TabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(text: 'Day'),
+                      Tab(text: 'Month'),
+                      Tab(text: 'Year'),
+                    ],
+                    onTap: (index) {
+                      // Handle tab selection
+                      switch (index) {
+                        case 0:
+                          _selectedDate = DateTime.now();
+                          String formattedDate =
+                              DateFormat('dd-MM-yyyy').format(_selectedDate);
+                          powerusages("day", formattedDate);
+                          break;
+                        case 1:
+                          _selectedDate = DateTime.now();
+                          String monthName =
+                              DateFormat('MMMM').format(_selectedDate);
+                          print(monthName);
+                          powerusages("month", monthName);
+                          break;
+                        case 2:
+                          _selectedDate = DateTime.now();
+                          String year =
+                              DateFormat('yyyy').format(_selectedDate);
+                          powerusages("year", year);
+                          break;
+                      }
+                    },
+                  ),
+                  SizedBox(
+                    height: 100,
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildDatePicker(context, 'day'),
+                        _buildDatePicker(context, 'month'),
+                        _buildDatePicker(context, 'year'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
             Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -354,6 +382,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               ),
             ),
             const SizedBox(height: 10),
+
             Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -427,53 +456,56 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
-            Container(
-              color: Colors.white,
-              child: Column(
-                children: <Widget>[
-                  TabBar(
-                    controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'Day'),
-                      Tab(text: 'Month'),
-                      Tab(text: 'Year'),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 100,
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildDatePicker(context, 'day'),
-                        _buildDatePicker(context, 'month'),
-                        _buildDatePicker(context, 'year'),
-                      ],
-                    ),
-                  ),
-                ],
+            Text(
+              "Real Time Power Consumption",
+              style: GoogleFonts.roboto(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: ConstantColors.iconColr,
               ),
             ),
-            const SizedBox(
-              height: 20,
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: CircularBar(
+                    label: 'AC Energy',
+                    value: acEnergy!,
+                    unit: "kWh",
+                    color: Colors.indigo,
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: CircularBar(
+                    label: 'DC Energy',
+                    value: dcEnergy!,
+                    unit: "kWh",
+                    color: Colors.indigo,
+                  ),
+                ),
+              ],
             ),
+            const SizedBox(height: 20),
+
             Row(
               children: [
                 Expanded(
                   child: CircularBar(
                     label: 'AC Power',
                     value: acValue!,
-                    unit: "kw.h",
+                    unit: "W",
                     color: Colors.orange,
                   ),
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Expanded(
                   child: CircularBar(
                     label: 'DC Power',
                     value: dcValue!,
-                    unit: "kw.h",
+                    unit: "W",
                     color: Colors.orange,
                   ),
                 ),
@@ -491,7 +523,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     color: Colors.blueAccent,
                   ),
                 ),
-                SizedBox(width: 20), // Adjust the spacing between the bars
+                const SizedBox(
+                    width: 20), // Adjust the spacing between the bars
                 Expanded(
                   child: CircularBar(
                     label: 'DC Voltage',
@@ -510,38 +543,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     label: 'AC Current',
                     value: acCurrent!,
                     unit: "A",
-                    color: Colors.green,
+                    color: Colors.teal,
                   ),
                 ),
-                SizedBox(width: 20), // Adjust the spacing between the bars
+                const SizedBox(width: 20),
                 Expanded(
                   child: CircularBar(
                     label: 'DC Current',
                     value: dcCurrent!,
                     unit: "A",
-                    color: Colors.green,
-                  ),
-                ),
-              ],
-            ),
-const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: CircularBar(
-                    label: 'AC Engery',
-                    value: acEngery!,
-                    unit: "kWh",
-                    color: Colors.redAccent,
-                  ),
-                ),
-                SizedBox(width: 20), // Adjust the spacing between the bars
-                Expanded(
-                  child: CircularBar(
-                    label: 'DC Engery',
-                    value: dcEngery!,
-                    unit: "kWh",
-                    color: Colors.redAccent,
+                    color: Colors.teal,
                   ),
                 ),
               ],

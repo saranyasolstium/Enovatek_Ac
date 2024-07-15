@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'package:enavatek_mobile/auth/authhelper.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/enginner_access/add_device_AppCtrl.dart';
+import 'package:enavatek_mobile/screen/enginner_access/enginner_home.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -58,15 +60,24 @@ class LoginScreenState extends State<LoginScreen> {
         String profileName = profile['name'];
         String profileEmailId = profile['emailId'];
         int userId = profile['userId'];
+        int userType = profile['userTypeId'];
         await SharedPreferencesHelper.instance.setAuthToken(accessToken);
         await SharedPreferencesHelper.instance.setLoginID(loginId);
         await SharedPreferencesHelper.instance.setUserID(userId);
+                await SharedPreferencesHelper.instance.setUserTypeID(userType);
+
         await SharedPreferencesHelper.instance
             .saveUserDataToSharedPreferences(profileName, profileEmailId);
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(homedRoute, (route) => false);
         AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
         authHelper.setLoggedIn(true);
+        //userType == 1 Enginner
+        if (userType == 1) {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(enginnerHomeRounte, (route) => false);
+        } else {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(homedRoute, (route) => false);
+        }
         SnackbarHelper.showSnackBar(context, "Login Successful");
       } else {
         var data = jsonDecode(response.body);
@@ -358,7 +369,12 @@ class LoginScreenState extends State<LoginScreen> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  signInWithGoogle();
+                  // signInWithGoogle();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddDeviceAppCtrlScreen()),
+                  );
                 },
                 icon: const Icon(
                   FontAwesomeIcons.google,

@@ -82,27 +82,29 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToInitialScreen() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-saveDeviceIdToSharedPreferences();
-  // Check if the user is logged in
-  bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    saveDeviceIdToSharedPreferences();
+    // Check if the user is logged in
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-  // Check if the app has been launched before
-  bool hasBeenLaunched = prefs.getBool('hasBeenLaunched') ?? false;
+    // Check if the app has been launched before
+    bool hasBeenLaunched = prefs.getBool('hasBeenLaunched') ?? false;
 
-  if (!hasBeenLaunched) {
-    await prefs.setBool('hasBeenLaunched', true);
-    Navigator.pushReplacementNamed(context, introduceRoute);
-  } else {
-    // The app has been launched before
-    if (isLoggedIn) {
-      Navigator.pushReplacementNamed(context, homedRoute);
+    if (!hasBeenLaunched) {
+      await prefs.setBool('hasBeenLaunched', true);
+      Navigator.pushReplacementNamed(context, introduceRoute);
     } else {
-      Navigator.pushReplacementNamed(context, loginRoute);
+      if (isLoggedIn) {
+        int? userTypeId = await SharedPreferencesHelper.instance.getUserTypeID();
+        print("aaaaaaaaaa $userTypeId");
+        if (userTypeId == 1) {
+          Navigator.pushReplacementNamed(context, enginnerHomeRounte);
+        } else {
+          Navigator.pushReplacementNamed(context, homedRoute);
+        }
+      } else {
+        Navigator.pushReplacementNamed(context, loginRoute);
+      }
     }
   }
 }
-
-
-  }
-

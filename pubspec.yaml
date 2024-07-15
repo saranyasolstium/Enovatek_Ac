@@ -56,9 +56,15 @@ dependencies:
   http: ^1.1.0
   flutter_social_button: ^1.1.4+1
   date_picker_timeline: ^1.2.5
-  url_launcher: ^6.1.14
   syncfusion_flutter_gauges: ^25.2.7
   get: ^4.6.6
+  horizontal_date_picker_flutter: ^0.0.1
+  url_launcher: ^6.3.0
+  easy_date_timeline: ^1.1.3
+  wifi_iot: ^0.3.19
+  tcp_socket_connection: ^0.3.1
+  connectivity: ^3.0.6
+  
 
 
 dev_dependencies:

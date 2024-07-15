@@ -335,7 +335,7 @@ class RemoteServices {
 
   //add device
   static Future<Response> createDevice(
-      String deviceId,
+      // String deviceId,
       String authToken,
       String deviceName,
       String deviceSerialNo,
@@ -353,7 +353,7 @@ class RemoteServices {
       };
       Map<String, dynamic> requestBody = {
         "id": 0,
-        "deviceId": deviceId,
+        "deviceId": "987654",
         "deviceName": deviceSerialNo,
         "displayName": deviceName,
         "roomId": roomId,
@@ -361,7 +361,7 @@ class RemoteServices {
         "wifiName": wifiName,
         "wifiPassword": password,
       };
-      print(requestBody);
+      print('Request Body: $requestBody');
       String jsonBody = jsonEncode(requestBody);
 
       http.Response response = await http.post(
@@ -396,7 +396,7 @@ class RemoteServices {
     }
   }
 
-   static Future<Response> actionCommand(String authToken, String value,
+  static Future<Response> actionCommand(String authToken, String value,
       String deviceId, int actionTypeId, int loginId) async {
     try {
       print('${url}api/appcommand');
@@ -426,10 +426,9 @@ class RemoteServices {
     }
   }
 
-
   //get actionCommand
-  static Future<Response> powerusages(String authToken,
-      String deviceId, String type, String typeValue,String consumptionType) async {
+  static Future<Response> powerusages(String authToken, String deviceId,
+      String type, String typeValue, String consumptionType) async {
     try {
       print('${url}api/user/consumption_data');
       String apiUrl = '${url}api/user/consumption_data';
@@ -438,7 +437,8 @@ class RemoteServices {
         'Authorization': 'Bearer $authToken',
       };
       Map<String, dynamic> requestBody = {
-        "deviceId": deviceId,
+        "device_id": deviceId,
+        //"uid":"D0EF76332D00",
         "period_type": type,
         "period_value": typeValue,
         "consumption_type": consumptionType
@@ -458,8 +458,7 @@ class RemoteServices {
     }
   }
 
-
-   static Future<Response> fetchDeviceRealTimeData(String token) async {
+  static Future<Response> fetchDeviceRealTimeData(String token) async {
     try {
       print('${url}api/user/devicerealtimedata?id=21');
       String apiUrl = '${url}api/user/devicerealtimedata?id=21';
@@ -471,6 +470,42 @@ class RemoteServices {
       http.Response response = await http.get(
         Uri.parse(apiUrl),
         headers: headers,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> sendConfiguration(String authToken) async {
+    try {
+      print('${url}api/mqtt/send_configuration');
+      String apiUrl = '${url}api/mqtt/send_configuration';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
+      };
+      Map<String, dynamic> requestBody = {
+        "packageHeader": "C6F9G0",
+        "deviceId": "987654",
+        "uid": "D0EF76332D00",
+        "syncFrequency": "60 minutes",
+        "mqttEndPoint": "a3bd9ic9v4dpst-ats.iot.ap-southeast-1.amazonaws.com",
+        "port": "8883",
+        "publishTopic": "Power/Data",
+        "subscribeTopic": "Power/CMD",
+        "ssid": "Enovatek01",
+        "ssidPassword": "GoGreen01",
+        "packageEnd": "E0N7D5"
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
       );
       print(response.body);
       return response;
