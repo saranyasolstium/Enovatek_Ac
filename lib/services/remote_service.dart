@@ -5,7 +5,7 @@ import 'package:http/http.dart';
 
 class RemoteServices {
   static var client = http.Client();
-  static String url = 'http://13.212.177.46/';
+  static String url = 'http://18.140.164.164/';
 
   //Facebook login
   static Future<Response> login(
@@ -353,8 +353,8 @@ class RemoteServices {
       };
       Map<String, dynamic> requestBody = {
         "id": 0,
-        "deviceId": "987654",
-        "deviceName": deviceSerialNo,
+        "deviceId": deviceSerialNo,
+        "deviceName": deviceName,
         "displayName": deviceName,
         "roomId": roomId,
         "userId": userId,

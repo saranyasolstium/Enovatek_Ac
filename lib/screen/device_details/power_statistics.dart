@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:date_picker_timeline/date_picker_timeline.dart';
@@ -36,6 +37,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       dcCurrent = 0,
       acEnergy = 0,
       dcEnergy = 0;
+  Timer? timer;
 
   @override
   void initState() {
@@ -45,12 +47,27 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     String formattedDate =
         "${currentDate.day}-${currentDate.month}-${currentDate.year}";
     powerusages("day", formattedDate);
+    updatePowerUsages("day", formattedDate);
+  }
+
+  void updatePowerUsages(String periodType, String value) {
+    timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      powerusages(periodType, value);
+    });
   }
 
   @override
   void dispose() {
     _tabController!.dispose();
+    stopTimer();
     super.dispose();
+  }
+
+  void stopTimer() {
+    if (timer != null && timer!.isActive) {
+      timer!.cancel();
+      print("Timer stopped");
+    }
   }
 
   Future<void> powerusages(String periodType, String periodValue) async {
@@ -60,6 +77,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         authToken!, widget.deviceId, periodType, periodValue, "all");
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
+      if (!mounted) return;
 
       setState(() {
         totalPower = responseData['total_power'];
@@ -127,7 +145,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             String formattedDate =
                 DateFormat('dd-MM-yyyy').format(selectedDate);
             print(selectedDate);
+            stopTimer();
             powerusages("day", formattedDate);
+            updatePowerUsages("day", formattedDate);
           },
           activeColor: const Color(0xff116A7B),
           dayProps: const EasyDayProps(
@@ -193,12 +213,15 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             if (type == 'month') {
               String monthName = DateFormat('MMMM').format(_selectedDate);
               print(monthName);
-
+              stopTimer();
               powerusages("month", monthName);
+              updatePowerUsages("month", monthName);
             } else {
               String year = DateFormat('yyyy').format(_selectedDate);
               print(year);
+              stopTimer();
               powerusages("year", year);
+              updatePowerUsages("year", year);
             }
           });
         },
@@ -287,20 +310,29 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           _selectedDate = DateTime.now();
                           String formattedDate =
                               DateFormat('dd-MM-yyyy').format(_selectedDate);
+                          stopTimer();
                           powerusages("day", formattedDate);
+                          updatePowerUsages("day", formattedDate);
+
                           break;
                         case 1:
                           _selectedDate = DateTime.now();
                           String monthName =
                               DateFormat('MMMM').format(_selectedDate);
                           print(monthName);
+                          stopTimer();
                           powerusages("month", monthName);
+                          updatePowerUsages("month", monthName);
+
                           break;
                         case 2:
                           _selectedDate = DateTime.now();
                           String year =
                               DateFormat('yyyy').format(_selectedDate);
+                          stopTimer();
                           powerusages("year", year);
+                          updatePowerUsages("year", year);
+
                           break;
                       }
                     },

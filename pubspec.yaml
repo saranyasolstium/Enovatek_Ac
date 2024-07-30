@@ -61,9 +61,11 @@ dependencies:
   horizontal_date_picker_flutter: ^0.0.1
   url_launcher: ^6.3.0
   easy_date_timeline: ^1.1.3
-  wifi_iot: ^0.3.19
-  tcp_socket_connection: ^0.3.1
   connectivity: ^3.0.6
+  flutter_socket_plugin: ^3.0.0
+  wifi_info_flutter: ^2.0.2
+  permission_handler: ^11.3.1
+  flutter_iot_wifi: ^0.0.3
   
 
 

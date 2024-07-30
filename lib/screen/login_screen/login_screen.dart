@@ -60,12 +60,11 @@ class LoginScreenState extends State<LoginScreen> {
         String profileName = profile['name'];
         String profileEmailId = profile['emailId'];
         int userId = profile['userId'];
-        int userType = profile['userTypeId'];
+        int userType = profile['userTypeId'] ?? 2;
         await SharedPreferencesHelper.instance.setAuthToken(accessToken);
         await SharedPreferencesHelper.instance.setLoginID(loginId);
         await SharedPreferencesHelper.instance.setUserID(userId);
-                await SharedPreferencesHelper.instance.setUserTypeID(userType);
-
+        await SharedPreferencesHelper.instance.setUserTypeID(userType);
         await SharedPreferencesHelper.instance
             .saveUserDataToSharedPreferences(profileName, profileEmailId);
         AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
@@ -370,11 +369,8 @@ class LoginScreenState extends State<LoginScreen> {
               child: ElevatedButton.icon(
                 onPressed: () {
                   // signInWithGoogle();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddDeviceAppCtrlScreen()),
-                  );
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      enginnerHomeRounte, (route) => false);
                 },
                 icon: const Icon(
                   FontAwesomeIcons.google,

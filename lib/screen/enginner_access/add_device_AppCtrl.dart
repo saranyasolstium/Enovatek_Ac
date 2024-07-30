@@ -10,8 +10,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
-import 'package:tcp_socket_connection/tcp_socket_connection.dart';
-import 'package:wifi_iot/wifi_iot.dart';
 
 class AddDeviceAppCtrlScreen extends StatefulWidget {
   const AddDeviceAppCtrlScreen({Key? key}) : super(key: key);
@@ -31,40 +29,28 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
   TextEditingController wifiPasswordController = TextEditingController();
 
   int selectedFrequency = 0;
-
-  Future<void> _disconnectFromWifi() async {
-    try {
-      await WiFiForIoTPlugin.disconnect();
-      sendConfig();
-      print('Disconnected from Wi-Fi');
-    } catch (e) {
-      print('Error disconnecting from Wi-Fi: $e');
-    }
-  }
+  String frequency = "60";
 
   void sendConfigurationPackage() async {
-    // Device IP address and port
     const String deviceIP = '192.6.6.6';
     const int devicePort = 8000;
 
-    // Configuration package detailsS
     const String packageHead = 'C6F9G0';
-    String deviceId = "987654";
-    String deviceUID = "70B8F665D734";
-    const int syncFreqMin = 60;
-    const String mqttEndPoint =
-        'a3bd9ic9v4dpst-ats.iot.ap-southeast-1.amazonaws.com';
-    const int mqttPort = 8883;
-    const String mqttPublishTopic = 'power/data';
-    const String mqttSubscribeTopic = 'power/cmd';
-    const String wifiSSID = 'Enovatek01';
-    const String wifiPassword = 'GoGreen01';
-    const String packageEnd = 'E0N7D5';
+    String deviceId = deviceIDController.text.toString();
+    String deviceUID = deviceUIDController.text.toString();
+    String syncFreqMin = frequency;
+    String mqttEndPoint = mqttEndPointController.text.toString();
+    String mqttPort = mqttPortController.text.toString();
+    String mqttPublishTopic = mqttPublishTopicController.text.toString();
+    String mqttSubscribeTopic = mqttSubscribeTopicController.text.toString();
+    String wifiSSID = wifiSSIDController.text.toString();
+    String wifiPassword = wifiPasswordController.text.toString();
+    String packageEnd = 'E0N7D5';
 
-    // Construct the configuration package
     String configPackage =
         '$packageHead;$deviceId;$deviceUID;$syncFreqMin;$mqttEndPoint;$mqttPort;$mqttPublishTopic;$mqttSubscribeTopic;$wifiSSID;$wifiPassword;$packageEnd';
     print(configPackage);
+
     try {
       final socket = await Socket.connect(deviceIP, devicePort,
           timeout: const Duration(seconds: 60));
@@ -76,8 +62,9 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
         String response = String.fromCharCodes(data);
         print('Response: $response');
         if (response.contains('CFGUOK')) {
-          print('Configuration was successful.');
-          _disconnectFromWifi();
+          SnackbarHelper.showSnackBar(context,
+              "Configuration has been successfully sent to the controller.");
+          sendConfig();
         } else {
           print('Configuration failed.');
         }
@@ -86,7 +73,13 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
       await socket.close();
       print('Connection closed.');
     } catch (e) {
-      print('Error sending configuration: $e');
+      print(e);
+      SnackbarHelper.showSnackBar(context, 'Error sending configuration: $e');
+      if (e is SocketException) {
+        SnackbarHelper.showSnackBar(context, 'SocketException: ${e.message}');
+      } else {
+        SnackbarHelper.showSnackBar(context, 'Other exception: $e');
+      }
     }
   }
 
@@ -191,7 +184,17 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   value: selectedFrequency,
                   onChanged: (newValue) {
                     setState(() {
-                      selectedFrequency = newValue!;
+                      if (newValue == 1) {
+                        frequency = "1";
+                      } else if (newValue == 2) {
+                        frequency = "5";
+                      } else if (newValue == 3) {
+                        frequency = "15";
+                      } else if (newValue == 4) {
+                        frequency = "30";
+                      } else {
+                        frequency = "60";
+                      }
                     });
                   },
                   icon: const Padding(
@@ -364,7 +367,10 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   width: 150,
                   height: 50,
                   child: RoundedButton(
-                    onPressed: sendConfigurationPackage,
+                    onPressed: () {
+                      // _disconnectFromWifi();
+                      sendConfigurationPackage();
+                    },
                     text: "Save",
                     backgroundColor: ConstantColors.borderButtonColor,
                     textColor: ConstantColors.whiteColor,
