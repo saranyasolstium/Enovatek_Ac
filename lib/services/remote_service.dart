@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:enavatek_mobile/model/energy.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:mqtt_client/mqtt_client.dart';
+import 'package:uuid/uuid.dart';
 
 class RemoteServices {
   static var client = http.Client();
@@ -478,7 +481,45 @@ class RemoteServices {
     }
   }
 
-  static Future<Response> sendConfiguration(String authToken) async {
+  static Future<List<EnergyData>>  fetchEnergyData({
+  required String deviceId,
+  required String periodType,
+  required String periodValue,
+}) async {
+  final apiUrl = Uri.parse('${url}api/user/consumption_data_chart');
+  final response = await http.post(
+    apiUrl,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'device_id': deviceId,
+      'period_type': periodType,
+      'period_value': periodValue,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    print('havish $data');
+    final List energyDataList = data['energy_data'];
+    return energyDataList.map((json) => EnergyData.fromJson(json)).toList();
+  } else {
+    throw Exception('Failed to load data');
+  }
+}
+
+  static Future<Response> sendConfiguration(
+      String authToken,
+      String deviceId,
+      String uid,
+      String syncFrequency,
+      String mqttEndPoint,
+      String port,
+      String publishTopic,
+      String subscribeTopic,
+      String ssid,
+      String ssidPassword,
+      String lat,
+      String long) async {
     try {
       print('${url}api/mqtt/send_configuration');
       String apiUrl = '${url}api/mqtt/send_configuration';
@@ -487,17 +528,17 @@ class RemoteServices {
         'Authorization': 'Bearer $authToken',
       };
       Map<String, dynamic> requestBody = {
-        "packageHeader": "C6F9G0",
-        "deviceId": "987654",
-        "uid": "D0EF76332D00",
-        "syncFrequency": "60 minutes",
-        "mqttEndPoint": "a3bd9ic9v4dpst-ats.iot.ap-southeast-1.amazonaws.com",
-        "port": "8883",
-        "publishTopic": "Power/Data",
-        "subscribeTopic": "Power/CMD",
-        "ssid": "Enovatek01",
-        "ssidPassword": "GoGreen01",
-        "packageEnd": "E0N7D5"
+        "deviceId": deviceId,
+        "uid": uid,
+        "sync_frequency": syncFrequency,
+        "mqtt_end_point": mqttEndPoint,
+        "port": port,
+        "publish_topic": publishTopic,
+        "subscribe_topic": subscribeTopic,
+        "ssid": ssid,
+        "ssid_password": ssidPassword,
+        "longitude": "",
+        "latitude":"",
       };
       print(requestBody);
       String jsonBody = jsonEncode(requestBody);

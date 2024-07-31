@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
+import 'package:enavatek_mobile/model/energy.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -12,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:horizontal_date_picker_flutter/horizontal_date_picker_flutter.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -22,6 +24,22 @@ class PowerStatisticsScreen extends StatefulWidget {
 
   @override
   PowerStatisticsScreenState createState() => PowerStatisticsScreenState();
+}
+
+List<ChartData> prepareChartData(List<EnergyData> data, String energyType) {
+  return data
+      .map((e) => ChartData(
+            date: e.date,
+            value: energyType == 'ac' ? e.acEnergy : e.dcEnergy,
+          ))
+      .toList();
+}
+
+class ChartData {
+  final DateTime date;
+  final double value;
+
+  ChartData({required this.date, required this.value});
 }
 
 class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
@@ -38,6 +56,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       acEnergy = 0,
       dcEnergy = 0;
   Timer? timer;
+  List<EnergyData> energyDataList = [];
+  bool _loading = false;
+  String periodType = "day";
 
   @override
   void initState() {
@@ -48,10 +69,28 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         "${currentDate.day}-${currentDate.month}-${currentDate.year}";
     powerusages("day", formattedDate);
     updatePowerUsages("day", formattedDate);
+    fetchData(widget.deviceId, periodType, formattedDate);
+  }
+
+  Future<void> fetchData(
+      String deviceid, String periodType, String value) async {
+    try {
+      final data = await RemoteServices.fetchEnergyData(
+        deviceId: deviceid,
+        periodType: periodType,
+        periodValue: value,
+      );
+      setState(() {
+        energyDataList = data;
+      });
+    } catch (e) {
+      // Handle error
+      print(e);
+    }
   }
 
   void updatePowerUsages(String periodType, String value) {
-    timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+    timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       powerusages(periodType, value);
     });
   }
@@ -134,8 +173,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   }
 
   Widget _buildDatePicker(BuildContext context, String mode) {
-    List<Widget> dateWidgets = [];
-
     switch (mode) {
       case 'day':
         return Center(
@@ -144,10 +181,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           onDateChange: (selectedDate) {
             String formattedDate =
                 DateFormat('dd-MM-yyyy').format(selectedDate);
-            print(selectedDate);
             stopTimer();
             powerusages("day", formattedDate);
             updatePowerUsages("day", formattedDate);
+            periodType = "day";
+            fetchData(widget.deviceId, periodType, formattedDate);
           },
           activeColor: const Color(0xff116A7B),
           dayProps: const EasyDayProps(
@@ -194,7 +232,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         );
     }
 
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget _buildDateItem(
@@ -216,12 +254,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               stopTimer();
               powerusages("month", monthName);
               updatePowerUsages("month", monthName);
+              periodType = "month";
+              fetchData(widget.deviceId, periodType, monthName);
             } else {
               String year = DateFormat('yyyy').format(_selectedDate);
               print(year);
               stopTimer();
               powerusages("year", year);
               updatePowerUsages("year", year);
+              periodType = "year";
+              fetchData(widget.deviceId, periodType, year);
             }
           });
         },
@@ -247,6 +289,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final acPowerData = prepareChartData(energyDataList, 'ac');
+    final dcPowerData = prepareChartData(energyDataList, 'dc');
     return Scaffold(
       backgroundColor: ConstantColors.darkBackgroundColor,
       appBar: AppBar(
@@ -313,6 +357,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           stopTimer();
                           powerusages("day", formattedDate);
                           updatePowerUsages("day", formattedDate);
+                          periodType = "day";
+                          fetchData(widget.deviceId, periodType, formattedDate);
 
                           break;
                         case 1:
@@ -323,6 +369,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           stopTimer();
                           powerusages("month", monthName);
                           updatePowerUsages("month", monthName);
+                          periodType = "month";
+                          fetchData(widget.deviceId, periodType, monthName);
 
                           break;
                         case 2:
@@ -332,6 +380,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           stopTimer();
                           powerusages("year", year);
                           updatePowerUsages("year", year);
+                          periodType = "year";
+                          fetchData(widget.deviceId, periodType, year);
 
                           break;
                       }
@@ -499,6 +549,113 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               ),
             ),
             const SizedBox(height: 20),
+            periodType == "year"
+                ? SfCartesianChart(
+                    primaryXAxis: DateTimeAxis(
+                      dateFormat: DateFormat.MMM(),
+                      interval: 1,
+                      edgeLabelPlacement: EdgeLabelPlacement.shift,
+                      majorGridLines: const MajorGridLines(width: 0),
+                      minimum: DateTime(DateTime.now().year, 1, 1),
+                      maximum: DateTime(DateTime.now().year + 1, 1, 1),
+                    ),
+                    primaryYAxis: const NumericAxis(
+                      edgeLabelPlacement: EdgeLabelPlacement.shift,
+                      labelFormat: '{value} kWh',
+                    ),
+                    series: <CartesianSeries>[
+                      LineSeries<ChartData, DateTime>(
+                        dataSource: acPowerData,
+                        xValueMapper: (ChartData data, _) => data.date,
+                        yValueMapper: (ChartData data, _) => data.value,
+                        name: 'AC Energy',
+                        color: Colors.blue,
+                      ),
+                      LineSeries<ChartData, DateTime>(
+                        dataSource: dcPowerData,
+                        xValueMapper: (ChartData data, _) => data.date,
+                        yValueMapper: (ChartData data, _) => data.value,
+                        name: 'DC Energy',
+                        color: Colors.red,
+                      ),
+                    ],
+                  )
+                : periodType == "month"
+                    ? SizedBox(
+                        height: 300,
+                        child: SfCartesianChart(
+                          primaryXAxis: DateTimeAxis(
+                            dateFormat: DateFormat.d(),
+                            interval: 1,
+                            edgeLabelPlacement: EdgeLabelPlacement.shift,
+                            majorGridLines: const MajorGridLines(width: 0),
+                            minimum: DateTime(
+                                DateTime.now().year, DateTime.now().month, 1),
+                            maximum: DateTime(DateTime.now().year,
+                                DateTime.now().month + 1, 0),
+                          ),
+                          primaryYAxis: const NumericAxis(
+                            edgeLabelPlacement: EdgeLabelPlacement.shift,
+                            labelFormat: '{value} kWh',
+                          ),
+                          series: <CartesianSeries>[
+                            LineSeries<ChartData, DateTime>(
+                              dataSource: acPowerData,
+                              xValueMapper: (ChartData data, _) => data.date,
+                              yValueMapper: (ChartData data, _) => data.value,
+                              name: 'AC Energy',
+                              color: Colors.blue,
+                            ),
+                            LineSeries<ChartData, DateTime>(
+                              dataSource: dcPowerData,
+                              xValueMapper: (ChartData data, _) => data.date,
+                              yValueMapper: (ChartData data, _) => data.value,
+                              name: 'DC Energy',
+                              color: Colors.red,
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox(
+                        height: 300,
+                        child: SfCartesianChart(
+                          primaryXAxis: DateTimeAxis(
+                            dateFormat: DateFormat('H'),
+                            interval: 1,
+                            intervalType: DateTimeIntervalType.hours,
+                            edgeLabelPlacement: EdgeLabelPlacement.shift,
+                            majorGridLines: const MajorGridLines(width: 0),
+                            minimum: DateTime(DateTime.now().year,
+                                DateTime.now().month, DateTime.now().day),
+                            maximum: DateTime(
+                                DateTime.now().year,
+                                DateTime.now().month,
+                                DateTime.now().day,
+                                23,
+                                59),
+                          ),
+                          primaryYAxis: const NumericAxis(
+                            edgeLabelPlacement: EdgeLabelPlacement.shift,
+                            labelFormat: '{value} kWh',
+                          ),
+                          series: <CartesianSeries>[
+                            LineSeries<ChartData, DateTime>(
+                              dataSource: acPowerData,
+                              xValueMapper: (ChartData data, _) => data.date,
+                              yValueMapper: (ChartData data, _) => data.value,
+                              name: 'AC Energy',
+                              color: Colors.blue,
+                            ),
+                            LineSeries<ChartData, DateTime>(
+                              dataSource: dcPowerData,
+                              xValueMapper: (ChartData data, _) => data.date,
+                              yValueMapper: (ChartData data, _) => data.value,
+                              name: 'DC Energy',
+                              color: Colors.red,
+                            ),
+                          ],
+                        ),
+                      ),
             Row(
               children: [
                 Expanded(

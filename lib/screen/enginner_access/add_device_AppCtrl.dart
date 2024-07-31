@@ -64,7 +64,7 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
         if (response.contains('CFGUOK')) {
           SnackbarHelper.showSnackBar(context,
               "Configuration has been successfully sent to the controller.");
-          sendConfig();
+         // sendConfig();
         } else {
           print('Configuration failed.');
         }
@@ -85,13 +85,33 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
 
   Future<void> sendConfig() async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    String deviceId = deviceIDController.text.toString();
+    String deviceUID = deviceUIDController.text.toString();
+    String syncFreqMin = frequency;
+    String mqttEndPoint = mqttEndPointController.text.toString();
+    String mqttPort = mqttPortController.text.toString();
+    String mqttPublishTopic = mqttPublishTopicController.text.toString();
+    String mqttSubscribeTopic = mqttSubscribeTopicController.text.toString();
+    String wifiSSID = wifiSSIDController.text.toString();
+    String wifiPassword = wifiPasswordController.text.toString();
 
-    final response = await RemoteServices.sendConfiguration(authToken!);
+    final response = await RemoteServices.sendConfiguration(
+        authToken!,
+        deviceId,
+        deviceUID,
+        syncFreqMin,
+        mqttEndPoint,
+        mqttPort,
+        mqttPublishTopic,
+        mqttSubscribeTopic,
+        wifiSSID,
+        wifiPassword,
+        "",
+        "");
     if (response.statusCode == 200) {
       Map<String, dynamic> responseBody = jsonDecode(response.body);
       String status = responseBody['status'];
       print('Status: $status');
-      SnackbarHelper.showSnackBar(context, "Configuration send successful.");
     } else {
       print('error ${response.statusCode}');
     }

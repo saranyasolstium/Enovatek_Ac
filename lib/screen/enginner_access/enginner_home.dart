@@ -5,11 +5,8 @@ import 'package:enavatek_mobile/screen/enginner_access/add_device_AppCtrl.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
-import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_iot_wifi/flutter_iot_wifi.dart';
 
