@@ -4,6 +4,7 @@ import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/enginner_access/add_device_AppCtrl.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,15 +25,22 @@ class EnginnerHomeScreenState extends State<EnginnerHomeScreen> {
   }
 
   Future<bool> _checkPermissions() async {
-    if (Platform.isIOS || await Permission.location.request().isGranted) {
-      return true;
-    }
-    return false;
+    final status = await [
+      Permission.location,
+      Permission.nearbyWifiDevices,
+      Permission.systemAlertWindow
+    ].request();
+
+    return status[Permission.location]!.isGranted &&
+        status[Permission.nearbyWifiDevices]!.isGranted &&
+        status[Permission.systemAlertWindow]!.isGranted;
   }
+
 
   void _connectToControllerWifi() async {
     if (await _checkPermissions()) {
-      FlutterIotWifi.connect("PM20H20Q", "Eno420714Vatek", prefix: true).then((value) {
+      FlutterIotWifi.connect("AJAY", "varshan123", prefix: true)
+          .then((value) {
         print("connect initiated: $value");
         Navigator.push(
           context,
@@ -44,30 +52,6 @@ class EnginnerHomeScreenState extends State<EnginnerHomeScreen> {
       print("don't have permission");
     }
   }
-
-  // Future<void> _connectToControllerWifi() async {
-  //   try {
-  //     String ssid = 'AJAY';
-  //     String password = 'varshan123';
-
-  //     await WiFiForIoTPlugin.connect(ssid,
-  //         password: password, joinOnce: false, security: NetworkSecurity.WPA);
-  //     bool isConnected = await WiFiForIoTPlugin.isConnected();
-  //     WiFiForIoTPlugin.setWiFiAPEnabled(true);
-
-  //     if (isConnected) {
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //             builder: (context) => const AddDeviceAppCtrlScreen()),
-  //       );
-  //     } else {
-  //       print('Failed to connect to Wi-Fi');
-  //     }
-  //   } catch (e) {
-  //     print('Error connecting to Wi-Fi: $e');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +93,7 @@ class EnginnerHomeScreenState extends State<EnginnerHomeScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: Footer(),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
         child: Column(

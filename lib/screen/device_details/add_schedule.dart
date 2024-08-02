@@ -2,6 +2,7 @@ import 'package:enavatek_mobile/screen/device_details/schedule_list.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/dialog_timepicker.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,6 +24,8 @@ class AddSheduleScreenState extends State<AddSheduleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
+      bottomNavigationBar: Footer(),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
         child: Column(

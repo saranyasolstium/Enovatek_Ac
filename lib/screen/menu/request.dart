@@ -1,5 +1,6 @@
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -40,6 +41,7 @@ class RequestScreenState extends State<RequestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
+      bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
         child: Column(
@@ -78,9 +80,11 @@ class RequestScreenState extends State<RequestScreen> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: isPendingVisible
                           ? ConstantColors.whiteColor
-                          : ConstantColors.lightBlueColor, backgroundColor: isPendingVisible
+                          : ConstantColors.lightBlueColor,
+                      backgroundColor: isPendingVisible
                           ? ConstantColors.lightBlueColor
-                          : ConstantColors.whiteColor, shape: RoundedRectangleBorder(
+                          : ConstantColors.whiteColor,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                       side: const BorderSide(
@@ -106,9 +110,11 @@ class RequestScreenState extends State<RequestScreen> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: isClosedVisible
                           ? ConstantColors.whiteColor
-                          : ConstantColors.lightBlueColor, backgroundColor: isClosedVisible
+                          : ConstantColors.lightBlueColor,
+                      backgroundColor: isClosedVisible
                           ? ConstantColors.lightBlueColor
-                          : ConstantColors.whiteColor, shape: RoundedRectangleBorder(
+                          : ConstantColors.whiteColor,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                       side: const BorderSide(

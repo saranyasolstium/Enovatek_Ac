@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,8 +33,8 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
   String frequency = "60";
 
   void sendConfigurationPackage() async {
-    const String deviceIP = '192.6.6.6';
-    const int devicePort = 8000;
+    const String deviceIP = '192.168.1.6';
+    const int devicePort = 8006;
 
     const String packageHead = 'C6F9G0';
     String deviceId = deviceIDController.text.toString();
@@ -64,7 +65,7 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
         if (response.contains('CFGUOK')) {
           SnackbarHelper.showSnackBar(context,
               "Configuration has been successfully sent to the controller.");
-         // sendConfig();
+          sendConfig();
         } else {
           print('Configuration failed.');
         }
@@ -142,6 +143,7 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -158,13 +160,15 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   controller: deviceIDController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintStyle: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    hintText: 'Enter Device ID',
-                  ),
+                      border: InputBorder.none,
+                      hintStyle: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      hintText: 'Enter Device ID',
+                      label: const Text(
+                        "Device ID",
+                      )),
                 ),
               ),
               const SizedBox(height: 20),
@@ -179,13 +183,15 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   controller: deviceUIDController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintStyle: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    hintText: 'Enter UID',
-                  ),
+                      border: InputBorder.none,
+                      hintStyle: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      hintText: 'Enter UID',
+                      label: const Text(
+                        "UID",
+                      )),
                 ),
               ),
               const SizedBox(height: 20),
@@ -215,6 +221,7 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                       } else {
                         frequency = "60";
                       }
+                      selectedFrequency = newValue!;
                     });
                   },
                   icon: const Padding(
@@ -267,13 +274,15 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   controller: mqttEndPointController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintStyle: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    hintText: 'Enter MQTT End Point',
-                  ),
+                      border: InputBorder.none,
+                      hintStyle: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      hintText: 'Enter MQTT End Point',
+                      label: const Text(
+                        "MQTT End Point",
+                      )),
                 ),
               ),
               const SizedBox(height: 20),
@@ -288,13 +297,15 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   controller: mqttPortController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintStyle: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    hintText: 'Enter MQTT Port',
-                  ),
+                      border: InputBorder.none,
+                      hintStyle: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      hintText: 'Enter MQTT Port',
+                      label: const Text(
+                        "MQTT Port",
+                      )),
                 ),
               ),
               const SizedBox(height: 20),
@@ -309,13 +320,15 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   controller: mqttPublishTopicController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintStyle: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    hintText: 'Enter Publish Topic',
-                  ),
+                      border: InputBorder.none,
+                      hintStyle: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      hintText: 'Enter Publish Topic',
+                      label: const Text(
+                        "MQTT Publish Topic",
+                      )),
                 ),
               ),
               const SizedBox(height: 20),
@@ -330,13 +343,15 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   controller: mqttSubscribeTopicController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintStyle: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    hintText: 'Enter Subscribe Topic',
-                  ),
+                      border: InputBorder.none,
+                      hintStyle: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      hintText: 'Enter Subscribe Topic',
+                      label: const Text(
+                        "Subscribe Topic",
+                      )),
                 ),
               ),
               const SizedBox(height: 20),
@@ -351,13 +366,15 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   controller: wifiSSIDController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintStyle: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    hintText: 'Enter Wi-Fi SSID',
-                  ),
+                      border: InputBorder.none,
+                      hintStyle: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      hintText: 'Enter Wi-Fi SSID',
+                      label: const Text(
+                        "Wi-Fi SSID",
+                      )),
                 ),
               ),
               const SizedBox(height: 20),
@@ -372,13 +389,15 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   controller: wifiPasswordController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintStyle: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    hintText: 'Enter Wi-Fi Password',
-                  ),
+                      border: InputBorder.none,
+                      hintStyle: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      hintText: 'Enter Wi-Fi Password',
+                      label: const Text(
+                        "Wi-Fi Password",
+                      )),
                 ),
               ),
               const SizedBox(height: 30),
@@ -388,8 +407,34 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                   height: 50,
                   child: RoundedButton(
                     onPressed: () {
-                      // _disconnectFromWifi();
-                      sendConfigurationPackage();
+                      String deviceId = deviceIDController.text.toString();
+                      String deviceUID = deviceUIDController.text.toString();
+                      String mqttEndPoint =
+                          mqttEndPointController.text.toString();
+                      String mqttPort = mqttPortController.text.toString();
+                      String mqttPublishTopic =
+                          mqttPublishTopicController.text.toString();
+                      String mqttSubscribeTopic =
+                          mqttSubscribeTopicController.text.toString();
+                      String wifiSSID = wifiSSIDController.text.toString();
+                      String wifiPassword =
+                          wifiPasswordController.text.toString();
+                      if (deviceId.isEmpty ||
+                          deviceUID.isEmpty ||
+                          mqttEndPoint.isEmpty ||
+                          mqttPort.isEmpty ||
+                          mqttPublishTopic.isEmpty ||
+                          mqttSubscribeTopic.isEmpty ||
+                          wifiPassword.isEmpty ||
+                          wifiSSID.isEmpty) {
+                        SnackbarHelper.showSnackBar(
+                            context, "Please fill in all required fields.");
+                      } else if (selectedFrequency == 0) {
+                        SnackbarHelper.showSnackBar(
+                            context, "Please select frequency");
+                      } else {
+                        sendConfigurationPackage();
+                      }
                     },
                     text: "Save",
                     backgroundColor: ConstantColors.borderButtonColor,

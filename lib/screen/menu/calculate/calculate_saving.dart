@@ -1,5 +1,6 @@
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -118,6 +119,7 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
+      bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           screenWidth * 0.05,
@@ -170,10 +172,7 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
               child: DropdownButtonFormField<int>(
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintStyle: GoogleFonts.roboto(
-                     fontSize: screenWidth *  0.04
-
-                  ),
+                  hintStyle: GoogleFonts.roboto(fontSize: screenWidth * 0.04),
                   hintText: 'Select Country',
                 ),
                 value: selectedCountry,
@@ -192,9 +191,7 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                     child: Text(
                       "Select Country",
                       style: TextStyle(
-                         fontSize: screenWidth *  0.035
-
-,
+                        fontSize: screenWidth * 0.035,
                       ),
                     ),
                   ),
@@ -226,9 +223,7 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                 '      No. of days your facility use the Air Con',
                 textAlign: TextAlign.left,
                 style: GoogleFonts.roboto(
-                     fontSize: screenWidth *  0.035
-
-,
+                    fontSize: screenWidth * 0.035,
                     color: ConstantColors.mainlyTextColor),
               ),
             ),
@@ -280,8 +275,7 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintStyle: GoogleFonts.roboto(
-                     fontSize: screenWidth *  0.04
-,
+                    fontSize: screenWidth * 0.04,
                   ),
                   hintText: 'Select the timings of use',
                 ),
@@ -301,9 +295,7 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                     child: Text(
                       "Select the timings of use",
                       style: TextStyle(
-                         fontSize: screenWidth *  0.035
-
-,
+                        fontSize: screenWidth * 0.035,
                       ),
                     ),
                   ),
@@ -330,10 +322,7 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
               child: DropdownButtonFormField<int>(
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintStyle: GoogleFonts.roboto(
-                     fontSize: screenWidth *  0.04
-
-                  ),
+                  hintStyle: GoogleFonts.roboto(fontSize: screenWidth * 0.04),
                   hintText: 'Select the BTU/HP/Tonnage of your air con',
                 ),
                 value: selectTonnage,
@@ -352,9 +341,7 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                     child: Text(
                       "Select the BTU/HP/Tonnage of your air con",
                       style: TextStyle(
-                         fontSize: screenWidth *  0.035
-
-,
+                        fontSize: screenWidth * 0.035,
                       ),
                     ),
                   ),
@@ -386,7 +373,9 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: ConstantColors.whiteColor, backgroundColor: ConstantColors.borderButtonColor, shape: RoundedRectangleBorder(
+                    foregroundColor: ConstantColors.whiteColor,
+                    backgroundColor: ConstantColors.borderButtonColor,
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                     side: const BorderSide(
@@ -400,10 +389,7 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                   },
                   child: Text(
                     "Proceed",
-                    style: GoogleFonts.roboto(
-                       fontSize: screenWidth *  0.05
-
-                    ),
+                    style: GoogleFonts.roboto(fontSize: screenWidth * 0.05),
                   ),
                 ),
               ),

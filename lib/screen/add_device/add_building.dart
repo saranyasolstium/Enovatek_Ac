@@ -9,6 +9,7 @@ import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,7 +50,7 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
 
   List<Building> buildings = [];
 
- Future<void> getAllDevice() async {
+  Future<void> getAllDevice() async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
     Response response =
@@ -79,6 +80,7 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
 
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
+      bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           screenWidth * 0.05,

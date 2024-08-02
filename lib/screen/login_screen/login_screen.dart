@@ -11,6 +11,7 @@ import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/decoration.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/gestures.dart';
@@ -40,10 +41,16 @@ class LoginScreenState extends State<LoginScreen> {
 
   User? _user;
   String? deviceID;
-
+  bool obscureText = false;
   @override
   void initState() {
     super.initState();
+  }
+
+  void toggleVisibility() {
+    setState(() {
+      obscureText = !obscureText;
+    });
   }
 
   Future<void> loginToken(String emailId, String password) async {
@@ -238,6 +245,7 @@ class LoginScreenState extends State<LoginScreen> {
 
     final isTablet = screenWidth >= 600;
     return Scaffold(
+      bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -284,9 +292,34 @@ class LoginScreenState extends State<LoginScreen> {
                   fontWeight: FontWeight.w500,
                   fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
                 ),
-                decoration: InputDecorationStyle.textFieldDecoration(
-                    placeholder: "Password", context: context),
-                obscureText: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(screenHeight * 0.1),
+                    borderSide: const BorderSide(
+                      width: 0,
+                      style: BorderStyle.none,
+                    ),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.05,
+                    vertical: screenWidth * 0.05,
+                  ),
+                  hintText: "Password",
+                  fillColor: ConstantColors.inputColor,
+                  filled: true,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility : Icons.visibility_off,
+                      color: ConstantColors.mainlyTextColor,
+                    ),
+                    onPressed: toggleVisibility,
+                  ),
+                  hintStyle: GoogleFonts.roboto(
+                    fontSize:
+                        isTablet ? screenWidth * 0.04 : screenWidth * 0.04,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ),
             Padding(

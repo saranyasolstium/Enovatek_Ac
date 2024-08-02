@@ -7,6 +7,7 @@ import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -128,6 +129,8 @@ Future<void> increaseProgressValue(String deviceId,int progressValue ) async {
 
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
+      bottomNavigationBar: Footer(),
+
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,

@@ -7,6 +7,7 @@ import 'package:enavatek_mobile/screen/add_device/device_assign/device_assigning
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,8 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
         },
         child: Scaffold(
           backgroundColor: ConstantColors.backgroundColor,
+          bottomNavigationBar: Footer(),
+
           body: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
             child: Column(

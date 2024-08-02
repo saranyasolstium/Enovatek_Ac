@@ -9,6 +9,7 @@ import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/decoration.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -136,6 +137,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(screenWidth * 0.05),
         child: Column(
@@ -206,7 +208,7 @@ class ProfileScreenState extends State<ProfileScreen> {
             //   ],
             // ),
 
-           SizedBox(
+            SizedBox(
               height: screenHeight * 0.03,
             ),
             Center(
@@ -226,7 +228,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                 child: Image.asset(ImgPath.pngName),
               ),
             ),
-             SizedBox(
+            SizedBox(
               height: screenHeight * 0.02,
             ),
             TextField(

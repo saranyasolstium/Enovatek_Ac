@@ -9,6 +9,7 @@ import 'package:enavatek_mobile/screen/menu/building/edit_building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,7 +29,7 @@ class BuildingScreenState extends State<BuildingScreen> {
     getAllDevice();
   }
 
- @override
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     getAllDevice();
@@ -66,6 +67,7 @@ class BuildingScreenState extends State<BuildingScreen> {
 
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
+      bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           screenWidth * 0.05,
@@ -99,7 +101,7 @@ class BuildingScreenState extends State<BuildingScreen> {
                         style: GoogleFonts.roboto(
                             fontSize: screenWidth * 0.05,
                             fontWeight: FontWeight.bold,
-                            color:  Colors.black),
+                            color: Colors.black),
                       ),
                     ],
                   ),

@@ -65,8 +65,6 @@ dependencies:
   wifi_info_flutter: ^2.0.2
   permission_handler: ^11.3.1
   flutter_iot_wifi: ^0.0.3
-  location: ^7.0.0
-  d_chart: ^2.6.0
   syncfusion_flutter_charts: ^26.2.7
   
 

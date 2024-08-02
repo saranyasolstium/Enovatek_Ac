@@ -4,6 +4,7 @@ import 'package:enavatek_mobile/screen/introduce/slide.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
@@ -51,38 +52,36 @@ class IntroductionScreen extends StatelessWidget {
             description: slides[index].description,
           );
         },
-        pagination:  SwiperPagination(
+        pagination: SwiperPagination(
           builder: DotSwiperPaginationBuilder(
             color: ConstantColors.dotColor,
-            size: screenHeight * 0.05, 
+            size: screenHeight * 0.05,
             activeColor: ConstantColors.lightBlueColor,
           ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: ConstantColors.backgroundColor,
-        
-        height:  screenHeight * 0.1, 
-        child:  Row(
+        height: screenHeight * 0.1,
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             RoundedButton(
-               onPressed: (){
+              onPressed: () {
                 Navigator.pushNamed(context, loginRoute);
               },
-                text: "Skip",
-                backgroundColor: ConstantColors.whiteColor,
-                textColor: ConstantColors.borderButtonColor,
-              ),
+              text: "Skip",
+              backgroundColor: ConstantColors.whiteColor,
+              textColor: ConstantColors.borderButtonColor,
+            ),
             RoundedButton(
-               onPressed: (){
+              onPressed: () {
                 Navigator.pushNamed(context, loginRoute);
               },
-                text: "Next",
-                backgroundColor: ConstantColors.borderButtonColor,
-                textColor: ConstantColors.whiteColor,
-              ),
-            
+              text: "Next",
+              backgroundColor: ConstantColors.borderButtonColor,
+              textColor: ConstantColors.whiteColor,
+            ),
           ],
         ),
       ),

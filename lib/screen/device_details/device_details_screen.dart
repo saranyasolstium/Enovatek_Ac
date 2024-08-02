@@ -13,6 +13,7 @@ import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/advanced_feature.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -247,6 +248,7 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
 
     return Scaffold(
         backgroundColor: ConstantColors.darkBackgroundColor,
+
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80.0),
           child: Padding(

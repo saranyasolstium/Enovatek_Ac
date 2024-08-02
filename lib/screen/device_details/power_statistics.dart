@@ -8,6 +8,7 @@ import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/circular_bar.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -293,6 +294,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     final dcPowerData = prepareChartData(energyDataList, 'dc');
     return Scaffold(
       backgroundColor: ConstantColors.darkBackgroundColor,
+      bottomNavigationBar: Footer(),
       appBar: AppBar(
         backgroundColor: ConstantColors.darkBackgroundColor,
         automaticallyImplyLeading: false,
@@ -588,11 +590,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             dateFormat: DateFormat.d(),
                             interval: 1,
                             edgeLabelPlacement: EdgeLabelPlacement.shift,
-                            majorGridLines: const MajorGridLines(width: 0),
-                            minimum: DateTime(
-                                DateTime.now().year, DateTime.now().month, 1),
-                            maximum: DateTime(DateTime.now().year,
-                                DateTime.now().month + 1, 0),
                           ),
                           primaryYAxis: const NumericAxis(
                             edgeLabelPlacement: EdgeLabelPlacement.shift,

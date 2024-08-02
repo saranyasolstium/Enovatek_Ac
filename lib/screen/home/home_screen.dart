@@ -9,6 +9,7 @@ import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -39,7 +40,7 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-  
+
     getAllDevice();
   }
 
@@ -50,7 +51,7 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
- Future<void> getAllDevice() async {
+  Future<void> getAllDevice() async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     print(authToken);
     int? userId = await SharedPreferencesHelper.instance.getUserID();
@@ -73,7 +74,6 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   Future<void> getActionType() async {
     Response response = await RemoteServices.getActiontype();
     if (response.statusCode == 200) {
@@ -90,6 +90,7 @@ class HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
+      bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,

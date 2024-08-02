@@ -7,6 +7,7 @@ import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
 class AddBuilding extends StatefulWidget {
-  
   const AddBuilding({Key? key}) : super(key: key);
 
   @override
@@ -33,6 +33,7 @@ class AddBuildingState extends State<AddBuilding> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
+      bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
         child: Column(
@@ -107,8 +108,8 @@ class AddBuildingState extends State<AddBuilding> {
                     String message = data["message"];
                     SnackbarHelper.showSnackBar(context, message);
                   }
-                 // Navigator.pushReplacementNamed(context, buildingRoute);
-                 Navigator.pop(context);
+                  // Navigator.pushReplacementNamed(context, buildingRoute);
+                  Navigator.pop(context);
                 } else {
                   if (data.containsKey("message")) {
                     String errorMessage = data["message"];
