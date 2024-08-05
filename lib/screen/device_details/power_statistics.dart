@@ -11,10 +11,10 @@ import 'package:enavatek_mobile/widget/circular_bar.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:horizontal_date_picker_flutter/horizontal_date_picker_flutter.dart';
+import 'package:fl_animated_linechart/fl_animated_linechart.dart';
+import 'package:fl_animated_linechart/common/pair.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:intl/intl.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -290,8 +290,23 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final acPowerData = prepareChartData(energyDataList, 'ac');
-    final dcPowerData = prepareChartData(energyDataList, 'dc');
+    List<ChartData> acPowerData = prepareChartData(energyDataList!, 'ac');
+    List<ChartData> dcPowerData = prepareChartData(energyDataList!, 'dc');
+
+    Map<DateTime, double> acDataMap = {
+      for (var data in acPowerData) data.date: data.value,
+    };
+
+    Map<DateTime, double> dcDataMap = {
+      for (var data in dcPowerData) data.date: data.value,
+    };
+
+    LineChart chart = LineChart.fromDateTimeMaps(
+      [acDataMap, dcDataMap],
+      [Colors.blue, Colors.red],
+      ['AC Energy', 'DC Energy'],
+    );
+
     return Scaffold(
       backgroundColor: ConstantColors.darkBackgroundColor,
       bottomNavigationBar: Footer(),
@@ -551,108 +566,43 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               ),
             ),
             const SizedBox(height: 20),
-            periodType == "year"
-                ? SfCartesianChart(
-                    primaryXAxis: DateTimeAxis(
-                      dateFormat: DateFormat.MMM(),
-                      interval: 1,
-                      edgeLabelPlacement: EdgeLabelPlacement.shift,
-                      majorGridLines: const MajorGridLines(width: 0),
-                      minimum: DateTime(DateTime.now().year, 1, 1),
-                      maximum: DateTime(DateTime.now().year + 1, 1, 1),
-                    ),
-                    primaryYAxis: const NumericAxis(
-                      edgeLabelPlacement: EdgeLabelPlacement.shift,
-                      labelFormat: '{value} kWh',
-                    ),
-                    series: <CartesianSeries>[
-                      LineSeries<ChartData, DateTime>(
-                        dataSource: acPowerData,
-                        xValueMapper: (ChartData data, _) => data.date,
-                        yValueMapper: (ChartData data, _) => data.value,
-                        name: 'AC Energy',
-                        color: Colors.blue,
-                      ),
-                      LineSeries<ChartData, DateTime>(
-                        dataSource: dcPowerData,
-                        xValueMapper: (ChartData data, _) => data.date,
-                        yValueMapper: (ChartData data, _) => data.value,
-                        name: 'DC Energy',
-                        color: Colors.red,
-                      ),
+            Visibility(
+              visible: energyDataList.isNotEmpty,
+              child: SizedBox(
+                height: 300,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: AnimatedLineChart(
+                    chart,
+                    gridColor: Colors.grey,
+                    toolTipColor: Colors.black,
+                    textStyle:
+                        const TextStyle(fontSize: 12, color: Colors.black54),
+                    legends: const [
+                      Legend(
+                          title: 'AC Energy',
+                          color: Colors.blue,
+                          showLeadingLine: true),
+                      Legend(
+                          title: 'DC Energy',
+                          color: Colors.red,
+                          showLeadingLine: true)
                     ],
-                  )
-                : periodType == "month"
-                    ? SizedBox(
-                        height: 300,
-                        child: SfCartesianChart(
-                          primaryXAxis: DateTimeAxis(
-                            dateFormat: DateFormat.d(),
-                            interval: 1,
-                            edgeLabelPlacement: EdgeLabelPlacement.shift,
-                          ),
-                          primaryYAxis: const NumericAxis(
-                            edgeLabelPlacement: EdgeLabelPlacement.shift,
-                            labelFormat: '{value} kWh',
-                          ),
-                          series: <CartesianSeries>[
-                            LineSeries<ChartData, DateTime>(
-                              dataSource: acPowerData,
-                              xValueMapper: (ChartData data, _) => data.date,
-                              yValueMapper: (ChartData data, _) => data.value,
-                              name: 'AC Energy',
-                              color: Colors.blue,
-                            ),
-                            LineSeries<ChartData, DateTime>(
-                              dataSource: dcPowerData,
-                              xValueMapper: (ChartData data, _) => data.date,
-                              yValueMapper: (ChartData data, _) => data.value,
-                              name: 'DC Energy',
-                              color: Colors.red,
-                            ),
-                          ],
-                        ),
-                      )
-                    : SizedBox(
-                        height: 300,
-                        child: SfCartesianChart(
-                          primaryXAxis: DateTimeAxis(
-                            dateFormat: DateFormat('H'),
-                            interval: 1,
-                            intervalType: DateTimeIntervalType.hours,
-                            edgeLabelPlacement: EdgeLabelPlacement.shift,
-                            majorGridLines: const MajorGridLines(width: 0),
-                            minimum: DateTime(DateTime.now().year,
-                                DateTime.now().month, DateTime.now().day),
-                            maximum: DateTime(
-                                DateTime.now().year,
-                                DateTime.now().month,
-                                DateTime.now().day,
-                                23,
-                                59),
-                          ),
-                          primaryYAxis: const NumericAxis(
-                            edgeLabelPlacement: EdgeLabelPlacement.shift,
-                            labelFormat: '{value} kWh',
-                          ),
-                          series: <CartesianSeries>[
-                            LineSeries<ChartData, DateTime>(
-                              dataSource: acPowerData,
-                              xValueMapper: (ChartData data, _) => data.date,
-                              yValueMapper: (ChartData data, _) => data.value,
-                              name: 'AC Energy',
-                              color: Colors.blue,
-                            ),
-                            LineSeries<ChartData, DateTime>(
-                              dataSource: dcPowerData,
-                              xValueMapper: (ChartData data, _) => data.date,
-                              yValueMapper: (ChartData data, _) => data.value,
-                              name: 'DC Energy',
-                              color: Colors.red,
-                            ),
-                          ],
-                        ),
-                      ),
+                    showMarkerLines: true,
+                    iconBackgroundColor: Colors.white,
+                    fillMarkerLines: true,
+                    innerGridStrokeWidth: 1.0,
+                    legendsRightLandscapeMode: false,
+                    useLineColorsInTooltip: true,
+                    showMinutesInTooltip: true,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+
             Row(
               children: [
                 Expanded(
