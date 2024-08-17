@@ -1,13 +1,7 @@
 import 'package:enavatek_mobile/router/route_constant.dart';
-import 'package:enavatek_mobile/screen/add_device/add_device_screen.dart';
 import 'package:enavatek_mobile/screen/add_device/bluetooth_scan.dart';
-import 'package:enavatek_mobile/screen/add_device/device_assign/device_assigning.dart';
-import 'package:enavatek_mobile/screen/add_device/device_name_screen.dart';
-import 'package:enavatek_mobile/screen/add_device/manual_add_device.dart';
-import 'package:enavatek_mobile/screen/add_device/wifi_password_screen.dart';
 import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/add_schedule.dart';
-import 'package:enavatek_mobile/screen/device_details/device_details_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/schedule.dart';
 import 'package:enavatek_mobile/screen/enginner_access/enginner_home.dart';
 import 'package:enavatek_mobile/screen/enginner_access/enginner_menu.dart';

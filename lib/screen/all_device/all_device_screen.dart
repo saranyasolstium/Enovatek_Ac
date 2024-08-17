@@ -31,29 +31,31 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
   }
 
   Future<void> getAllDevice() async {
-  String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-  int? userId = await SharedPreferencesHelper.instance.getUserID();
-  
-  Response response = await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
-  
-  if (response.statusCode == 200) {
-    String responseBody = response.body;
-    Map<String, dynamic> jsonData = json.decode(responseBody);
-    
-    if (jsonData.containsKey("buildings")) {
-      List<dynamic> buildingList = jsonData["buildings"];
-      buildings = buildingList.map((data) => Building.fromJson(data)).toList();
-      setState(() {
-        devices = getAllDevices(buildings);
-      });
-      print(devices.length);
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? userId = await SharedPreferencesHelper.instance.getUserID();
+
+    Response response =
+        await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
+
+    if (response.statusCode == 200) {
+      String responseBody = response.body;
+      Map<String, dynamic> jsonData = json.decode(responseBody);
+
+      if (jsonData.containsKey("buildings")) {
+        List<dynamic> buildingList = jsonData["buildings"];
+        buildings =
+            buildingList.map((data) => Building.fromJson(data)).toList();
+        setState(() {
+          devices = getAllDevices(buildings);
+        });
+        print(devices.length);
+      } else {
+        print('Response body does not contain buildings');
+      }
     } else {
-      print('Response body does not contain buildings');
+      print('Response body: ${response.body}');
     }
-  } else {
-    print('Response body: ${response.body}');
   }
-}
 
   List<Device> getAllDevices(List<Building> buildings) {
     List<Device> allDevices = [];
@@ -76,15 +78,16 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
         for (final room in floor.rooms) {
           for (final device in room.devices) {
             if (device.deviceId == deviceId) {
-              return DeviceLocation(floor.name, room.name);
+              return DeviceLocation(building.name, floor.name, room.name);
             }
           }
         }
       }
     }
-    return DeviceLocation(null, null); // Device not found
+    return DeviceLocation(null, null, null); // Device not found
   }
-Future<void> increaseProgressValue(String deviceId,int progressValue ) async {
+
+  Future<void> increaseProgressValue(String deviceId, int progressValue) async {
     setState(() {
       if (progressValue < 30) {
         progressValue += 1;
@@ -102,7 +105,7 @@ Future<void> increaseProgressValue(String deviceId,int progressValue ) async {
     }
   }
 
-  Future<void> decreaseProgressValue(String deviceId,int progressValue) async {
+  Future<void> decreaseProgressValue(String deviceId, int progressValue) async {
     setState(() {
       progressValue -= 1;
       if (progressValue < 16) {
@@ -130,7 +133,6 @@ Future<void> increaseProgressValue(String deviceId,int progressValue ) async {
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       bottomNavigationBar: Footer(),
-
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
@@ -182,9 +184,7 @@ Future<void> increaseProgressValue(String deviceId,int progressValue ) async {
                 const SizedBox(width: 10),
               ],
             ),
-            const SizedBox(
-              height: 30,
-            ),
+          
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -202,12 +202,12 @@ Future<void> increaseProgressValue(String deviceId,int progressValue ) async {
                         context,
                         MaterialPageRoute(
                             builder: (context) => DeviceDetailScreen(
-                              deviceName: device.displayName,
-                              fanSpeed: device.fanSpeed,
-                              mode: device.mode,
-                              power: device.power,
-                              deviceId: device.deviceId,
-                            )),
+                                  deviceName: device.displayName,
+                                  fanSpeed: device.fanSpeed,
+                                  mode: device.mode,
+                                  power: device.power,
+                                  deviceId: device.deviceId,
+                                )),
                       );
                     },
                     child: Card(
@@ -428,7 +428,6 @@ Future<void> increaseProgressValue(String deviceId,int progressValue ) async {
                                           size: 20,
                                           color: ConstantColors.whiteColor),
                                     )
-                                 
                                   ]),
                             ),
                           ])),

@@ -15,16 +15,16 @@ import 'package:http/http.dart';
 
 class DeviceAssigningScreen extends StatefulWidget {
   final String deviceSerialNo;
-  final String wifinName;
-  final String password;
+  final String business;
+  final String location;
   final int buildingID;
   final String buildingName;
 
   const DeviceAssigningScreen(
       {Key? key,
       required this.deviceSerialNo,
-      required this.wifinName,
-      required this.password,
+      required this.business,
+      required this.location,
       required this.buildingID,
       required this.buildingName})
       : super(key: key);
@@ -143,8 +143,8 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                                   builder: (context) => DeviceAddFloor(
                                         buildingId: widget.buildingID!,
                                         deviceSerialNo: widget.deviceSerialNo,
-                                        password: widget.password,
-                                        wifinName: widget.wifinName,
+                                        location: widget.location,
+                                        business: widget.business,
                                       )),
                             );
                           },
@@ -199,8 +199,8 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                                           builder: (context) => DeviceAddRoom(
                                                 deviceSerialNo:
                                                     widget.deviceSerialNo,
-                                                password: widget.password,
-                                                wifinName: widget.wifinName,
+                                                location: widget.location,
+                                                business: widget.business,
                                                 buildingID: widget.buildingID,
                                                 floorID: floor.floorId,
                                               )),
@@ -270,10 +270,10 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                                                             DeviceNameScreen(
                                                               deviceSerialNo: widget
                                                                   .deviceSerialNo,
-                                                              wifinName: widget
-                                                                  .wifinName,
-                                                              password: widget
-                                                                  .password,
+                                                              business: widget
+                                                                  .business,
+                                                              location: widget
+                                                                  .location,
                                                               roomId:
                                                                   room.roomId,
                                                             )),

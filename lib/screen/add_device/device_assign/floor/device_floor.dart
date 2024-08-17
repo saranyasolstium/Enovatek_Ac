@@ -16,15 +16,15 @@ import 'package:http/http.dart';
 
 class DeviceAddFloor extends StatefulWidget {
   final String deviceSerialNo;
-  final String wifinName;
-  final String password;
+  final String business;
+  final String location;
   final int buildingId;
 
   const DeviceAddFloor({
     Key? key,
     required this.deviceSerialNo,
-    required this.wifinName,
-    required this.password,
+    required this.business,
+    required this.location,
     required this.buildingId,
   }) : super(key: key);
 
@@ -43,8 +43,8 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
             MaterialPageRoute(
                 builder: (context) => DeviceAssigningScreen(
                       deviceSerialNo: widget.deviceSerialNo,
-                      password: widget.password,
-                      wifinName: widget.wifinName,
+                      location: widget.location,
+                      business: widget.business,
                       buildingID: widget.buildingId,
                       buildingName: "",
                     )),
@@ -69,8 +69,8 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
                           MaterialPageRoute(
                               builder: (context) => DeviceAssigningScreen(
                                     deviceSerialNo: widget.deviceSerialNo,
-                                    password: widget.password,
-                                    wifinName: widget.wifinName,
+                                    location: widget.location,
+                                    business: widget.business,
                                     buildingID: widget.buildingId,
                                     buildingName: "",
                                   )),
@@ -143,8 +143,8 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
                         MaterialPageRoute(
                             builder: (context) => DeviceAssigningScreen(
                                   deviceSerialNo: widget.deviceSerialNo,
-                                  password: widget.password,
-                                  wifinName: widget.wifinName,
+                                  location: widget.location,
+                                  business: widget.business,
                                   buildingID: widget.buildingId,
                                   buildingName: "",
                                 )),

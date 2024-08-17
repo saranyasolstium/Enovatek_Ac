@@ -17,14 +17,14 @@ import 'package:http/http.dart';
 
 class DeviceAddBuildingScreen extends StatefulWidget {
   final String deviceSerialNo;
-  final String wifinName;
-  final String password;
+  final String bussiness;
+  final String location;
 
   const DeviceAddBuildingScreen(
       {Key? key,
       required this.deviceSerialNo,
-      required this.wifinName,
-      required this.password})
+      required this.bussiness,
+      required this.location})
       : super(key: key);
   @override
   DeviceAddBuildingScreenState createState() => DeviceAddBuildingScreenState();
@@ -160,8 +160,8 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                                 buildingID: building.buildingId,
                                 buildingName: building.name,
                                 deviceSerialNo: widget.deviceSerialNo,
-                                wifinName: widget.wifinName,
-                                password: widget.password,
+                                business: widget.bussiness,
+                                location: widget.location,
                               )),
                     );
                   },

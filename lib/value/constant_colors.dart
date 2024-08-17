@@ -8,6 +8,8 @@ class ConstantColors {
   static const Color lightBlueColor = Color(0xFF78BFCF);
   static const Color dotColor = Color(0xFFF6F9FF);
   static const Color backgroundColor = Color(0xFFF6F9FF);
+  static const Color liveBgColor = Color(0xFFFAFBFB);
+
   static const Color darkBackgroundColor = Color(0xFFEAF0F6);
   static const Color mainlyTextColor = Color(0xFF1B2D3C);
 
@@ -29,4 +31,9 @@ class ConstantColors {
   static const Color transparent = Colors.transparent;
   static const Color black = Color(0xFF000000);
   static const Color modeDefault = Color(0xFFD1D5D8);
+  static const Color appColor = Color(0Xff1B2D3C);
+  static const Color unSelectColor = Color(0x1B2D3C0F);
+  static const Color acColor = Color(0xFF78BFCF);
+  static const Color dcColor = Color(0xFF41CB28);
+  static const Color borderColor = Color(0xFFE2E5E6);
 }

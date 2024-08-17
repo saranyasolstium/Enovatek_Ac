@@ -13,9 +13,7 @@ import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/advanced_feature.dart';
-import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -43,7 +41,7 @@ class DeviceDetailScreen extends StatefulWidget {
 class DeviceDetailScreenState extends State<DeviceDetailScreen> {
   double progressValue = 24;
   double secondaryProgressValue = 0;
-  int fanSpeedLevel = 1; // Initial fan speed level
+  int fanSpeedLevel = 1;
   String powerColor = "off";
   String modeNameToFind = "";
   @override

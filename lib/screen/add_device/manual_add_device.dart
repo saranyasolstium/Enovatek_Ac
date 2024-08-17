@@ -1,6 +1,6 @@
 import 'package:enavatek_mobile/screen/add_device/add_building.dart';
 import 'package:enavatek_mobile/screen/add_device/device_assign/device_assigning.dart';
-import 'package:enavatek_mobile/screen/add_device/wifi_password_screen.dart';
+import 'package:enavatek_mobile/screen/add_device/basic_detail_screen.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/decoration.dart';
@@ -31,7 +31,6 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       bottomNavigationBar: Footer(),
-
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           screenWidth * 0.05,
@@ -106,38 +105,15 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
                 onPressed: () {
                   String deviceSerialNo = deviceSerialNoTextController.text;
                   if (deviceSerialNo.isNotEmpty) {
-                    if (widget.buildingID == 0) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DeviceAddBuildingScreen(
-                                  deviceSerialNo: deviceSerialNo,
-                                  wifinName: "",
-                                  password: "",
-                                )),
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DeviceAssigningScreen(
-                                  buildingID: widget.buildingID,
-                                  buildingName: widget.buildingName,
-                                  deviceSerialNo: deviceSerialNo,
-                                  wifinName: "",
-                                  password: "",
-                                )),
-                      );
-                    }
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) => WifiPasswordScreen(
-                    //             buildingID: widget.buildingID,
-                    //             buildingName: widget.buildingName,
-                    //             deviceSerialNo: deviceSerialNo,
-                    //           )),
-                    // );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => BasicDetailScreen(
+                                buildingID: widget.buildingID,
+                                buildingName: widget.buildingName,
+                                deviceSerialNo: deviceSerialNo,
+                              )),
+                    );
                   } else {
                     SnackbarHelper.showSnackBar(
                         context, "Please enter a device serial no!");

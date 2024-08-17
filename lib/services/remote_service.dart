@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:country_picker/country_picker.dart';
+import 'package:enavatek_mobile/model/country_data.dart';
 import 'package:enavatek_mobile/model/energy.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:mqtt_client/mqtt_client.dart';
-import 'package:uuid/uuid.dart';
 
 class RemoteServices {
   static var client = http.Client();
@@ -199,7 +199,7 @@ class RemoteServices {
         'Authorization': 'Bearer $token',
       };
 
-      http.Response response = await http.get(
+      http.Response response = await http.post(
         Uri.parse(apiUrl),
         headers: headers,
       );
@@ -342,8 +342,8 @@ class RemoteServices {
       String authToken,
       String deviceName,
       String deviceSerialNo,
-      String wifiName,
-      String password,
+      String bussiness,
+      String location,
       int deviceID,
       int roomId,
       int userId) async {
@@ -361,8 +361,10 @@ class RemoteServices {
         "displayName": deviceName,
         "roomId": roomId,
         "userId": userId,
-        "wifiName": wifiName,
-        "wifiPassword": password,
+        "wifiName": "",
+        "wifiPassword": "",
+        "location_name": location,
+        "business_unit_name": bussiness
       };
       print('Request Body: $requestBody');
       String jsonBody = jsonEncode(requestBody);
@@ -481,31 +483,27 @@ class RemoteServices {
     }
   }
 
-  static Future<List<EnergyData>>  fetchEnergyData({
-  required String deviceId,
-  required String periodType,
-  required String periodValue,
-}) async {
-  final apiUrl = Uri.parse('${url}api/user/consumption_data_chart');
-  final response = await http.post(
-    apiUrl,
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({
-      'device_id': deviceId,
-      'period_type': periodType,
-      'period_value': periodValue,
-    }),
-  );
+  static Future<List<EnergyData>> fetchEnergyData({
+    required String deviceId,
+    required String periodType,
+  }) async {
+    final apiUrl = Uri.parse('${url}api/user/power_consumption_data');
+    final response = await http.post(
+      apiUrl,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'device_id': deviceId,
+        'period_type': periodType,
+      }),
+    );
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    print('havish $data');
-    final List energyDataList = data['energy_data'];
-    return energyDataList.map((json) => EnergyData.fromJson(json)).toList();
-  } else {
-    throw Exception('Failed to load data');
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['energy_data'] as List;
+      return data.map((json) => EnergyData.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load data');
+    }
   }
-}
 
   static Future<Response> sendConfiguration(
       String authToken,
@@ -538,7 +536,7 @@ class RemoteServices {
         "ssid": ssid,
         "ssid_password": ssidPassword,
         "longitude": "",
-        "latitude":"",
+        "latitude": "",
       };
       print(requestBody);
       String jsonBody = jsonEncode(requestBody);
@@ -547,6 +545,97 @@ class RemoteServices {
         Uri.parse(apiUrl),
         headers: headers,
         body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> createCountry(String token, String countryName,
+      String currencyType, int energyRate) async {
+    try {
+      print('${url}api/master/create_update_country');
+      String apiUrl = '${url}api/master/create_update_country';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+      Map<String, dynamic> requestBody = {
+        "id": 4,
+        "name": countryName,
+        "currency_type": currencyType,
+        "energy_rate": energyRate
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<List<CountryData>> fetchCountryList(
+      {required String token}) async {
+    final apiUrl = Uri.parse('${url}api/master/list_of_country');
+    final response = await http.get(
+      apiUrl,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      final List list = data['data'];
+      return list.map((json) => CountryData.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
+  static Future<Response> getBusinessUnit(String token) async {
+    try {
+      print('${url}api/master/list_of_business');
+      String apiUrl = '${url}api/master/list_of_business';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      http.Response response = await http.get(
+        Uri.parse(apiUrl),
+        headers: headers,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> getLocation(String token) async {
+    try {
+      print('${url}api/master/list_of_location');
+      String apiUrl = '${url}api/master/list_of_location';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      http.Response response = await http.get(
+        Uri.parse(apiUrl),
+        headers: headers,
       );
       print(response.body);
       return response;

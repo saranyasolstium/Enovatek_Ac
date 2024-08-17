@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:enavatek_mobile/value/constant_colors.dart';
 
 class CircularBar extends StatelessWidget {
   final double value;
+  final double maxValue;
   final String unit;
   final String label;
   final Color color;
@@ -9,6 +12,7 @@ class CircularBar extends StatelessWidget {
   const CircularBar({
     Key? key,
     required this.value,
+    required this.maxValue,
     required this.unit,
     required this.label,
     required this.color,
@@ -16,32 +20,73 @@ class CircularBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate the progress ratio as percentage
+    double progress = (value / maxValue) * 100;
+
     return Column(
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 20),
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-              width: 120,
-              height: 120,
-              child: CircularProgressIndicator(
-                strokeWidth: 12,
-                value: value / 300, // Adjust max value if necessary
-
-                valueColor: AlwaysStoppedAnimation<Color>(color),
-                backgroundColor: Colors.grey,
+        const SizedBox(height: 20),
+        SizedBox(
+          width: 120,
+          height: 120,
+          child: SfRadialGauge(
+            axes: <RadialAxis>[
+              RadialAxis(
+                minimum: 0,
+                maximum: 100,
+                showLabels: false,
+                showTicks: false,
+                startAngle: 270,
+                endAngle: 270,
+                axisLineStyle: const AxisLineStyle(
+                  thickness: 0.15,
+                  color: ConstantColors.unSelectColor,
+                  thicknessUnit: GaugeSizeUnit.factor,
+                ),
+                pointers: <GaugePointer>[
+                  RangePointer(
+                    value: progress,
+                    width: 0.15,
+                    sizeUnit: GaugeSizeUnit.factor,
+                    color: color,
+                    enableAnimation: true,
+                    animationDuration: 1000,
+                    animationType: AnimationType.ease,
+                  ),
+                ],
+                annotations: <GaugeAnnotation>[
+                  GaugeAnnotation(
+                    widget: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          value.toStringAsFixed(2),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          unit,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    angle: 90,
+                    positionFactor: 0.1,
+                  ),
+                ],
               ),
-            ),
-            Text(
-              '${value.toStringAsFixed(2)} $unit',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );

@@ -1,20 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
-import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
+import 'package:enavatek_mobile/model/country_data.dart';
 import 'package:enavatek_mobile/model/energy.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all_device_screen.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics_live_data.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
-import 'package:enavatek_mobile/widget/circular_bar.dart';
+import 'package:enavatek_mobile/widget/dropdown.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
+import 'package:enavatek_mobile/widget/rounded_btn.dart';
+import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:fl_animated_linechart/fl_animated_linechart.dart';
-import 'package:fl_animated_linechart/common/pair.dart';
-import 'package:easy_date_timeline/easy_date_timeline.dart';
-import 'package:intl/intl.dart';
+import 'package:http/http.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:country_picker/country_picker.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -27,26 +32,8 @@ class PowerStatisticsScreen extends StatefulWidget {
   PowerStatisticsScreenState createState() => PowerStatisticsScreenState();
 }
 
-List<ChartData> prepareChartData(List<EnergyData> data, String energyType) {
-  return data
-      .map((e) => ChartData(
-            date: e.date,
-            value: energyType == 'ac' ? e.acEnergy : e.dcEnergy,
-          ))
-      .toList();
-}
-
-class ChartData {
-  final DateTime date;
-  final double value;
-
-  ChartData({required this.date, required this.value});
-}
-
 class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     with SingleTickerProviderStateMixin {
-  DateTime _selectedDate = DateTime.now();
-  TabController? _tabController;
   String? totalPower = "", acPower = "", dcPower = "";
   double? acValue = 0,
       dcValue = 0,
@@ -58,28 +45,33 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       dcEnergy = 0;
   Timer? timer;
   List<EnergyData> energyDataList = [];
-  bool _loading = false;
-  String periodType = "day";
+  List<CountryData> countryList = [];
 
+  String energyType = "intraday";
+
+  String periodType = "day";
+  ValueNotifier<bool> energyNotiifer = ValueNotifier(true);
+  ValueNotifier<bool> treeNotiifer = ValueNotifier(false);
+  ValueNotifier<bool> savingNotiifer = ValueNotifier(false);
+  ValueNotifier<int> selectedTabIndex = ValueNotifier<int>(0);
+
+  ValueNotifier<String> selectedCountryNotifier = ValueNotifier<String>('sg');
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     DateTime currentDate = DateTime.now();
     String formattedDate =
         "${currentDate.day}-${currentDate.month}-${currentDate.year}";
+    fetchData(widget.deviceId, energyType);
     powerusages("day", formattedDate);
-    updatePowerUsages("day", formattedDate);
-    fetchData(widget.deviceId, periodType, formattedDate);
+    fetchCountry(false);
   }
 
-  Future<void> fetchData(
-      String deviceid, String periodType, String value) async {
+  Future<void> fetchData(String deviceid, String periodType) async {
     try {
       final data = await RemoteServices.fetchEnergyData(
         deviceId: deviceid,
         periodType: periodType,
-        periodValue: value,
       );
       setState(() {
         energyDataList = data;
@@ -90,25 +82,42 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
-  void updatePowerUsages(String periodType, String value) {
-    timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      powerusages(periodType, value);
-    });
-  }
+  Future<void> fetchCountry(bool status) async {
+    try {
+      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
 
-  @override
-  void dispose() {
-    _tabController!.dispose();
-    stopTimer();
-    super.dispose();
-  }
-
-  void stopTimer() {
-    if (timer != null && timer!.isActive) {
-      timer!.cancel();
-      print("Timer stopped");
+      final data = await RemoteServices.fetchCountryList(token: authToken!);
+      setState(() {
+        countryList = data;
+        if (status) {
+          countrySelection();
+        }
+      });
+    } catch (e) {
+      // Handle error
+      print(e);
     }
   }
+
+  // void updatePowerUsages(String periodType, String value) {
+  //   timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+  //     powerusages(periodType, value);
+  //   });
+  // }
+
+  // @override
+  // void dispose() {
+  //   _tabController!.dispose();
+  //   stopTimer();
+  //   super.dispose();
+  // }
+
+  // void stopTimer() {
+  //   if (timer != null && timer!.isActive) {
+  //     timer!.cancel();
+  //     print("Timer stopped");
+  //   }
+  // }
 
   Future<void> powerusages(String periodType, String periodValue) async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
@@ -173,142 +182,291 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
-  Widget _buildDatePicker(BuildContext context, String mode) {
-    switch (mode) {
-      case 'day':
-        return Center(
-            child: EasyDateTimeLine(
-          initialDate: DateTime.now(),
-          onDateChange: (selectedDate) {
-            String formattedDate =
-                DateFormat('dd-MM-yyyy').format(selectedDate);
-            stopTimer();
-            powerusages("day", formattedDate);
-            updatePowerUsages("day", formattedDate);
-            periodType = "day";
-            fetchData(widget.deviceId, periodType, formattedDate);
-          },
-          activeColor: const Color(0xff116A7B),
-          dayProps: const EasyDayProps(
-            landScapeMode: true,
-            activeDayStyle: DayStyle(
-              borderRadius: 48.0,
-            ),
-            dayStructure: DayStructure.monthDayNumDayStr,
-          ),
-          headerProps: const EasyHeaderProps(showHeader: false),
-        ));
+  Future<void> countrySelection() async {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
 
-      case 'month':
-        int currentMonthIndex = _selectedDate.month - 1;
-        double initialScrollOffset = currentMonthIndex * 100.0;
+    Future<void> createCountry(
+        String countryName, String currencyType, int energyRate) async {
+      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+      print(authToken);
+      Response response = await RemoteServices.createCountry(
+          authToken!, countryName, currencyType, energyRate);
+      var data = jsonDecode(response.body);
 
-        return SizedBox(
-          height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 12,
-            itemBuilder: (context, index) {
-              DateTime monthDate = DateTime(_selectedDate.year, index + 1);
-              return _buildDateItem(context, monthDate,
-                  DateFormat.MMMM().format(monthDate), "month");
-            },
-            controller:
-                ScrollController(initialScrollOffset: initialScrollOffset),
-          ),
-        );
-
-      case 'year':
-        return SizedBox(
-          height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 7,
-            itemBuilder: (context, index) {
-              int year = _selectedDate.year - 1 + index;
-              return _buildDateItem(
-                  context, DateTime(year, 1, 1), year.toString(), "year");
-            },
-          ),
-        );
+      if (response.statusCode == 200) {
+        if (data.containsKey("message")) {
+          String message = data["message"];
+          SnackbarHelper.showSnackBar(context, message);
+          Navigator.pop(context);
+        }
+      } else {
+        SnackbarHelper.showSnackBar(context, "Failed to create country");
+      }
     }
 
-    return const SizedBox.shrink();
-  }
+    String currency = "";
+    String radioValue = "";
+    TextEditingController countryController = TextEditingController();
+    TextEditingController energyController = TextEditingController();
 
-  Widget _buildDateItem(
-      BuildContext context, DateTime date, String displayText, String type) {
-    bool isSelected = false;
-    if (type == 'month') {
-      isSelected = date.month == _selectedDate.month;
-    } else if (type == 'year') {
-      isSelected = date.year == _selectedDate.year;
-    }
-
-    return GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedDate = date;
-            if (type == 'month') {
-              String monthName = DateFormat('MMMM').format(_selectedDate);
-              print(monthName);
-              stopTimer();
-              powerusages("month", monthName);
-              updatePowerUsages("month", monthName);
-              periodType = "month";
-              fetchData(widget.deviceId, periodType, monthName);
-            } else {
-              String year = DateFormat('yyyy').format(_selectedDate);
-              print(year);
-              stopTimer();
-              powerusages("year", year);
-              updatePowerUsages("year", year);
-              periodType = "year";
-              fetchData(widget.deviceId, periodType, year);
-            }
-          });
-        },
-        child: Center(
-          child: Container(
-            width: 120,
-            height: 60,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: isSelected ? const Color(0xff116A7B) : Colors.transparent,
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: Text(
-              displayText,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
-                fontWeight: FontWeight.bold,
+    return showDialog(
+      context: context,
+      builder: (builder) {
+        return StatefulBuilder(
+          builder:
+              (BuildContext context, void Function(void Function()) setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
               ),
-            ),
-          ),
-        ));
+              contentPadding: EdgeInsets.zero,
+              insetPadding: const EdgeInsets.all(14),
+              actionsPadding:
+                  const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
+              actions: <Widget>[
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  color: Colors.white,
+                  width: MediaQuery.of(context).size.width * 0.82,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Select Country',
+                            style: GoogleFonts.roboto(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: ConstantColors.appColor,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.only(right: 10),
+                              child: Icon(Icons.close),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        child: Divider(
+                          thickness: 1,
+                          color: Colors.black12,
+                        ),
+                      ),
+                      // Country Selection Radio Buttons
+                      ...countryList.map((country) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CountryFlag.fromCountryCode(
+                              country.currencyType,
+                              shape: const Circle(),
+                              height: 25,
+                              width: 25,
+                            ),
+                            const SizedBox(width: 20),
+                            Text(
+                              country.name,
+                              style: GoogleFonts.roboto(
+                                fontSize: 14,
+                                color: ConstantColors.appColor,
+                              ),
+                            ),
+                            const Spacer(),
+                            Transform.scale(
+                              scale: 1,
+                              child: Radio(
+                                value: country.currencyType,
+                                groupValue: radioValue,
+                                hoverColor: ConstantColors.borderButtonColor,
+                                fillColor: MaterialStateColor.resolveWith(
+                                    (states) =>
+                                        ConstantColors.borderButtonColor),
+                                onChanged: (value) {
+                                  setState(() {
+                                    radioValue = value.toString();
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                      const SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 25,
+                            width: 25,
+                            decoration: const BoxDecoration(
+                              color: ConstantColors.iconColr,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Text(
+                            'Custom',
+                            style: GoogleFonts.roboto(
+                              fontSize: 14,
+                              color: ConstantColors.appColor,
+                            ),
+                          ),
+                          const Spacer(),
+                          Transform.scale(
+                            scale: 1,
+                            child: Radio(
+                              value: "Custom",
+                              groupValue: radioValue,
+                              hoverColor: ConstantColors.borderButtonColor,
+                              fillColor: MaterialStateColor.resolveWith(
+                                  (states) => ConstantColors.borderButtonColor),
+                              onChanged: (value) {
+                                setState(() {
+                                  radioValue = value.toString();
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      // Conditional Display of Country Picker and Energy Rate Input
+                      if (radioValue == "Custom") ...[
+                        Container(
+                          padding: EdgeInsets.only(
+                            left: 20,
+                            right: 0,
+                            top: isTablet ? 20 : 0,
+                            bottom: isTablet ? 20 : 0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: ConstantColors.inputColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: TextField(
+                            onTap: () {
+                              showCountryPicker(
+                                context: context,
+                                showPhoneCode: false,
+                                onSelect: (Country country) {
+                                  countryController.text = country.name;
+                                  currency = country.countryCode;
+                                },
+                              );
+                            },
+                            controller: countryController,
+                            autocorrect: false,
+                            readOnly: true,
+                            textAlignVertical: TextAlignVertical.center,
+                            decoration: InputDecoration(
+                              suffixIcon: Icon(
+                                Icons.expand_more,
+                                size: screenWidth * 0.05,
+                                color: ConstantColors.mainlyTextColor,
+                              ),
+                              border: InputBorder.none,
+                              hintStyle: GoogleFonts.roboto(
+                                fontSize: screenWidth * 0.04,
+                              ),
+                              hintText: 'Select Country',
+                            ),
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.04,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: EdgeInsets.only(
+                            left: 20,
+                            right: 0,
+                            top: isTablet ? 20 : 0,
+                            bottom: isTablet ? 20 : 0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: ConstantColors.inputColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: TextField(
+                            controller: energyController,
+                            textAlignVertical: TextAlignVertical.center,
+                            decoration: InputDecoration(
+                              prefixIcon: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15.0),
+                                child: Text(
+                                  'USD | ',
+                                  style: GoogleFonts.roboto(
+                                    fontSize: screenWidth * 0.04,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              border: InputBorder.none,
+                              hintStyle: GoogleFonts.roboto(
+                                fontSize: screenWidth * 0.04,
+                              ),
+                              hintText: 'Energy rate',
+                            ),
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.04,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                      RoundedButton(
+                        text: radioValue == "Custom" ? "Create" : "Apply",
+                        backgroundColor: ConstantColors.borderButtonColor,
+                        textColor: ConstantColors.whiteColor,
+                        onPressed: () {
+                          if (radioValue == "Custom") {
+                            if (countryController.text.isEmpty) {
+                              SnackbarHelper.showSnackBar(
+                                  context, "Please select country");
+                            } else if (energyController.text.isEmpty) {
+                              SnackbarHelper.showSnackBar(
+                                  context, "Please select energy");
+                            } else {
+                              createCountry(
+                                countryController.text,
+                                currency,
+                                int.parse(energyController.text),
+                              );
+                            }
+                          } else {
+                            setState(() {
+                              print(radioValue);
+                              selectedCountryNotifier.value = radioValue;
+                              Navigator.pop(context);
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    List<ChartData> acPowerData = prepareChartData(energyDataList!, 'ac');
-    List<ChartData> dcPowerData = prepareChartData(energyDataList!, 'dc');
-
-    Map<DateTime, double> acDataMap = {
-      for (var data in acPowerData) data.date: data.value,
-    };
-
-    Map<DateTime, double> dcDataMap = {
-      for (var data in dcPowerData) data.date: data.value,
-    };
-
-    LineChart chart = LineChart.fromDateTimeMaps(
-      [acDataMap, dcDataMap],
-      [Colors.blue, Colors.red],
-      ['AC Energy', 'DC Energy'],
-    );
-
     return Scaffold(
-      backgroundColor: ConstantColors.darkBackgroundColor,
+      backgroundColor: ConstantColors.liveBgColor,
       bottomNavigationBar: Footer(),
       appBar: AppBar(
         backgroundColor: ConstantColors.darkBackgroundColor,
@@ -329,17 +487,19 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: 25,
-                          width: 25,
+                          height: 22,
+                          width: 22,
+                          color: ConstantColors.appColor,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         'Power Statistics',
                         style: GoogleFonts.roboto(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: ConstantColors.black),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: ConstantColors.appColor,
+                        ),
                       ),
                     ],
                   ),
@@ -348,408 +508,987 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             ),
           ],
         ),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              fetchCountry(true);
+            },
+            child: ValueListenableBuilder<String>(
+              valueListenable: selectedCountryNotifier,
+              builder: (context, value, child) {
+                return CountryFlag.fromCountryCode(
+                  value,
+                  shape: const Circle(),
+                  height: 30,
+                  width: 30,
+                );
+              },
+            ),
+          ),
+          const Icon(Icons.arrow_drop_down_sharp),
+          const SizedBox(
+            width: 10,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PowerStatisticsLiveScreen(
+                          deviceId: widget.deviceId,
+                        )),
+              );
+            },
+            child: Image.asset(
+              ImgPath.liveData,
+              height: 30,
+              width: 30,
+            ),
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const PowerStatisticsAllScreen()),
+              );
+            },
+            child: Image.asset(
+              ImgPath.pngMenu,
+              height: 30,
+              width: 30,
+              color: ConstantColors.borderButtonColor,
+            ),
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
         child: Column(
           children: [
             Container(
-              color: Colors.white,
+              color: ConstantColors.darkBackgroundColor,
               child: Column(
-                children: <Widget>[
-                  TabBar(
-                    controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'Day'),
-                      Tab(text: 'Month'),
-                      Tab(text: 'Year'),
-                    ],
-                    onTap: (index) {
-                      // Handle tab selection
-                      switch (index) {
-                        case 0:
-                          _selectedDate = DateTime.now();
-                          String formattedDate =
-                              DateFormat('dd-MM-yyyy').format(_selectedDate);
-                          stopTimer();
-                          powerusages("day", formattedDate);
-                          updatePowerUsages("day", formattedDate);
-                          periodType = "day";
-                          fetchData(widget.deviceId, periodType, formattedDate);
-
-                          break;
-                        case 1:
-                          _selectedDate = DateTime.now();
-                          String monthName =
-                              DateFormat('MMMM').format(_selectedDate);
-                          print(monthName);
-                          stopTimer();
-                          powerusages("month", monthName);
-                          updatePowerUsages("month", monthName);
-                          periodType = "month";
-                          fetchData(widget.deviceId, periodType, monthName);
-
-                          break;
-                        case 2:
-                          _selectedDate = DateTime.now();
-                          String year =
-                              DateFormat('yyyy').format(_selectedDate);
-                          stopTimer();
-                          powerusages("year", year);
-                          updatePowerUsages("year", year);
-                          periodType = "year";
-                          fetchData(widget.deviceId, periodType, year);
-
-                          break;
-                      }
-                    },
+                children: [
+                  const SizedBox(
+                    height: 10,
                   ),
-                  SizedBox(
-                    height: 100,
-                    child: TabBarView(
-                      controller: _tabController,
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _buildDatePicker(context, 'day'),
-                        _buildDatePicker(context, 'month'),
-                        _buildDatePicker(context, 'year'),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              ImgPath.pngSolarPlane,
+                              width: 50,
+                              height: 50,
+                            ),
+                            Text(
+                              '2 W',
+                              style: GoogleFonts.roboto(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantColors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          width: 30,
+                        ),
+                        Image.asset(
+                          ImgPath.pngArrowBack,
+                          color: ConstantColors.iconColr,
+                          height: 15,
+                        ),
+                        Image.asset(
+                          ImgPath.pngArrowBack,
+                          color: ConstantColors.iconColr,
+                          height: 15,
+                        ),
+                        Image.asset(
+                          ImgPath.pngArrowBack,
+                          color: ConstantColors.iconColr,
+                          height: 15,
+                        ),
+                        const SizedBox(
+                          width: 30,
+                        ),
+                        Image.asset(
+                          ImgPath.totalPower,
+                          width: 50,
+                          height: 50,
+                        ),
+                        const SizedBox(
+                          width: 30,
+                        ),
+                        Image.asset(
+                          ImgPath.pngArrowBack,
+                          color: ConstantColors.iconColr,
+                          height: 15,
+                        ),
+                        Image.asset(
+                          ImgPath.pngArrowBack,
+                          color: ConstantColors.iconColr,
+                          height: 15,
+                        ),
+                        Image.asset(
+                          ImgPath.pngArrowBack,
+                          color: ConstantColors.iconColr,
+                          height: 15,
+                        ),
+                        const SizedBox(
+                          width: 30,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              ImgPath.pngTower,
+                              width: 50,
+                              height: 50,
+                            ),
+                            Text(
+                              '912 W',
+                              style: GoogleFonts.roboto(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantColors.black,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'DC Power',
+                              style: GoogleFonts.roboto(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantColors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              dcPower!,
+                              style: GoogleFonts.roboto(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantColors.appColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Total Power',
+                              style: GoogleFonts.roboto(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantColors.iconColr,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              totalPower!,
+                              style: GoogleFonts.roboto(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantColors.iconColr,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'AC Power',
+                              style: GoogleFonts.roboto(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantColors.appColor,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              acPower!,
+                              style: GoogleFonts.roboto(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantColors.appColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
+            ValueListenableBuilder<int>(
+              valueListenable: selectedTabIndex,
+              builder: (context, value, child) {
+                return Container(
+                  color: ConstantColors.liveBgColor,
+                  padding: const EdgeInsets.all(10),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            selectedTabIndex.value = 0;
+                            energyNotiifer.value = true;
+                            treeNotiifer.value = false;
+                            savingNotiifer.value = false;
+                            setState(() {
+                              energyType = "intraday";
+                            });
+                            fetchData(widget.deviceId, "intraday");
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 10),
+                              Image.asset(
+                                ImgPath.energyIcon,
+                                width: 30,
+                                height: 30,
+                                color: value == 0
+                                    ? ConstantColors.borderButtonColor
+                                    : ConstantColors.appColor,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                'Energy Saving',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: ConstantColors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 60),
+                        GestureDetector(
+                          onTap: () {
+                            selectedTabIndex.value = 1;
+                            energyNotiifer.value = false;
+                            treeNotiifer.value = false;
+                            savingNotiifer.value = true;
+                            setState(() {
+                              energyType = "week";
+                            });
+                            fetchData(widget.deviceId, "week");
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 10),
+                              Image.asset(
+                                ImgPath.dollerSymbol,
+                                width: 30,
+                                height: 30,
+                                color: value == 1
+                                    ? ConstantColors.borderButtonColor
+                                    : ConstantColors.appColor,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                'Saving',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: ConstantColors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 60),
+                        GestureDetector(
+                          onTap: () {
+                            selectedTabIndex.value = 2;
+                            energyNotiifer.value = false;
+                            treeNotiifer.value = true;
+                            savingNotiifer.value = false;
+                            fetchData(widget.deviceId, "week");
+                            setState(() {
+                              energyType = "week";
+                            });
+                            fetchData(widget.deviceId, "week");
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 10),
+                              Image.asset(
+                                ImgPath.treeIcon,
+                                width: 30,
+                                height: 30,
+                                color: value == 2
+                                    ? ConstantColors.borderButtonColor
+                                    : ConstantColors.appColor,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                'Tree Planted',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: ConstantColors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            ValueListenableBuilder(
+                valueListenable: energyNotiifer,
+                builder: (context, value, child) {
+                  return Visibility(
+                    visible: energyNotiifer.value,
+                    child: Column(
+                      children: [
+                        Container(
+                          color: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'Total Energy Saving',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: ConstantColors.appColor,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      '1.24 kwh',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: ConstantColors.appColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  width: 50,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          color:
+                                              ConstantColors.borderButtonColor,
+                                          width: 10,
+                                          height: 2,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'AC',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: ConstantColors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          color: ConstantColors.greenColor,
+                                          width: 10,
+                                          height: 2,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'DC',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: ConstantColors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  width: 40,
+                                ),
+                                SizedBox(
+                                  width: 120,
+                                  child: CustomDropdownButton(
+                                    value: "Intraday",
+                                    items: const [
+                                      DropdownMenuItem(
+                                        value: 'Intraday',
+                                        child: Text('Intraday'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Day',
+                                        child: Text('Day'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Week',
+                                        child: Text('Week'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Month',
+                                        child: Text('Month'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Year',
+                                        child: Text('Year'),
+                                      ),
+                                    ],
+                                    onChanged: (value) {
+                                      print(' selected: $value');
+                                      if (value == "Intraday") {
+                                        setState(() {
+                                          energyType = "intraday";
+                                        });
+                                        fetchData(widget.deviceId, "intraday");
+                                      } else if (value == "Day") {
+                                        setState(() {
+                                          energyType = "day";
+                                        });
+                                        fetchData(widget.deviceId, "day");
+                                      } else if (value == "Week") {
+                                        setState(() {
+                                          energyType = "week";
+                                        });
+                                        fetchData(widget.deviceId, "week");
+                                      } else if (value == "Month") {
+                                        setState(() {
+                                          energyType = "month";
+                                        });
+                                        fetchData(widget.deviceId, "month");
+                                      } else {
+                                        setState(() {
+                                          energyType = "year";
+                                        });
+                                        fetchData(widget.deviceId, "year");
+                                      }
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+            ValueListenableBuilder(
+                valueListenable: savingNotiifer,
+                builder: (context, value, child) {
+                  return Visibility(
+                    visible: savingNotiifer.value,
+                    child: Column(
+                      children: [
+                        Container(
+                          color: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'Total saving in SGD',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: ConstantColors.appColor,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      '1102',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: ConstantColors.appColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                SizedBox(
+                                  width: 120,
+                                  child: CustomDropdownButton(
+                                    value: "Week",
+                                    items: const [
+                                      DropdownMenuItem(
+                                        value: 'Week',
+                                        child: Text('Week'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Month',
+                                        child: Text('Month'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Year',
+                                        child: Text('Year'),
+                                      ),
+                                    ],
+                                    onChanged: (value) {
+                                      print(' selected: $value');
+                                      if (value == "Week") {
+                                        setState(() {
+                                          energyType = "week";
+                                        });
+                                        fetchData(widget.deviceId, "week");
+                                      } else if (value == "Month") {
+                                        setState(() {
+                                          energyType = "month";
+                                        });
+                                        fetchData(widget.deviceId, "month");
+                                      } else {
+                                        setState(() {
+                                          energyType = "year";
+                                        });
+                                        fetchData(widget.deviceId, "year");
+                                      }
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+            ValueListenableBuilder(
+                valueListenable: treeNotiifer,
+                builder: (context, value, child) {
+                  return Visibility(
+                    visible: treeNotiifer.value,
+                    child: Column(
+                      children: [
+                        Container(
+                          color: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'Total tree planted',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: ConstantColors.appColor,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      '11k',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: ConstantColors.appColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          color: ConstantColors.greenColor,
+                                          width: 10,
+                                          height: 2,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          'Tree Planted',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: ConstantColors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          color:
+                                              ConstantColors.borderButtonColor,
+                                          width: 10,
+                                          height: 2,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'S\$ Savings',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: ConstantColors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          color: ConstantColors.appColor,
+                                          width: 10,
+                                          height: 2,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'CO2',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: ConstantColors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                SizedBox(
+                                  width: 120,
+                                  child: CustomDropdownButton(
+                                    value: "Week",
+                                    items: const [
+                                      DropdownMenuItem(
+                                        value: 'Week',
+                                        child: Text('Week'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Month',
+                                        child: Text('Month'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Year',
+                                        child: Text('Year'),
+                                      ),
+                                    ],
+                                    onChanged: (value) {
+                                      print(' selected: $value');
+                                      if (value == "Week") {
+                                        setState(() {
+                                          energyType = "week";
+                                        });
+                                        fetchData(widget.deviceId, "week");
+                                      } else if (value == "Month") {
+                                        setState(() {
+                                          energyType = "month";
+                                        });
+                                        fetchData(widget.deviceId, "month");
+                                      } else {
+                                        setState(() {
+                                          energyType = "year";
+                                        });
+                                        fetchData(widget.deviceId, "year");
+                                      }
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
             const SizedBox(
               height: 20,
             ),
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        ImgPath.pngSolarPlane,
-                        width: 50,
-                        height: 50,
-                      ),
-                      Text(
-                        '2 W',
-                        style: GoogleFonts.roboto(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    width: 80,
-                  ),
-                  Image.asset(
-                    ImgPath.pngVector,
-                    width: 50,
-                    height: 50,
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  Image.asset(
-                    ImgPath.pngArrowBack,
-                    color: ConstantColors.iconColr,
-                    height: 15,
-                  ),
-                  Image.asset(
-                    ImgPath.pngArrowBack,
-                    color: ConstantColors.iconColr,
-                    height: 15,
-                  ),
-                  Image.asset(
-                    ImgPath.pngArrowBack,
-                    color: ConstantColors.iconColr,
-                    height: 15,
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  Image.asset(
-                    ImgPath.pngTower,
-                    width: 50,
-                    height: 50,
-                  ),
-                ],
-              ),
+            ValueListenableBuilder(
+              valueListenable: energyNotiifer,
+              builder: (context, value, child) {
+                return Visibility(
+                  visible: energyNotiifer.value,
+                  child: energyDataList.isNotEmpty
+                      ? SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Container(
+                            height: 350,
+                            child: SfCartesianChart(
+                              primaryXAxis: const CategoryAxis(),
+                              legend: const Legend(isVisible: true),
+                              tooltipBehavior: TooltipBehavior(enable: true),
+                              series: <CartesianSeries>[
+                                ColumnSeries<EnergyData, String>(
+                                  dataSource: energyDataList,
+                                  xValueMapper: (EnergyData data, _) {
+                                    if (energyType == "intraday") {
+                                      return data.getFormattedTime();
+                                    } else if (energyType == "day" ||
+                                        energyType == "week") {
+                                      return data.getFormattedDate();
+                                    } else if (energyType == "month") {
+                                      return data.getFormattedMonth();
+                                    } else if (energyType == "year") {
+                                      return data.getFormattedYear();
+                                    } else {
+                                      return "";
+                                    }
+                                  },
+                                  yValueMapper: (EnergyData data, _) =>
+                                      data.acEnergy,
+                                  name: 'AC Power',
+                                  color: ConstantColors.borderButtonColor,
+                                ),
+                                ColumnSeries<EnergyData, String>(
+                                  dataSource: energyDataList,
+                                  xValueMapper: (EnergyData data, _) {
+                                    if (energyType == "intraday") {
+                                      return data
+                                          .getFormattedTime(); // Return formatted time
+                                    } else if (energyType == "day" ||
+                                        energyType == "week") {
+                                      return data
+                                          .getFormattedDate(); // Return formatted date
+                                    } else if (energyType == "month") {
+                                      return data
+                                          .getFormattedMonth(); // Return formatted month
+                                    } else if (energyType == "year") {
+                                      return data
+                                          .getFormattedYear(); // Return formatted year
+                                    } else {
+                                      return ""; // Fallback to an empty string
+                                    }
+                                  },
+                                  yValueMapper: (EnergyData data, _) =>
+                                      data.dcEnergy,
+                                  name: 'DC Power',
+                                  color: Colors.green,
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : const CircularProgressIndicator(),
+                );
+              },
             ),
-            const SizedBox(height: 10),
-
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Total Power',
-                        style: GoogleFonts.roboto(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        totalPower!,
-                        style: GoogleFonts.roboto(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.iconColr,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'AC Power',
-                        style: GoogleFonts.roboto(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        acPower!,
-                        style: GoogleFonts.roboto(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'DC Power',
-                        style: GoogleFonts.roboto(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        dcPower!,
-                        style: GoogleFonts.roboto(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            ValueListenableBuilder(
+              valueListenable: savingNotiifer,
+              builder: (context, value, child) {
+                return Visibility(
+                  visible: savingNotiifer.value,
+                  child: energyDataList.isNotEmpty
+                      ? SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Container(
+                            height: 350,
+                            child: SfCartesianChart(
+                              primaryXAxis: const CategoryAxis(),
+                              legend: const Legend(isVisible: true),
+                              tooltipBehavior: TooltipBehavior(enable: true),
+                              series: <CartesianSeries>[
+                                LineSeries<EnergyData, String>(
+                                  dataSource: energyDataList,
+                                  xValueMapper: (EnergyData data, _) {
+                                    if (energyType == "week") {
+                                      return data.getFormattedDate();
+                                    } else if (energyType == "month") {
+                                      return data.getFormattedMonth();
+                                    } else if (energyType == "year") {
+                                      return data.getFormattedYear();
+                                    } else {
+                                      return "";
+                                    }
+                                  },
+                                  yValueMapper: (EnergyData data, _) =>
+                                      data.saving,
+                                  name: 'Saving',
+                                  color: ConstantColors.borderButtonColor,
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : const CircularProgressIndicator(),
+                );
+              },
             ),
-            const SizedBox(height: 30),
-
-            Text(
-              "Real Time Power Consumption",
-              style: GoogleFonts.roboto(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: ConstantColors.iconColr,
-              ),
+            ValueListenableBuilder(
+              valueListenable: treeNotiifer,
+              builder: (context, value, child) {
+                return Visibility(
+                  visible: treeNotiifer.value,
+                  child: energyDataList.isNotEmpty
+                      ? SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Container(
+                            height: 350,
+                            child: SfCartesianChart(
+                              primaryXAxis: const CategoryAxis(),
+                              legend: const Legend(isVisible: true),
+                              tooltipBehavior: TooltipBehavior(enable: true),
+                              series: <CartesianSeries>[
+                                ColumnSeries<EnergyData, String>(
+                                  dataSource: energyDataList,
+                                  xValueMapper: (EnergyData data, _) {
+                                    if (energyType == "week") {
+                                      return data.getFormattedDate();
+                                    } else if (energyType == "month") {
+                                      return data.getFormattedMonth();
+                                    } else if (energyType == "year") {
+                                      return data.getFormattedYear();
+                                    } else {
+                                      return "";
+                                    }
+                                  },
+                                  yValueMapper: (EnergyData data, _) =>
+                                      data.acTree,
+                                  name: 'Tree Planted',
+                                  color: Colors.green,
+                                ),
+                                ColumnSeries<EnergyData, String>(
+                                  dataSource: energyDataList,
+                                  xValueMapper: (EnergyData data, _) {
+                                    if (energyType == "intraday") {
+                                      return data.getFormattedTime();
+                                    } else if (energyType == "day" ||
+                                        energyType == "week") {
+                                      return data.getFormattedDate();
+                                    } else if (energyType == "month") {
+                                      return data.getFormattedMonth();
+                                    } else if (energyType == "year") {
+                                      return data.getFormattedYear();
+                                    } else {
+                                      return "";
+                                    }
+                                  },
+                                  yValueMapper: (EnergyData data, _) => data.saving,
+                                  name: 'Saving',
+                                  color: ConstantColors.borderButtonColor,
+                                ),
+                                ColumnSeries<EnergyData, String>(
+                                  dataSource: energyDataList,
+                                  xValueMapper: (EnergyData data, _) {
+                                    if (energyType == "week") {
+                                      return data.getFormattedDate();
+                                    } else if (energyType == "month") {
+                                      return data.getFormattedMonth();
+                                    } else if (energyType == "year") {
+                                      return data.getFormattedYear();
+                                    } else {
+                                      return "";
+                                    }
+                                  },
+                                  yValueMapper: (EnergyData data, _) =>
+                                      data.acCo2,
+                                  name: 'CO2',
+                                  color: ConstantColors.appColor,
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : const CircularProgressIndicator(),
+                );
+              },
             ),
-            const SizedBox(height: 20),
-            Visibility(
-              visible: energyDataList.isNotEmpty,
-              child: SizedBox(
-                height: 300,
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: AnimatedLineChart(
-                    chart,
-                    gridColor: Colors.grey,
-                    toolTipColor: Colors.black,
-                    textStyle:
-                        const TextStyle(fontSize: 12, color: Colors.black54),
-                    legends: const [
-                      Legend(
-                          title: 'AC Energy',
-                          color: Colors.blue,
-                          showLeadingLine: true),
-                      Legend(
-                          title: 'DC Energy',
-                          color: Colors.red,
-                          showLeadingLine: true)
-                    ],
-                    showMarkerLines: true,
-                    iconBackgroundColor: Colors.white,
-                    fillMarkerLines: true,
-                    innerGridStrokeWidth: 1.0,
-                    legendsRightLandscapeMode: false,
-                    useLineColorsInTooltip: true,
-                    showMinutesInTooltip: true,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-
-            Row(
-              children: [
-                Expanded(
-                  child: CircularBar(
-                    label: 'AC Energy',
-                    value: acEnergy!,
-                    unit: "kWh",
-                    color: Colors.indigo,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: CircularBar(
-                    label: 'DC Energy',
-                    value: dcEnergy!,
-                    unit: "kWh",
-                    color: Colors.indigo,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            Row(
-              children: [
-                Expanded(
-                  child: CircularBar(
-                    label: 'AC Power',
-                    value: acValue!,
-                    unit: "W",
-                    color: Colors.orange,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: CircularBar(
-                    label: 'DC Power',
-                    value: dcValue!,
-                    unit: "W",
-                    color: Colors.orange,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            Row(
-              children: [
-                Expanded(
-                  child: CircularBar(
-                    label: 'AC Voltage',
-                    value: acVoltage!,
-                    unit: "V",
-                    color: Colors.blueAccent,
-                  ),
-                ),
-                const SizedBox(
-                    width: 20), // Adjust the spacing between the bars
-                Expanded(
-                  child: CircularBar(
-                    label: 'DC Voltage',
-                    value: dcVoltgae!,
-                    unit: "V",
-                    color: Colors.blueAccent,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: CircularBar(
-                    label: 'AC Current',
-                    value: acCurrent!,
-                    unit: "A",
-                    color: Colors.teal,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: CircularBar(
-                    label: 'DC Current',
-                    value: dcCurrent!,
-                    unit: "A",
-                    color: Colors.teal,
-                  ),
-                ),
-              ],
-            ),
-
-            // Container(
-            //   color: Colors.white,
-            //   child: Column(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: <Widget>[
-            //       Row(
-            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //         children: <Widget>[
-            //           IconButton(
-            //             icon: const Icon(Icons.arrow_left),
-            //             onPressed: _previousMonth,
-            //           ),
-            //           Text(
-            //             DateFormat.MMMM().format(_selectedDate),
-            //             style: const TextStyle(
-            //               fontSize: 18,
-            //               fontWeight: FontWeight.bold,
-            //               color: Colors.black,
-            //             ),
-            //           ),
-            //           IconButton(
-            //             icon: const Icon(Icons.arrow_right),
-            //             onPressed: _nextMonth,
-            //           ),
-            //         ],
-            //       ),
-            //       const SizedBox(height: 10),
-            //       SizedBox(
-            //         height: 100,
-            //         child: DatePicker(
-            //           _selectedDate,
-            //           initialSelectedDate: DateTime.now(),
-            //           selectionColor: ConstantColors.iconColr,
-            //           selectedTextColor: Colors.white,
-            //           onDateChange: (date) {
-            //             setState(() {
-            //               _selectedDate = date;
-            //             });
-            //           },
-            //         ),
-            //       ),
-            //       const SizedBox(height: 30),
-            //     ],
-            //   ),
-            // ),
-            // Container(
-            //   color: Colors.white,
-            //   child: Column(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: <Widget>[
-            //       const SizedBox(height: 10),
-            //       buildChart(),
-            //       const SizedBox(height: 30),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),

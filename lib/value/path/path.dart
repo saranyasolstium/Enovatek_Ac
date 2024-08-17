@@ -70,4 +70,10 @@ class ImgPath {
   static String pngSleep = "assets/sleep_icon.png";
   static String pngStrongWind = "assets/strong_wind_icon.png";
   static String pngUpDown = "assets/up_down_icon.png";
+
+  static String liveData = "assets/live_icon.png";
+  static String dollerSymbol = "assets/doller_symbol_icon.png";
+  static String energyIcon = "assets/energy_icon.png";
+  static String treeIcon = "assets/tree_icon.png";
+  static String totalPower = "assets/total_power_icon.png";
 }

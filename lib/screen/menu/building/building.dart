@@ -126,3 +126,12 @@ class Device {
   }
 }
 
+List<Floor> getAllFloors(List<Building> buildings) {
+  List<Floor> allFloors = [];
+
+  for (var building in buildings) {
+    allFloors.addAll(building.floors);
+  }
+
+  return allFloors;
+}

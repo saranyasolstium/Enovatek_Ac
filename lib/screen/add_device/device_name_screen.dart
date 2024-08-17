@@ -17,14 +17,14 @@ import 'package:http/http.dart';
 
 class DeviceNameScreen extends StatefulWidget {
   final String deviceSerialNo;
-  final String wifinName;
-  final String password;
+  final String business;
+  final String location;
   final int roomId;
   const DeviceNameScreen(
       {Key? key,
       required this.deviceSerialNo,
-      required this.wifinName,
-      required this.password,
+      required this.business,
+      required this.location,
       required this.roomId})
       : super(key: key);
 
@@ -147,8 +147,8 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
                           authToken!,
                           displayname,
                           widget.deviceSerialNo,
-                          widget.wifinName,
-                          widget.password,
+                          widget.business,
+                          widget.location,
                           0,
                           widget.roomId,
                           userId!);
