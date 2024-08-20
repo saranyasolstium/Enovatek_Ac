@@ -135,3 +135,14 @@ List<Floor> getAllFloors(List<Building> buildings) {
 
   return allFloors;
 }
+List<Room> getAllRooms(List<Building> buildings) {
+  List<Room> allRooms = [];
+
+  for (var building in buildings) {
+    for (var floor in building.floors) {
+      allRooms.addAll(floor.rooms);
+    }
+  }
+
+  return allRooms;
+}

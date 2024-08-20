@@ -70,6 +70,8 @@ dependencies:
   country_flags: ^3.0.0
   country_pickers: ^3.0.1
   country_picker: ^2.0.26
+  qr_code_scanner: ^1.0.1
+  qr_scanner_with_effect: ^1.0.5
 
 
 dev_dependencies:

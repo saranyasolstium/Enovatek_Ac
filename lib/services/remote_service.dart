@@ -496,7 +496,11 @@ class RemoteServices {
         'period_type': periodType,
       }),
     );
-
+    print(jsonEncode({
+      'device_id': deviceId,
+      'period_type': periodType,
+    }));
+    print(response.body);
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['energy_data'] as List;
       return data.map((json) => EnergyData.fromJson(json)).toList();
@@ -642,5 +646,24 @@ class RemoteServices {
     } catch (e) {
       rethrow;
     }
+  }
+
+  static Future<Response> filteredDevices(
+    String authToken,
+    int userId,
+    Map<String, dynamic> requestBody,
+  ) async {
+    final apiUrl = '${url}api/user/devices?id=$userId';
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $authToken',
+    };
+    final body = jsonEncode(requestBody);
+
+    return await post(
+      Uri.parse(apiUrl),
+      headers: headers,
+      body: body,
+    );
   }
 }

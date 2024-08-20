@@ -904,6 +904,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  qr_code_scanner:
+    dependency: "direct main"
+    description:
+      name: qr_code_scanner
+      sha256: f23b68d893505a424f0bd2e324ebea71ed88465d572d26bb8d2e78a4749591fd
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
+  qr_scanner_with_effect:
+    dependency: "direct main"
+    description:
+      name: qr_scanner_with_effect
+      sha256: "9b1e36b2c48b681f08e262afbd9114e194112b9e576ae51b371eb60f7aee53d7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.5"
   quiver:
     dependency: transitive
     description:

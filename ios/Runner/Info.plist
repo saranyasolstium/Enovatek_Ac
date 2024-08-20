@@ -66,6 +66,9 @@
     <key>NSLocationAlwaysUsageDescription</key>
     <string>We need your location to find nearby WiFi networks</string>
     <key>UISupportedInterfaceOrientations~ipad</key>
+    <key>NSCameraUsageDescription</key>
+    <string>Need camera access to scan QR codes</string>
+
     <array>
         <string>UIInterfaceOrientationPortrait</string>
         <string>UIInterfaceOrientationPortraitUpsideDown</string>

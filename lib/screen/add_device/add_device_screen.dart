@@ -1,5 +1,6 @@
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/add_device/manual_add_device.dart';
+import 'package:enavatek_mobile/screen/add_device/qr_scanner/device_config.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
@@ -25,7 +26,6 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       bottomNavigationBar: Footer(),
-
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           screenWidth * 0.05,
@@ -72,44 +72,56 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
             const SizedBox(
               height: 30,
             ),
-            Container(
-              decoration: BoxDecoration(
-                  color: ConstantColors.whiteColor,
-                  borderRadius: BorderRadius.circular(30)),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 20, right: 10, bottom: 20, top: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Scan QR code\n\n ',
-                            style: GoogleFonts.roboto(
-                              color: ConstantColors.mainlyTextColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: screenWidth * 0.04,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => QRScannerScreen(
+                            buildingID: widget.buildingID,
+                            buildingName: widget.buildingName,
+                          )),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    color: ConstantColors.whiteColor,
+                    borderRadius: BorderRadius.circular(30)),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 20, right: 10, bottom: 20, top: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Scan QR code\n\n ',
+                              style: GoogleFonts.roboto(
+                                color: ConstantColors.mainlyTextColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: screenWidth * 0.04,
+                              ),
                             ),
-                          ),
-                          TextSpan(
-                            text: 'Scan the QR code available on your device',
-                            style: GoogleFonts.roboto(
-                              color: ConstantColors.mainlyTextColor,
-                              fontSize: screenWidth * 0.034,
+                            TextSpan(
+                              text: 'Scan the QR code available on your device',
+                              style: GoogleFonts.roboto(
+                                color: ConstantColors.mainlyTextColor,
+                                fontSize: screenWidth * 0.034,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 20),
-                    const Icon(
-                      Icons.arrow_forward_ios,
-                      color: ConstantColors.mainlyTextColor,
-                      size: 20,
-                    ),
-                  ],
+                      const SizedBox(width: 20),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        color: ConstantColors.mainlyTextColor,
+                        size: 20,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

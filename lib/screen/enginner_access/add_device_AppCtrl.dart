@@ -33,7 +33,7 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
   String frequency = "60";
 
   void sendConfigurationPackage() async {
-    const String deviceIP = '192.168.1.6';
+    const String deviceIP = '192.6.6.6';
     const int devicePort = 8006;
 
     const String packageHead = 'C6F9G0';

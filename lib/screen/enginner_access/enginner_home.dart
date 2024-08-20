@@ -39,7 +39,7 @@ class EnginnerHomeScreenState extends State<EnginnerHomeScreen> {
 
   void _connectToControllerWifi() async {
     if (await _checkPermissions()) {
-      FlutterIotWifi.connect("AJAY", "varshan123", prefix: true)
+      FlutterIotWifi.connect("PM20H20Q", "Eno420714Vatek", prefix: true)
           .then((value) {
         print("connect initiated: $value");
         Navigator.push(

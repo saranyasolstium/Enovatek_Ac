@@ -10,7 +10,7 @@ const String enginnerMenuRoute = "enginnerMenu";
 
 const String enginnerHomeRounte = "enginnerHome";
 const String addBuildingRoute = "addBuilding";
-const String allDeviceRoute = "allDevice";
+//const String allDeviceRoute = "allDevice";
 
 //Add Device Route
 const String blueToothScanRoute = "blueToothScan";

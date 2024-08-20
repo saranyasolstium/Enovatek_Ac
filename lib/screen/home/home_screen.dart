@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/add_device/add_device_screen.dart';
+import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
@@ -244,7 +245,17 @@ class HomeScreenState extends State<HomeScreen> {
                   onTap: () async {
                     print('Tapped on building: ${building.buildingId}');
                     if (deviceList.isNotEmpty) {
-                      Navigator.pushNamed(context, allDeviceRoute);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AllDeviceScreen(
+                            isFilter: false,
+                            businessUnits: [],
+                            locationUnits: [],
+                            roomUnits: [],
+                          ),
+                        ),
+                      );
                     }
                   },
                   child: Padding(

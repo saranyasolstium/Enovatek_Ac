@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
+import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/all_device/devicelocation.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
@@ -25,34 +26,27 @@ class FilterScreenState extends State<FilterScreen> {
   // Example checkbox values
   Map<String, bool> businessUnits = {
     'Business Unit 1': false,
-    'Business Unit 2': false,
-    'Business Unit 3': false,
-    'Business Unit 4': false,
-    'Business Unit 5': false,
-    'Business Unit 6': false,
   };
 
   // Map for Locations
   Map<String, bool> locationUnits = {
     'Location 1': false,
-    'Location 2': false,
-    'Location 3': false,
-    'Location 4': false,
   };
 
   // Map for Floors
-  Map<String, bool> floorUnits = {
-    'Floor 1': false,
-    'Floor 2': false,
-    'Floor 3': false,
+  Map<String, bool> roomUnits = {
+    'Room 1': false,
   };
+
+  List<Room> rooms = [];
+  List<int> roomIds = [];
 
   void _clearAll() {
     setState(() {
       // Clear all selections
       businessUnits.updateAll((key, value) => false);
       locationUnits.updateAll((key, value) => false);
-      floorUnits.updateAll((key, value) => false);
+      roomUnits.updateAll((key, value) => false);
     });
   }
 
@@ -61,7 +55,7 @@ class FilterScreenState extends State<FilterScreen> {
     super.initState();
     fetchBusinessUnitList();
     fetchLocationList();
-    getFloorList();
+    getRoomList();
   }
 
   Future<void> fetchBusinessUnitList() async {
@@ -94,7 +88,7 @@ class FilterScreenState extends State<FilterScreen> {
     }
   }
 
-  Future<void> getFloorList() async {
+  Future<void> getRoomList() async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
     print(authToken);
@@ -110,16 +104,16 @@ class FilterScreenState extends State<FilterScreen> {
         List<dynamic> buildingList = jsonData["buildings"];
         buildings =
             buildingList.map((data) => Building.fromJson(data)).toList();
-        List<Floor> floors = getAllFloors(buildings);
 
-        // Populate the floorUnits map with floor names
+        // Populate the roomUnits map with floor names
         setState(() {
-          floorUnits = {for (var floor in floors) floor.name: false};
+          rooms = getAllRooms(buildings);
+          roomUnits = {for (var room in rooms) room.name: false};
         });
 
         // Optional: Print floor names to verify
-        for (var floor in floors) {
-          print('Floor ID: ${floor.floorId}, Name: ${floor.name}');
+        for (var room in rooms) {
+          print('Floor ID: ${room.roomId}, Name: ${room.name}');
         }
       } else {
         print('Response body does not contain buildings');
@@ -127,6 +121,30 @@ class FilterScreenState extends State<FilterScreen> {
     } else {
       print('Response body: ${response.body}');
     }
+  }
+
+  int? getRoomIdByName(List<Room> rooms, String roomName) {
+    for (var room in rooms) {
+      if (room.name == roomName) {
+        return room.roomId;
+      }
+    }
+    return null;
+  }
+
+  List<int> getRoomIdsByNames(
+      List<String> selectedRoomNames, List<Room> rooms) {
+    print(selectedRoomNames);
+    print(rooms);
+    roomIds.clear();
+    for (var roomName in selectedRoomNames) {
+      int? roomId = getRoomIdByName(rooms, roomName);
+      if (roomId != null) {
+        roomIds.add(roomId);
+      }
+    }
+    print(roomIds);
+    return roomIds;
   }
 
   @override
@@ -228,7 +246,7 @@ class FilterScreenState extends State<FilterScreen> {
                         });
                       },
                       child: Text(
-                        'Floor',
+                        'Room',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -266,7 +284,37 @@ class FilterScreenState extends State<FilterScreen> {
               textColor: ConstantColors.borderButtonColor,
             ),
             RoundedButton(
-              onPressed: () {},
+              onPressed: () {
+                // Get selected Business Units
+                List<String> selectedBusinessUnits = businessUnits.keys
+                    .where((key) => businessUnits[key] == true)
+                    .toList();
+
+                // Get selected Locations
+                List<String> selectedLocations = locationUnits.keys
+                    .where((key) => locationUnits[key] == true)
+                    .toList();
+
+                // Get selected Rooms
+                List<String> selectedRooms = roomUnits.keys
+                    .where((key) => roomUnits[key] == true)
+                    .toList();
+
+                roomIds = getRoomIdsByNames(selectedRooms, rooms);
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AllDeviceScreen(
+                      isFilter: true,
+                      businessUnits: selectedBusinessUnits,
+                      locationUnits: selectedLocations,
+                      roomUnits: roomIds,
+                    ),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+              },
               text: "Apply",
               backgroundColor: ConstantColors.borderButtonColor,
               textColor: ConstantColors.whiteColor,
@@ -312,13 +360,13 @@ class FilterScreenState extends State<FilterScreen> {
       );
     } else if (selectedCategory == 'Floor') {
       checkboxList.addAll(
-        floorUnits.keys.map((String key) {
+        roomUnits.keys.map((String key) {
           return CheckboxListTile(
             title: Text(key),
-            value: floorUnits[key],
+            value: roomUnits[key],
             onChanged: (bool? value) {
               setState(() {
-                floorUnits[key] = value!;
+                roomUnits[key] = value!;
               });
             },
             activeColor: ConstantColors.borderButtonColor,

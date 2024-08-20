@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/FanSpeedScreen.dart';
 import 'package:enavatek_mobile/screen/device_details/mode_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
@@ -246,7 +247,6 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
 
     return Scaffold(
         backgroundColor: ConstantColors.darkBackgroundColor,
-
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80.0),
           child: Padding(
@@ -266,8 +266,17 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushReplacementNamed(
-                                    context, allDeviceRoute);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AllDeviceScreen(
+                                      isFilter: false,
+                                      businessUnits: [],
+                                      locationUnits: [],
+                                      roomUnits: [],
+                                    ),
+                                  ),
+                                );
                               },
                               child: Image.asset(
                                 ImgPath.pngArrowBack,
@@ -543,7 +552,9 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PowerStatisticsScreen(deviceId: widget.deviceId,)),
+                                builder: (context) => PowerStatisticsScreen(
+                                      deviceId: widget.deviceId,
+                                    )),
                           );
                         },
                         child: Column(

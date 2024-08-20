@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
+import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/all_device/devicelocation.dart';
 import 'package:enavatek_mobile/screen/device_details/device_details_screen.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
@@ -14,7 +15,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
 class AllDeviceScreen extends StatefulWidget {
-  const AllDeviceScreen({Key? key}) : super(key: key);
+  final bool isFilter;
+  final List<String> businessUnits;
+  final List<String> locationUnits;
+  final List<int> roomUnits;
+
+  const AllDeviceScreen({
+    Key? key,
+    required this.isFilter,
+    required this.businessUnits,
+    required this.locationUnits,
+    required this.roomUnits,
+  }) : super(key: key);
 
   @override
   AllDeviceScreenState createState() => AllDeviceScreenState();
@@ -27,7 +39,11 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
   @override
   void initState() {
     super.initState();
-    getAllDevice();
+    if (widget.isFilter) {
+      applyFilters();
+    } else {
+      getAllDevice();
+    }
   }
 
   Future<void> getAllDevice() async {
@@ -36,6 +52,43 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
 
     Response response =
         await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
+
+    if (response.statusCode == 200) {
+      String responseBody = response.body;
+      Map<String, dynamic> jsonData = json.decode(responseBody);
+
+      if (jsonData.containsKey("buildings")) {
+        List<dynamic> buildingList = jsonData["buildings"];
+        buildings =
+            buildingList.map((data) => Building.fromJson(data)).toList();
+        setState(() {
+          devices = getAllDevices(buildings);
+        });
+        print(devices.length);
+      } else {
+        print('Response body does not contain buildings');
+      }
+    } else {
+      print('Response body: ${response.body}');
+    }
+  }
+
+  Future<void> applyFilters() async {
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? userId = await SharedPreferencesHelper.instance.getUserID();
+
+    Map<String, dynamic> requestBody = {
+      "room_ids": widget.roomUnits,
+      "business_units": widget.businessUnits,
+      "locations": widget.locationUnits,
+    };
+
+    print(requestBody);
+    Response response = await RemoteServices.filteredDevices(
+      authToken!,
+      userId!,
+      requestBody,
+    );
 
     if (response.statusCode == 200) {
       String responseBody = response.body;
@@ -84,7 +137,7 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
         }
       }
     }
-    return DeviceLocation(null, null, null); // Device not found
+    return DeviceLocation(null, null, null);
   }
 
   Future<void> increaseProgressValue(String deviceId, int progressValue) async {
@@ -151,7 +204,9 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          //  Navigator.pop(context);
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              homedRoute, (route) => false);
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
@@ -184,7 +239,6 @@ class AllDeviceScreenState extends State<AllDeviceScreen> {
                 const SizedBox(width: 10),
               ],
             ),
-          
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
