@@ -54,7 +54,8 @@ class EnergyData {
     double totalEnergy = _parseEnergyValue(json['total_energy']);
     double acEnergy = _parseEnergyValue(json['ac_energy']);
     double dcEnergy = _parseEnergyValue(json['dc_energy']);
-    double saving = _parseEnergyValue(json['total_energy_saving']);
+    print(json['total_energy_saving']);
+    double saving = _parseDynamicValue(json['total_energy_saving']);
 
     // Calculation for CO2 with rounding to two decimal places
     double acCo2 = acEnergy > 0
@@ -88,7 +89,7 @@ class EnergyData {
       dcCo2: dcCo2,
       acTree: acTree,
       dcTree: dcTree,
-      saving:saving, 
+      saving: saving,
     );
   }
 
@@ -99,6 +100,17 @@ class EnergyData {
       return energy;
     } else {
       throw const FormatException('Invalid energy format');
+    }
+  }
+
+  static double _parseDynamicValue(dynamic value) {
+    if (value is int) {
+      return value.toDouble(); // Convert int to double directly
+    } else if (value is String) {
+      // Remove any negative signs if necessary, and then parse the string to double
+      return double.parse(value.replaceAll('-', '').trim());
+    } else {
+      throw const FormatException('Invalid format for total energy saving');
     }
   }
 
