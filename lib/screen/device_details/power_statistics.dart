@@ -16,6 +16,7 @@ import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -48,6 +49,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   List<CountryData> countryList = [];
 
   String energyType = "intraday";
+  String totalTree = "0";
 
   String periodType = "day";
   ValueNotifier<bool> energyNotiifer = ValueNotifier(true);
@@ -75,6 +77,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       );
       setState(() {
         energyDataList = data;
+        totalTree =
+            calculateTotalTreesPlanted(energyDataList).toStringAsFixed(2);
       });
     } catch (e) {
       // Handle error
@@ -180,6 +184,18 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         });
       }
     }
+  }
+
+  calculateTotalTreesPlanted(List<EnergyData> energyDataList) {
+    double totalDcTree = 0.0;
+
+    for (var data in energyDataList) {
+      totalDcTree += data.dcTree;
+    }
+    setState(() {
+      totalTree = totalDcTree.toString();
+    });
+    return totalDcTree;
   }
 
   Future<void> countrySelection() async {
@@ -896,7 +912,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      'Total Energy Saving',
+                                      'Total Energy',
                                       style: GoogleFonts.roboto(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -1059,7 +1075,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      'Total saving in SGD',
+                                      'Total saving',
                                       style: GoogleFonts.roboto(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -1070,7 +1086,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      '1102',
+                                      '45.29%',
                                       style: GoogleFonts.roboto(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -1163,7 +1179,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      '11k',
+                                      totalTree,
                                       style: GoogleFonts.roboto(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -1313,7 +1329,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             child: SfCartesianChart(
                               primaryXAxis: const CategoryAxis(),
                               legend: const Legend(isVisible: true),
-                              tooltipBehavior: TooltipBehavior(enable: true),
+                              tooltipBehavior: TooltipBehavior(
+                                enable: true,
+                                shared: false,
+                                format: 'point.y',
+                                tooltipPosition: TooltipPosition.auto,
+                              ),
                               series: <CartesianSeries>[
                                 ColumnSeries<EnergyData, String>(
                                   dataSource: energyDataList,
@@ -1439,7 +1460,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     }
                                   },
                                   yValueMapper: (EnergyData data, _) =>
-                                      data.acTree,
+                                      data.dcTree,
                                   name: 'Tree Planted',
                                   color: Colors.green,
                                 ),
@@ -1459,7 +1480,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       return "";
                                     }
                                   },
-                                  yValueMapper: (EnergyData data, _) => data.saving,
+                                  yValueMapper: (EnergyData data, _) =>
+                                      data.saving,
                                   name: 'Saving',
                                   color: ConstantColors.borderButtonColor,
                                 ),
@@ -1477,7 +1499,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     }
                                   },
                                   yValueMapper: (EnergyData data, _) =>
-                                      data.acCo2,
+                                      data.dcCo2,
                                   name: 'CO2',
                                   color: ConstantColors.appColor,
                                 ),

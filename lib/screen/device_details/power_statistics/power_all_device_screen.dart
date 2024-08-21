@@ -141,7 +141,8 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>const FilterScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const FilterScreen()),
                     );
                   },
                   child: const Icon(

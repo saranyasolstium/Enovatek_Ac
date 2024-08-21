@@ -10,6 +10,7 @@ class EnergyData {
   final double acTree;
   final double dcTree;
   final double saving;
+  final double avgSaving;
 
   EnergyData(
       {required this.date,
@@ -20,7 +21,8 @@ class EnergyData {
       required this.dcCo2,
       required this.acTree,
       required this.dcTree,
-      required this.saving});
+      required this.saving,
+      required this.avgSaving});
 
   factory EnergyData.fromJson(Map<String, dynamic> json) {
     DateTime date;
@@ -54,43 +56,58 @@ class EnergyData {
     double totalEnergy = _parseEnergyValue(json['total_energy']);
     double acEnergy = _parseEnergyValue(json['ac_energy']);
     double dcEnergy = _parseEnergyValue(json['dc_energy']);
-    print(json['total_energy_saving']);
+      print('energy2 $dcEnergy');
     double saving = _parseDynamicValue(json['total_energy_saving']);
+    double avgSaving;
+    if (json.containsKey('avg_energy_saving')) {
+      print('saranya ${json['avg_energy_saving']}');
+
+      avgSaving = _parseDynamicValue(json['avg_energy_saving']);
+      print(avgSaving);
+    } else {
+      avgSaving = 0.0;
+    }
 
     // Calculation for CO2 with rounding to two decimal places
     double acCo2 = acEnergy > 0
-        ? double.parse((0.4168 * acEnergy).toStringAsFixed(2))
+        ? double.parse((0.4168 * acEnergy).toStringAsFixed(4))
         : 0.0;
-    print(acCo2);
     double dcCo2 = dcEnergy > 0
-        ? double.parse((0.4168 * dcEnergy).toStringAsFixed(2))
+        ? double.parse((0.4168 * dcEnergy).toStringAsFixed(4))
         : 0.0;
+    print('dcEnergy $dcEnergy');
+
+    print('dcCo2 $dcCo2');
 
     // Calculation for CO2 Reduction
-    double reduction = (7.81 * 0.4168);
-    double acCo2Reduction = acCo2 > 0 ? reduction - acCo2 : 0.0;
-    double dcCo2Reduction = dcCo2 > 0 ? reduction - dcCo2 : 0.0;
+    double reduction = (avgSaving * 0.4168);
+    print('reduction $reduction');
+    double acCo2Reduction = reduction - acCo2;
+    double dcCo2Reduction = reduction - dcCo2;
+
+    print('dcCo2Reduction $dcCo2Reduction');
 
     // Calculation for Trees Planted
     double acTree = acCo2Reduction > 0
-        ? double.parse((acCo2Reduction / 25).toStringAsFixed(2))
+        ? double.parse((acCo2Reduction / 25).toStringAsFixed(4))
         : 0.0;
-    print('tree $acTree');
     double dcTree = dcCo2Reduction > 0
-        ? double.parse((dcCo2Reduction / 25).toStringAsFixed(2))
+        ? double.parse((dcCo2Reduction / 25).toStringAsFixed(4))
         : 0.0;
 
+    print('tree $dcTree');
+
     return EnergyData(
-      date: date,
-      totalEnergy: totalEnergy,
-      acEnergy: acEnergy,
-      dcEnergy: dcEnergy,
-      acCo2: acCo2,
-      dcCo2: dcCo2,
-      acTree: acTree,
-      dcTree: dcTree,
-      saving: saving,
-    );
+        date: date,
+        totalEnergy: totalEnergy,
+        acEnergy: acEnergy,
+        dcEnergy: dcEnergy,
+        acCo2: acCo2,
+        dcCo2: dcCo2,
+        acTree: acTree,
+        dcTree: dcTree,
+        saving: saving,
+        avgSaving: avgSaving);
   }
 
   static double _parseEnergyValue(dynamic energy) {

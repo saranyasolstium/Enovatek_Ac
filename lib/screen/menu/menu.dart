@@ -100,7 +100,7 @@ class MenuScreenState extends State<MenuScreen> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Expanded(
@@ -153,7 +153,7 @@ class MenuScreenState extends State<MenuScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, buildingRoute);
+                      // Navigator.pushNamed(context, buildingRoute);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -162,15 +162,16 @@ class MenuScreenState extends State<MenuScreen> {
                           width: 10,
                         ),
                         Image.asset(
-                          ImgPath.pngApartment,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
+                          ImgPath.pngPlus,
+                          height: screenWidth * 0.05,
+                          width: screenWidth * 0.05,
+                          color: ConstantColors.iconColr,
                         ),
                         SizedBox(
                           width: 0.02 * screenHeight,
                         ),
                         Text(
-                          'Building',
+                          'Add Device',
                           style: GoogleFonts.roboto(
                               color: const Color.fromARGB(255, 7, 3, 3),
                               fontSize: screenWidth * 0.045),
@@ -183,7 +184,37 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, calculateRoute);
+                      // Navigator.pushNamed(context, calculateRoute);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Icon(
+                          Icons.visibility,
+                          size: screenWidth * 0.06,
+                          color: ConstantColors.iconColr,
+                        ),
+                        SizedBox(
+                          width: 0.02 * screenHeight,
+                        ),
+                        Text(
+                          'View Device',
+                          style: GoogleFonts.roboto(
+                              color: ConstantColors.black,
+                              fontSize: screenWidth * 0.045),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 0.03 * screenHeight,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // Navigator.pushNamed(context, calculateRoute);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -192,15 +223,16 @@ class MenuScreenState extends State<MenuScreen> {
                           width: 10,
                         ),
                         Image.asset(
-                          ImgPath.pngSaving,
+                          ImgPath.liveData,
                           height: screenWidth * 0.06,
                           width: screenWidth * 0.06,
+                          color: ConstantColors.iconColr,
                         ),
                         SizedBox(
                           width: 0.02 * screenHeight,
                         ),
                         Text(
-                          'Calculate saving',
+                          'Live data',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: screenWidth * 0.045),
@@ -208,6 +240,66 @@ class MenuScreenState extends State<MenuScreen> {
                       ],
                     ),
                   ),
+
+//hide by saranya
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, buildingRoute);
+                  //   },
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.start,
+                  //     children: [
+                  //       const SizedBox(
+                  //         width: 10,
+                  //       ),
+                  //       Image.asset(
+                  //         ImgPath.pngApartment,
+                  //         height: screenWidth * 0.06,
+                  //         width: screenWidth * 0.06,
+                  //       ),
+                  //       SizedBox(
+                  //         width: 0.02 * screenHeight,
+                  //       ),
+                  //       Text(
+                  //         'Building',
+                  //         style: GoogleFonts.roboto(
+                  //             color: const Color.fromARGB(255, 7, 3, 3),
+                  //             fontSize: screenWidth * 0.045),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 0.03 * screenHeight,
+                  // ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, calculateRoute);
+                  //   },
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.start,
+                  //     children: [
+                  //       const SizedBox(
+                  //         width: 10,
+                  //       ),
+                  //       Image.asset(
+                  //         ImgPath.pngSaving,
+                  //         height: screenWidth * 0.06,
+                  //         width: screenWidth * 0.06,
+                  //       ),
+                  //       SizedBox(
+                  //         width: 0.02 * screenHeight,
+                  //       ),
+                  //       Text(
+                  //         'Calculate saving',
+                  //         style: GoogleFonts.roboto(
+                  //             color: ConstantColors.black,
+                  //             fontSize: screenWidth * 0.045),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+
                   SizedBox(
                     height: 0.03 * screenHeight,
                   ),
@@ -217,34 +309,10 @@ class MenuScreenState extends State<MenuScreen> {
                   SizedBox(
                     height: 0.03 * screenHeight,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Image.asset(
-                        ImgPath.pngFaq,
-                        height: screenWidth * 0.06,
-                        width: screenWidth * 0.06,
-                      ),
-                      SizedBox(
-                        width: 0.02 * screenHeight,
-                      ),
-                      Text(
-                        'FAQ',
-                        style: GoogleFonts.roboto(
-                            color: ConstantColors.black,
-                            fontSize: screenWidth * 0.045),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 0.03 * screenHeight,
-                  ),
+
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, supportRoute);
+                      // Navigator.pushNamed(context, buildingRoute);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -253,15 +321,46 @@ class MenuScreenState extends State<MenuScreen> {
                           width: 10,
                         ),
                         Image.asset(
-                          ImgPath.pngSupport,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
+                          ImgPath.pngPlus,
+                          height: screenWidth * 0.05,
+                          width: screenWidth * 0.05,
+                          color: ConstantColors.iconColr,
                         ),
                         SizedBox(
                           width: 0.02 * screenHeight,
                         ),
                         Text(
-                          'Support',
+                          'Add Device',
+                          style: GoogleFonts.roboto(
+                              color: const Color.fromARGB(255, 7, 3, 3),
+                              fontSize: screenWidth * 0.045),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 0.03 * screenHeight,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // Navigator.pushNamed(context, calculateRoute);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Icon(
+                          Icons.visibility,
+                          size: screenWidth * 0.06,
+                          color: ConstantColors.iconColr,
+                        ),
+                        SizedBox(
+                          width: 0.02 * screenHeight,
+                        ),
+                        Text(
+                          'View Device',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: screenWidth * 0.045),
@@ -274,7 +373,7 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, requestRoute);
+                      // Navigator.pushNamed(context, calculateRoute);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -283,15 +382,16 @@ class MenuScreenState extends State<MenuScreen> {
                           width: 10,
                         ),
                         Image.asset(
-                          ImgPath.pngGroup,
+                          ImgPath.liveData,
                           height: screenWidth * 0.06,
                           width: screenWidth * 0.06,
+                          color: ConstantColors.iconColr,
                         ),
                         SizedBox(
                           width: 0.02 * screenHeight,
                         ),
                         Text(
-                          'Track Request',
+                          'Live data',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: screenWidth * 0.045),
@@ -299,9 +399,93 @@ class MenuScreenState extends State<MenuScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 0.03 * screenHeight,
-                  ),
+
+                  //hideby saranya
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   children: [
+                  //     const SizedBox(
+                  //       width: 10,
+                  //     ),
+                  //     Image.asset(
+                  //       ImgPath.pngFaq,
+                  //       height: screenWidth * 0.06,
+                  //       width: screenWidth * 0.06,
+                  //     ),
+                  //     SizedBox(
+                  //       width: 0.02 * screenHeight,
+                  //     ),
+                  //     Text(
+                  //       'FAQ',
+                  //       style: GoogleFonts.roboto(
+                  //           color: ConstantColors.black,
+                  //           fontSize: screenWidth * 0.045),
+                  //     ),
+                  //   ],
+                  // ),
+                  // SizedBox(
+                  //   height: 0.03 * screenHeight,
+                  // ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, supportRoute);
+                  //   },
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.start,
+                  //     children: [
+                  //       const SizedBox(
+                  //         width: 10,
+                  //       ),
+                  //       Image.asset(
+                  //         ImgPath.pngSupport,
+                  //         height: screenWidth * 0.06,
+                  //         width: screenWidth * 0.06,
+                  //       ),
+                  //       SizedBox(
+                  //         width: 0.02 * screenHeight,
+                  //       ),
+                  //       Text(
+                  //         'Support',
+                  //         style: GoogleFonts.roboto(
+                  //             color: ConstantColors.black,
+                  //             fontSize: screenWidth * 0.045),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 0.03 * screenHeight,
+                  // ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, requestRoute);
+                  //   },
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.start,
+                  //     children: [
+                  //       const SizedBox(
+                  //         width: 10,
+                  //       ),
+                  //       Image.asset(
+                  //         ImgPath.pngGroup,
+                  //         height: screenWidth * 0.06,
+                  //         width: screenWidth * 0.06,
+                  //       ),
+                  //       SizedBox(
+                  //         width: 0.02 * screenHeight,
+                  //       ),
+                  //       Text(
+                  //         'Track Request',
+                  //         style: GoogleFonts.roboto(
+                  //             color: ConstantColors.black,
+                  //             fontSize: screenWidth * 0.045),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 0.03 * screenHeight,
+                  // ),
                   const Divider(
                     thickness: 1,
                   ),
