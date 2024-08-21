@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all_device_screen.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -43,7 +44,6 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       bottomNavigationBar: Footer(),
-
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           screenWidth * 0.05,
@@ -159,8 +159,21 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
                           String message = data["message"];
                           SnackbarHelper.showSnackBar(context, message);
                         }
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            homedRoute, (route) => false);
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const PowerStatisticsAllScreen(
+                              isFilter: false,
+                              businessUnits: [],
+                              locationUnits: [],
+                              roomUnits: [],
+                            ),
+                          ),
+                          (Route<dynamic> route) => false,
+                        );
+                        // Navigator.of(context).pushNamedAndRemoveUntil(
+                        //     homedRoute, (route) => false);
                       } else {
                         if (data.containsKey("message")) {
                           String errorMessage = data["message"];

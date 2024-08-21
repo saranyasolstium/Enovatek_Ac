@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:device_info/device_info.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:flutter/material.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -95,12 +96,20 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacementNamed(context, introduceRoute);
     } else {
       if (isLoggedIn) {
-        int? userTypeId = await SharedPreferencesHelper.instance.getUserTypeID();
-        print("aaaaaaaaaa $userTypeId");
+        int? userTypeId =
+            await SharedPreferencesHelper.instance.getUserTypeID();
         if (userTypeId == 1) {
           Navigator.pushReplacementNamed(context, enginnerHomeRounte);
         } else {
-          Navigator.pushReplacementNamed(context, homedRoute);
+          // Navigator.pushReplacementNamed(context, homedRoute);
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  const PowerStatisticsScreen(deviceId: "ENV003"),
+            ),
+            (Route<dynamic> route) => false,
+          );
         }
       } else {
         Navigator.pushReplacementNamed(context, loginRoute);

@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/screen/all_device/devicelocation.dart';
 import 'package:enavatek_mobile/screen/device_details/device_details_screen.dart';
-import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics/filter_screen.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics_live_data.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
@@ -17,36 +17,24 @@ import 'package:getwidget/types/gf_toggle_type.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
-class PowerStatisticsAllScreen extends StatefulWidget {
-  final bool isFilter;
-  final List<String> businessUnits;
-  final List<String> locationUnits;
-  final List<int> roomUnits;
-  const PowerStatisticsAllScreen({
+class LiveDataScreen extends StatefulWidget {
+  const LiveDataScreen({
     Key? key,
-    required this.isFilter,
-    required this.businessUnits,
-    required this.locationUnits,
-    required this.roomUnits,
   }) : super(key: key);
 
   @override
-  PowerStatisticsAllScreenState createState() =>
-      PowerStatisticsAllScreenState();
+  LiveDataScreenState createState() => LiveDataScreenState();
 }
 
-class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
+class LiveDataScreenState extends State<LiveDataScreen> {
   List<Building> buildings = [];
   List<Device> devices = [];
 
   @override
   void initState() {
     super.initState();
-    if (widget.isFilter) {
-      applyFilters();
-    } else {
-      getAllDevice();
-    }
+
+    getAllDevice();
   }
 
   Future<void> getAllDevice() async {
@@ -68,43 +56,6 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
           devices = getAllDevices(buildings);
         });
         print(buildings.length);
-      } else {
-        print('Response body does not contain buildings');
-      }
-    } else {
-      print('Response body: ${response.body}');
-    }
-  }
-
-  Future<void> applyFilters() async {
-    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-    int? userId = await SharedPreferencesHelper.instance.getUserID();
-
-    Map<String, dynamic> requestBody = {
-      "room_ids": widget.roomUnits,
-      "business_units": widget.businessUnits,
-      "locations": widget.locationUnits,
-    };
-
-    print(requestBody);
-    Response response = await RemoteServices.filteredDevices(
-      authToken!,
-      userId!,
-      requestBody,
-    );
-
-    if (response.statusCode == 200) {
-      String responseBody = response.body;
-      Map<String, dynamic> jsonData = json.decode(responseBody);
-
-      if (jsonData.containsKey("buildings")) {
-        List<dynamic> buildingList = jsonData["buildings"];
-        buildings =
-            buildingList.map((data) => Building.fromJson(data)).toList();
-        setState(() {
-          devices = getAllDevices(buildings);
-        });
-        print(devices.length);
       } else {
         print('Response body does not contain buildings');
       }
@@ -170,16 +121,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Navigator.pop(context);
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const PowerStatisticsScreen(
-                                deviceId: "",
-                              ),
-                            ),
-                            (Route<dynamic> route) => false,
-                          );
+                          Navigator.pop(context);
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
@@ -198,20 +140,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                     ],
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const FilterScreen()),
-                    );
-                  },
-                  child: const Icon(
-                    Icons.filter_alt_rounded,
-                    color: ConstantColors.mainlyTextColor,
-                    size: 30,
-                  ),
-                ),
+
                 const SizedBox(width: 20),
                 // const Icon(
                 //   Icons.search,
@@ -233,17 +162,13 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
 
                 return GestureDetector(
                     onTap: () {
-                      // Navigator.pushReplacement(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => DeviceDetailScreen(
-                      //             deviceName: device.displayName,
-                      //             fanSpeed: device.fanSpeed,
-                      //             mode: device.mode,
-                      //             power: device.power,
-                      //             deviceId: device.deviceId,
-                      //           )),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PowerStatisticsLiveScreen(
+                                  deviceId: device.deviceId,
+                                )),
+                      );
                     },
                     child: Card(
                       elevation: 10.0,
@@ -285,37 +210,11 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 20),
-                                  GFToggle(
-                                    onChanged: (val) async {
-                                      print(val);
-
-                                      String? authToken =
-                                          await SharedPreferencesHelper.instance
-                                              .getAuthToken();
-                                      int? loginId =
-                                          await SharedPreferencesHelper.instance
-                                              .getLoginID();
-                                      Response response =
-                                          await RemoteServices.actionCommand(
-                                              authToken!,
-                                              val! ? "ON" : "OFF",
-                                              device.deviceId,
-                                              1,
-                                              loginId!);
-                                      var data = jsonDecode(response.body);
-                                      print(data);
-                                      if (response.statusCode == 200) {
-                                        print(data["message"]);
-                                        getAllDevice();
-                                      }
-                                    },
-                                    value: device.power == 'ON' ? true : false,
-                                    enabledThumbColor:
-                                        ConstantColors.whiteColor,
-                                    enabledTrackColor:
-                                        ConstantColors.lightBlueColor,
-                                    type: GFToggleType.ios,
-                                  )
+                                  const Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: ConstantColors.mainlyTextColor,
+                                    size: 20,
+                                  ),
                                 ],
                               ),
                             ),

@@ -6,8 +6,10 @@ import 'package:country_flags/country_flags.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
 import 'package:enavatek_mobile/model/energy.dart';
+import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all_device_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics_live_data.dart';
+import 'package:enavatek_mobile/screen/menu/live_data.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -16,7 +18,6 @@ import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -316,45 +317,45 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           ],
                         );
                       }).toList(),
-                      const SizedBox(height: 5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            height: 25,
-                            width: 25,
-                            decoration: const BoxDecoration(
-                              color: ConstantColors.iconColr,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Text(
-                            'Custom',
-                            style: GoogleFonts.roboto(
-                              fontSize: 14,
-                              color: ConstantColors.appColor,
-                            ),
-                          ),
-                          const Spacer(),
-                          Transform.scale(
-                            scale: 1,
-                            child: Radio(
-                              value: "Custom",
-                              groupValue: radioValue,
-                              hoverColor: ConstantColors.borderButtonColor,
-                              fillColor: MaterialStateColor.resolveWith(
-                                  (states) => ConstantColors.borderButtonColor),
-                              onChanged: (value) {
-                                setState(() {
-                                  radioValue = value.toString();
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
                       const SizedBox(height: 10),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.start,
+                      //   children: [
+                      //     Container(
+                      //       height: 25,
+                      //       width: 25,
+                      //       decoration: const BoxDecoration(
+                      //         color: ConstantColors.iconColr,
+                      //         shape: BoxShape.circle,
+                      //       ),
+                      //     ),
+                      //     const SizedBox(width: 20),
+                      //     Text(
+                      //       'Custom',
+                      //       style: GoogleFonts.roboto(
+                      //         fontSize: 14,
+                      //         color: ConstantColors.appColor,
+                      //       ),
+                      //     ),
+                      //     const Spacer(),
+                      //     Transform.scale(
+                      //       scale: 1,
+                      //       child: Radio(
+                      //         value: "Custom",
+                      //         groupValue: radioValue,
+                      //         hoverColor: ConstantColors.borderButtonColor,
+                      //         fillColor: MaterialStateColor.resolveWith(
+                      //             (states) => ConstantColors.borderButtonColor),
+                      //         onChanged: (value) {
+                      //           setState(() {
+                      //             radioValue = value.toString();
+                      //           });
+                      //         },
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+                      // const SizedBox(height: 10),
                       // Conditional Display of Country Picker and Energy Rate Input
                       if (radioValue == "Custom") ...[
                         Container(
@@ -497,18 +498,18 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Image.asset(
-                          ImgPath.pngArrowBack,
-                          height: 22,
-                          width: 22,
-                          color: ConstantColors.appColor,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     Navigator.pop(context);
+                      //   },
+                      //   child: Image.asset(
+                      //     ImgPath.pngArrowBack,
+                      //     height: 22,
+                      //     width: 22,
+                      //     color: ConstantColors.appColor,
+                      //   ),
+                      // ),
+                       const SizedBox(width: 10),
                       Text(
                         'Power Statistics',
                         style: GoogleFonts.roboto(
@@ -547,12 +548,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           ),
           GestureDetector(
             onTap: () {
+             
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => PowerStatisticsLiveScreen(
-                          deviceId: widget.deviceId,
-                        )),
+                  builder: (context) => const LiveDataScreen(),
+                ),
               );
             },
             child: Image.asset(
@@ -566,11 +567,17 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           ),
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const PowerStatisticsAllScreen()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) => const PowerStatisticsAllScreen(
+              //             businessUnits: [],
+              //             isFilter: false,
+              //             locationUnits: [],
+              //             roomUnits: [],
+              //           )),
+              // );
+              Navigator.pushNamed(context, menuRoute);
             },
             child: Image.asset(
               ImgPath.pngMenu,
@@ -1264,10 +1271,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   ],
                                 ),
                                 const SizedBox(
-                                  width: 30,
+                                  width: 20,
                                 ),
                                 SizedBox(
-                                  width: 120,
+                                  width: 100,
                                   child: CustomDropdownButton(
                                     value: "Week",
                                     items: const [
@@ -1328,7 +1335,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             height: 350,
                             child: SfCartesianChart(
                               primaryXAxis: const CategoryAxis(),
-                              legend: const Legend(isVisible: true),
                               tooltipBehavior: TooltipBehavior(
                                 enable: true,
                                 shared: false,
@@ -1402,7 +1408,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             height: 350,
                             child: SfCartesianChart(
                               primaryXAxis: const CategoryAxis(),
-                              legend: const Legend(isVisible: true),
                               tooltipBehavior: TooltipBehavior(enable: true),
                               series: <CartesianSeries>[
                                 LineSeries<EnergyData, String>(
@@ -1443,7 +1448,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             height: 350,
                             child: SfCartesianChart(
                               primaryXAxis: const CategoryAxis(),
-                              legend: const Legend(isVisible: true),
                               tooltipBehavior: TooltipBehavior(enable: true),
                               series: <CartesianSeries>[
                                 ColumnSeries<EnergyData, String>(

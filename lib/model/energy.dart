@@ -28,9 +28,9 @@ class EnergyData {
     DateTime date;
 
     try {
-      if (json.containsKey('hour')) {
+      if (json.containsKey('interval_start')) {
         // Intraday
-        date = DateTime.parse(json['hour']);
+        date = DateTime.parse(json['interval_start']);
       } else if (json.containsKey('date')) {
         // Day
         date = DateTime.parse(json['date']);
@@ -56,7 +56,7 @@ class EnergyData {
     double totalEnergy = _parseEnergyValue(json['total_energy']);
     double acEnergy = _parseEnergyValue(json['ac_energy']);
     double dcEnergy = _parseEnergyValue(json['dc_energy']);
-      print('energy2 $dcEnergy');
+    print('energy2 $dcEnergy');
     double saving = _parseDynamicValue(json['total_energy_saving']);
     double avgSaving;
     if (json.containsKey('avg_energy_saving')) {
@@ -106,7 +106,7 @@ class EnergyData {
         dcCo2: dcCo2,
         acTree: acTree,
         dcTree: dcTree,
-        saving: saving,
+        saving: dcEnergy * 3,
         avgSaving: avgSaving);
   }
 
@@ -122,9 +122,8 @@ class EnergyData {
 
   static double _parseDynamicValue(dynamic value) {
     if (value is int) {
-      return value.toDouble(); // Convert int to double directly
+      return value.toDouble();
     } else if (value is String) {
-      // Remove any negative signs if necessary, and then parse the string to double
       return double.parse(value.replaceAll('-', '').trim());
     } else {
       throw const FormatException('Invalid format for total energy saving');
@@ -132,18 +131,18 @@ class EnergyData {
   }
 
   String getFormattedTime() {
-    return DateFormat.H().format(date);
+    return DateFormat('h:mm a').format(date);
   }
 
   String getFormattedDate() {
-    return DateFormat('d MMM').format(date); // Converts to format like '12 Aug'
+    return DateFormat('d MMM').format(date);
   }
 
   String getFormattedMonth() {
-    return DateFormat('MMM').format(date); // Converts to format like 'Jul'
+    return DateFormat('MMM').format(date);
   }
 
   String getFormattedYear() {
-    return DateFormat('yyyy').format(date); // Converts to format like '2024'
+    return DateFormat('yyyy').format(date);
   }
 }

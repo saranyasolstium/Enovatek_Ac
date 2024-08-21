@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:enavatek_mobile/auth/authhelper.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/screen/enginner_access/add_device_AppCtrl.dart';
 import 'package:enavatek_mobile/screen/enginner_access/enginner_home.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
@@ -81,8 +82,17 @@ class LoginScreenState extends State<LoginScreen> {
           Navigator.of(context)
               .pushNamedAndRemoveUntil(enginnerHomeRounte, (route) => false);
         } else {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil(homedRoute, (route) => false);
+          // Navigator.of(context)
+          //     .pushNamedAndRemoveUntil(homedRoute, (route) => false);
+
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  const PowerStatisticsScreen(deviceId: "ENV003"),
+            ),
+            (Route<dynamic> route) => false,
+          );
         }
         SnackbarHelper.showSnackBar(context, "Login Successful");
       } else {
@@ -402,8 +412,8 @@ class LoginScreenState extends State<LoginScreen> {
               child: ElevatedButton.icon(
                 onPressed: () {
                   // signInWithGoogle();
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      enginnerHomeRounte, (route) => false);
+                  // Navigator.of(context).pushNamedAndRemoveUntil(
+                  //     enginnerHomeRounte, (route) => false);
                 },
                 icon: const Icon(
                   FontAwesomeIcons.google,
@@ -427,7 +437,7 @@ class LoginScreenState extends State<LoginScreen> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  signInWithFacebook();
+                  // signInWithFacebook();
                 },
                 icon: const Icon(
                   FontAwesomeIcons.facebook,

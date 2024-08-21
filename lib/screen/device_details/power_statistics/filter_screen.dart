@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/all_device/devicelocation.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all_device_screen.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
@@ -157,7 +158,16 @@ class FilterScreenState extends State<FilterScreen> {
         backgroundColor: ConstantColors.backgroundColor,
         leading: GestureDetector(
           onTap: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const PowerStatisticsAllScreen(
+                        isFilter: false,
+                        businessUnits: [],
+                        locationUnits: [],
+                        roomUnits: [],
+                      )),
+            );
           },
           child: Container(
             width: 24,
@@ -277,7 +287,16 @@ class FilterScreenState extends State<FilterScreen> {
           children: [
             RoundedButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const PowerStatisticsAllScreen(
+                            isFilter: false,
+                            businessUnits: [],
+                            locationUnits: [],
+                            roomUnits: [],
+                          )),
+                );
               },
               text: "Close",
               backgroundColor: ConstantColors.whiteColor,
@@ -302,17 +321,16 @@ class FilterScreenState extends State<FilterScreen> {
 
                 roomIds = getRoomIdsByNames(selectedRooms, rooms);
 
-                Navigator.pushAndRemoveUntil(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AllDeviceScreen(
+                    builder: (context) => PowerStatisticsAllScreen(
                       isFilter: true,
                       businessUnits: selectedBusinessUnits,
                       locationUnits: selectedLocations,
                       roomUnits: roomIds,
                     ),
                   ),
-                  (Route<dynamic> route) => false,
                 );
               },
               text: "Apply",
