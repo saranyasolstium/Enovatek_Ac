@@ -554,6 +554,8 @@ class DeviceDetailScreenState extends State<DeviceDetailScreen> {
                             MaterialPageRoute(
                                 builder: (context) => PowerStatisticsScreen(
                                       deviceId: widget.deviceId,
+                                      deviceList: [],
+                                      tabIndex: 1,
                                     )),
                           );
                         },

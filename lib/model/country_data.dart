@@ -2,13 +2,17 @@ class CountryData {
   final int id;
   final String name;
   final String currencyType;
-  final String energyRate; // Keep energyRate as a String
+  final double energyRate;
+  final double temperature;
+  final double factor;
 
   CountryData({
     required this.id,
     required this.name,
     required this.currencyType,
     required this.energyRate,
+    required this.temperature,
+    required this.factor,
   });
 
   factory CountryData.fromJson(Map<String, dynamic> json) {
@@ -16,7 +20,9 @@ class CountryData {
       id: _parseId(json['id']),
       name: json['name'] ?? '',
       currencyType: _parseCurrencyType(json['currency_type']),
-      energyRate: _parseEnergyRate(json['energy_rate']),
+      energyRate: json['energy_rate'],
+      temperature: json['temperature'],
+      factor: json['factor'],
     );
   }
 

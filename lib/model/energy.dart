@@ -56,8 +56,9 @@ class EnergyData {
     double totalEnergy = _parseEnergyValue(json['total_energy']);
     double acEnergy = _parseEnergyValue(json['ac_energy']);
     double dcEnergy = _parseEnergyValue(json['dc_energy']);
-    print('energy2 $dcEnergy');
-    double saving = _parseDynamicValue(json['total_energy_saving']);
+    double saving = dcEnergy * 3;
+    print('saving $saving');
+    // double totalEnergySaving = _parseDynamicValue(json['total_energy_saving']);
     double avgSaving;
     if (json.containsKey('avg_energy_saving')) {
       print('saranya ${json['avg_energy_saving']}');
@@ -75,15 +76,15 @@ class EnergyData {
     double dcCo2 = dcEnergy > 0
         ? double.parse((0.4168 * dcEnergy).toStringAsFixed(4))
         : 0.0;
-    print('dcEnergy $dcEnergy');
+    //print('dcEnergy $dcEnergy');
 
-    print('dcCo2 $dcCo2');
+   // print('dcCo2 $dcCo2');
 
     // Calculation for CO2 Reduction
     double reduction = (avgSaving * 0.4168);
-    print('reduction $reduction');
+   // print('reduction $reduction');
     double acCo2Reduction = reduction - acCo2;
-    double dcCo2Reduction = reduction - dcCo2;
+    double dcCo2Reduction = (reduction - dcCo2).abs();
 
     print('dcCo2Reduction $dcCo2Reduction');
 
@@ -103,10 +104,10 @@ class EnergyData {
         acEnergy: acEnergy,
         dcEnergy: dcEnergy,
         acCo2: acCo2,
-        dcCo2: dcCo2,
+        dcCo2: acCo2,
         acTree: acTree,
         dcTree: dcTree,
-        saving: dcEnergy * 3,
+        saving: saving,
         avgSaving: avgSaving);
   }
 

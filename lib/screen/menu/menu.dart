@@ -1,7 +1,10 @@
+import 'package:country_pickers/country.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/add_device/add_device_screen.dart';
 import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all_device_screen.dart';
+import 'package:enavatek_mobile/screen/menu/country/country_screen.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -88,7 +91,7 @@ class MenuScreenState extends State<MenuScreen> {
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-          isTablet ? 0.05 * screenHeight : 0.05 * screenHeight,
+          isTablet ? 0.02 * screenHeight : 0.02 * screenHeight,
           isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
           isTablet ? 0.02 * screenHeight : 0.05 * screenHeight,
         ),
@@ -157,7 +160,7 @@ class MenuScreenState extends State<MenuScreen> {
               ],
             ),
             SizedBox(
-              height: 0.05 * screenHeight,
+              height: 0.02 * screenHeight,
             ),
             Container(
               decoration: BoxDecoration(
@@ -290,7 +293,16 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.pushNamed(context, buildingRoute);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PowerStatisticsScreen(
+                            deviceId: "",
+                            deviceList: [],
+                            tabIndex: 1,
+                          ),
+                        ),
+                      );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -321,7 +333,16 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.pushNamed(context, calculateRoute);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PowerStatisticsScreen(
+                            deviceId: "",
+                            deviceList: [],
+                            tabIndex: 2,
+                          ),
+                        ),
+                      );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -352,7 +373,16 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.pushNamed(context, calculateRoute);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PowerStatisticsScreen(
+                            deviceId: "",
+                            deviceList: [],
+                            tabIndex: 3,
+                          ),
+                        ),
+                      );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -371,6 +401,42 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Text(
                           'Tree Planted',
+                          style: GoogleFonts.roboto(
+                              color: ConstantColors.black,
+                              fontSize: screenWidth * 0.045),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 0.03 * screenHeight,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CountryScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Image.asset(
+                          ImgPath.treeIcon,
+                          height: screenWidth * 0.06,
+                          width: screenWidth * 0.06,
+                          color: ConstantColors.iconColr,
+                        ),
+                        SizedBox(
+                          width: 0.02 * screenHeight,
+                        ),
+                        Text(
+                          'Manage Country',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: screenWidth * 0.045),

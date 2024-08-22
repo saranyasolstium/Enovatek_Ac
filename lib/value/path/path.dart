@@ -8,6 +8,8 @@ class ImgPath {
   static String pngSerialNo = "assets/serial_number_icon.png";
 
   static String pngArrowBack = "assets/arrow_back_icon.png";
+  static String pngdoubleArrow = "assets/double_arrow.png";
+
   static String pngLoginBg = "assets/login_bg.png";
   static String pngPerson = "assets/person_icon.png";
   static String pngEdit = "assets/edit_icon.png";

@@ -88,8 +88,11 @@ class LoginScreenState extends State<LoginScreen> {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  const PowerStatisticsScreen(deviceId: "ENV003"),
+              builder: (context) => const PowerStatisticsScreen(
+                deviceId: "",
+                deviceList: [],
+                tabIndex: 1,
+              ),
             ),
             (Route<dynamic> route) => false,
           );

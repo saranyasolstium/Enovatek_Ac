@@ -26,12 +26,12 @@ class FilterScreenState extends State<FilterScreen> {
 
   // Example checkbox values
   Map<String, bool> businessUnits = {
-    'Business Unit 1': false,
+    'solstium': false,
   };
 
   // Map for Locations
   Map<String, bool> locationUnits = {
-    'Location 1': false,
+    'singapore': false,
   };
 
   // Map for Floors
@@ -82,7 +82,9 @@ class FilterScreenState extends State<FilterScreen> {
       final data = jsonDecode(response.body)['data'];
 
       setState(() {
-        locationUnits = {for (var unit in data) unit['location_name']: false};
+        locationUnits = {
+          for (var unit in data) (unit['location_name'] ?? ''): false
+        };
       });
     } else {
       throw Exception('Failed to load business units');

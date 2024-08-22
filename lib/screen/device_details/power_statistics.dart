@@ -18,6 +18,7 @@ import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -25,9 +26,14 @@ import 'package:country_picker/country_picker.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
+  final List<String> deviceList;
+  final int tabIndex;
+
   const PowerStatisticsScreen({
     Key? key,
     required this.deviceId,
+    required this.deviceList,
+    required this.tabIndex,
   }) : super(key: key);
 
   @override
@@ -57,7 +63,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   ValueNotifier<bool> treeNotiifer = ValueNotifier(false);
   ValueNotifier<bool> savingNotiifer = ValueNotifier(false);
   ValueNotifier<int> selectedTabIndex = ValueNotifier<int>(0);
-
   ValueNotifier<String> selectedCountryNotifier = ValueNotifier<String>('sg');
   @override
   void initState() {
@@ -65,16 +70,35 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     DateTime currentDate = DateTime.now();
     String formattedDate =
         "${currentDate.day}-${currentDate.month}-${currentDate.year}";
-    fetchData(widget.deviceId, energyType);
+    fetchData(energyType);
     powerusages("day", formattedDate);
     fetchCountry(false);
+    if (widget.tabIndex == 1) {
+      energyNotiifer.value = true;
+      savingNotiifer.value = false;
+      treeNotiifer.value = false;
+      selectedTabIndex.value = 0;
+    } else if (widget.tabIndex == 2) {
+      energyNotiifer.value = false;
+      savingNotiifer.value = true;
+      treeNotiifer.value = false;
+      selectedTabIndex.value = 1;
+    } else if (widget.tabIndex == 3) {
+      energyNotiifer.value = false;
+      savingNotiifer.value = false;
+      treeNotiifer.value = true;
+      selectedTabIndex.value = 2;
+    }
   }
 
-  Future<void> fetchData(String deviceid, String periodType) async {
+  Future<void> fetchData(String periodType) async {
     try {
+      int? userId = await SharedPreferencesHelper.instance.getUserID();
+
       final data = await RemoteServices.fetchEnergyData(
-        deviceId: deviceid,
+        deviceId: widget.deviceList,
         periodType: periodType,
+        userId: userId!,
       );
       setState(() {
         energyDataList = data;
@@ -128,7 +152,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
 
     final response = await RemoteServices.powerusages(
-        authToken!, widget.deviceId, periodType, periodValue, "all");
+        authToken!, "Env003", periodType, periodValue, "all");
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (!mounted) return;
@@ -203,24 +227,24 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isTablet = screenWidth >= 600;
 
-    Future<void> createCountry(
-        String countryName, String currencyType, int energyRate) async {
-      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-      print(authToken);
-      Response response = await RemoteServices.createCountry(
-          authToken!, countryName, currencyType, energyRate);
-      var data = jsonDecode(response.body);
+    // Future<void> createCountry(
+    //     String countryName, String currencyType, double energyRate) async {
+    //   String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    //   print(authToken);
+    //   Response response = await RemoteServices.createCountry(
+    //       authToken!, countryName, currencyType, energyRate);
+    //   var data = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
-        if (data.containsKey("message")) {
-          String message = data["message"];
-          SnackbarHelper.showSnackBar(context, message);
-          Navigator.pop(context);
-        }
-      } else {
-        SnackbarHelper.showSnackBar(context, "Failed to create country");
-      }
-    }
+    //   if (response.statusCode == 200) {
+    //     if (data.containsKey("message")) {
+    //       String message = data["message"];
+    //       SnackbarHelper.showSnackBar(context, message);
+    //       Navigator.pop(context);
+    //     }
+    //   } else {
+    //     SnackbarHelper.showSnackBar(context, "Failed to create country");
+    //   }
+    // }
 
     String currency = "";
     String radioValue = "";
@@ -454,11 +478,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               SnackbarHelper.showSnackBar(
                                   context, "Please select energy");
                             } else {
-                              createCountry(
-                                countryController.text,
-                                currency,
-                                int.parse(energyController.text),
-                              );
+                              // createCountry(
+                              //   countryController.text,
+                              //   currency,
+                              //   double.parse(energyController.text),
+                              // );
                             }
                           } else {
                             setState(() {
@@ -509,7 +533,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       //     color: ConstantColors.appColor,
                       //   ),
                       // ),
-                       const SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(
                         'Power Statistics',
                         style: GoogleFonts.roboto(
@@ -548,7 +572,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           ),
           GestureDetector(
             onTap: () {
-             
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -624,25 +647,25 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           ],
                         ),
                         const SizedBox(
-                          width: 30,
+                          width: 20,
                         ),
-                        Image.asset(
-                          ImgPath.pngArrowBack,
+                        const Icon(
+                          Icons.arrow_forward_ios,
                           color: ConstantColors.iconColr,
-                          height: 15,
+                          size: 24.0,
                         ),
-                        Image.asset(
-                          ImgPath.pngArrowBack,
+                        const Icon(
+                          Icons.arrow_forward_ios,
                           color: ConstantColors.iconColr,
-                          height: 15,
+                          size: 24.0,
                         ),
-                        Image.asset(
-                          ImgPath.pngArrowBack,
+                        const Icon(
+                          Icons.arrow_forward_ios,
                           color: ConstantColors.iconColr,
-                          height: 15,
+                          size: 24.0,
                         ),
                         const SizedBox(
-                          width: 30,
+                          width: 20,
                         ),
                         Image.asset(
                           ImgPath.totalPower,
@@ -650,26 +673,39 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           height: 50,
                         ),
                         const SizedBox(
-                          width: 30,
+                          width: 20,
                         ),
-                        Image.asset(
-                          ImgPath.pngArrowBack,
+                        // Image.asset(
+                        //   ImgPath.pngArrowBack,
+                        //   color: ConstantColors.iconColr,
+                        //   height: 15,
+                        // ),
+                        // Image.asset(
+                        //   ImgPath.pngArrowBack,
+                        //   color: ConstantColors.iconColr,
+                        //   height: 15,
+                        // ),
+                        // Image.asset(
+                        //   ImgPath.pngArrowBack,
+                        //   color: ConstantColors.iconColr,
+                        //   height: 15,
+                        // ),
+                        const Icon(
+                          Icons.arrow_back_ios,
                           color: ConstantColors.iconColr,
-                          height: 15,
+                          size: 24.0,
                         ),
-                        Image.asset(
-                          ImgPath.pngArrowBack,
+                        const Icon(
+                          Icons.arrow_back_ios,
                           color: ConstantColors.iconColr,
-                          height: 15,
+                          size: 24.0,
                         ),
-                        Image.asset(
-                          ImgPath.pngArrowBack,
+                        const Icon(
+                          Icons.arrow_back_ios,
                           color: ConstantColors.iconColr,
-                          height: 15,
+                          size: 24.0,
                         ),
-                        const SizedBox(
-                          width: 30,
-                        ),
+
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -788,7 +824,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             setState(() {
                               energyType = "intraday";
                             });
-                            fetchData(widget.deviceId, "intraday");
+                            fetchData("intraday");
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -823,9 +859,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             treeNotiifer.value = false;
                             savingNotiifer.value = true;
                             setState(() {
-                              energyType = "week";
+                              energyType = "Intraday";
                             });
-                            fetchData(widget.deviceId, "week");
+                            fetchData("intraday");
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -859,11 +895,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             energyNotiifer.value = false;
                             treeNotiifer.value = true;
                             savingNotiifer.value = false;
-                            fetchData(widget.deviceId, "week");
+                            fetchData("intraday");
                             setState(() {
-                              energyType = "week";
+                              energyType = "Intraday";
                             });
-                            fetchData(widget.deviceId, "week");
+                            fetchData("intraday");
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -919,7 +955,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      'Total Energy',
+                                      'Total Energy Saving',
                                       style: GoogleFonts.roboto(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -930,7 +966,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      '1.24 kwh',
+                                      '45.29%',
                                       style: GoogleFonts.roboto(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -1026,27 +1062,27 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         setState(() {
                                           energyType = "intraday";
                                         });
-                                        fetchData(widget.deviceId, "intraday");
+                                        fetchData("intraday");
                                       } else if (value == "Day") {
                                         setState(() {
                                           energyType = "day";
                                         });
-                                        fetchData(widget.deviceId, "day");
+                                        fetchData("day");
                                       } else if (value == "Week") {
                                         setState(() {
                                           energyType = "week";
                                         });
-                                        fetchData(widget.deviceId, "week");
+                                        fetchData("week");
                                       } else if (value == "Month") {
                                         setState(() {
                                           energyType = "month";
                                         });
-                                        fetchData(widget.deviceId, "month");
+                                        fetchData("month");
                                       } else {
                                         setState(() {
                                           energyType = "year";
                                         });
-                                        fetchData(widget.deviceId, "year");
+                                        fetchData("year");
                                       }
                                     },
                                   ),
@@ -1082,7 +1118,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      'Total saving',
+                                      'Total saving in SGD',
                                       style: GoogleFonts.roboto(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -1093,7 +1129,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      '45.29%',
+                                      '20.38\$',
                                       style: GoogleFonts.roboto(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -1108,8 +1144,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 SizedBox(
                                   width: 120,
                                   child: CustomDropdownButton(
-                                    value: "Week",
+                                    value: "Intraday",
                                     items: const [
+                                      DropdownMenuItem(
+                                        value: 'Intraday',
+                                        child: Text('Intraday'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Day',
+                                        child: Text('Day'),
+                                      ),
                                       DropdownMenuItem(
                                         value: 'Week',
                                         child: Text('Week'),
@@ -1125,21 +1169,31 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     ],
                                     onChanged: (value) {
                                       print(' selected: $value');
-                                      if (value == "Week") {
+                                      if (value == "Intraday") {
+                                        setState(() {
+                                          energyType = "intraday";
+                                        });
+                                        fetchData("intraday");
+                                      } else if (value == "Day") {
+                                        setState(() {
+                                          energyType = "day";
+                                        });
+                                        fetchData("day");
+                                      } else if (value == "Week") {
                                         setState(() {
                                           energyType = "week";
                                         });
-                                        fetchData(widget.deviceId, "week");
+                                        fetchData("week");
                                       } else if (value == "Month") {
                                         setState(() {
                                           energyType = "month";
                                         });
-                                        fetchData(widget.deviceId, "month");
+                                        fetchData("month");
                                       } else {
                                         setState(() {
                                           energyType = "year";
                                         });
-                                        fetchData(widget.deviceId, "year");
+                                        fetchData("year");
                                       }
                                     },
                                   ),
@@ -1271,13 +1325,21 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   ],
                                 ),
                                 const SizedBox(
-                                  width: 20,
+                                  width: 15,
                                 ),
                                 SizedBox(
-                                  width: 100,
+                                  width: 120,
                                   child: CustomDropdownButton(
-                                    value: "Week",
+                                    value: "Intraday",
                                     items: const [
+                                      DropdownMenuItem(
+                                        value: 'Intraday',
+                                        child: Text('Intraday'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Day',
+                                        child: Text('Day'),
+                                      ),
                                       DropdownMenuItem(
                                         value: 'Week',
                                         child: Text('Week'),
@@ -1293,21 +1355,31 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     ],
                                     onChanged: (value) {
                                       print(' selected: $value');
-                                      if (value == "Week") {
+                                      if (value == "Intraday") {
+                                        setState(() {
+                                          energyType = "intraday";
+                                        });
+                                        fetchData("intraday");
+                                      } else if (value == "Day") {
+                                        setState(() {
+                                          energyType = "day";
+                                        });
+                                        fetchData("day");
+                                      } else if (value == "Week") {
                                         setState(() {
                                           energyType = "week";
                                         });
-                                        fetchData(widget.deviceId, "week");
+                                        fetchData("week");
                                       } else if (value == "Month") {
                                         setState(() {
                                           energyType = "month";
                                         });
-                                        fetchData(widget.deviceId, "month");
+                                        fetchData("month");
                                       } else {
                                         setState(() {
                                           energyType = "year";
                                         });
-                                        fetchData(widget.deviceId, "year");
+                                        fetchData("year");
                                       }
                                     },
                                   ),
@@ -1367,20 +1439,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   dataSource: energyDataList,
                                   xValueMapper: (EnergyData data, _) {
                                     if (energyType == "intraday") {
-                                      return data
-                                          .getFormattedTime(); // Return formatted time
+                                      return data.getFormattedTime();
                                     } else if (energyType == "day" ||
                                         energyType == "week") {
-                                      return data
-                                          .getFormattedDate(); // Return formatted date
+                                      return data.getFormattedDate();
                                     } else if (energyType == "month") {
-                                      return data
-                                          .getFormattedMonth(); // Return formatted month
+                                      return data.getFormattedMonth();
                                     } else if (energyType == "year") {
-                                      return data
-                                          .getFormattedYear(); // Return formatted year
+                                      return data.getFormattedYear();
                                     } else {
-                                      return ""; // Fallback to an empty string
+                                      return "";
                                     }
                                   },
                                   yValueMapper: (EnergyData data, _) =>
@@ -1413,7 +1481,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 LineSeries<EnergyData, String>(
                                   dataSource: energyDataList,
                                   xValueMapper: (EnergyData data, _) {
-                                    if (energyType == "week") {
+                                    if (energyType == "intraday") {
+                                      return data.getFormattedTime();
+                                    } else if (energyType == "day" ||
+                                        energyType == "week") {
                                       return data.getFormattedDate();
                                     } else if (energyType == "month") {
                                       return data.getFormattedMonth();
@@ -1453,7 +1524,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 ColumnSeries<EnergyData, String>(
                                   dataSource: energyDataList,
                                   xValueMapper: (EnergyData data, _) {
-                                    if (energyType == "week") {
+                                    if (energyType == "intraday") {
+                                      return data.getFormattedTime();
+                                    } else if (energyType == "day" ||
+                                        energyType == "week") {
                                       return data.getFormattedDate();
                                     } else if (energyType == "month") {
                                       return data.getFormattedMonth();

@@ -140,7 +140,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
         }
       }
     }
-    return DeviceLocation(null, null, null); // Device not found
+    return DeviceLocation(null, null, null);
   }
 
   @override
@@ -176,6 +176,8 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                             MaterialPageRoute(
                               builder: (context) => const PowerStatisticsScreen(
                                 deviceId: "",
+                                deviceList: [],
+                                tabIndex: 1,
                               ),
                             ),
                             (Route<dynamic> route) => false,
@@ -298,7 +300,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                                       Response response =
                                           await RemoteServices.actionCommand(
                                               authToken!,
-                                              val! ? "ON" : "OFF",
+                                              val! ? "On" : "Off",
                                               device.deviceId,
                                               1,
                                               loginId!);
@@ -309,7 +311,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                                         getAllDevice();
                                       }
                                     },
-                                    value: device.power == 'ON' ? true : false,
+                                    value: device.power == 'On' ? true : false,
                                     enabledThumbColor:
                                         ConstantColors.whiteColor,
                                     enabledTrackColor:

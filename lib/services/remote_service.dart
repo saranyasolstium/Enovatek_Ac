@@ -484,8 +484,9 @@ class RemoteServices {
   }
 
   static Future<List<EnergyData>> fetchEnergyData({
-    required String deviceId,
+    required List<String> deviceId,
     required String periodType,
+    required int userId,
   }) async {
     final apiUrl = Uri.parse('${url}api/user/power_consumption_data');
     final response = await http.post(
@@ -494,12 +495,14 @@ class RemoteServices {
       body: jsonEncode({
         'device_id': deviceId,
         'period_type': periodType,
+        'user_id': userId
       }),
     );
-    print(jsonEncode({
-      'device_id': deviceId,
-      'period_type': periodType,
-    }));
+    print('request ${jsonEncode({
+          'device_id': deviceId,
+          'period_type': periodType,
+          'user_id': userId
+        })}');
     print(response.body);
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['energy_data'] as List;
@@ -557,8 +560,14 @@ class RemoteServices {
     }
   }
 
-  static Future<Response> createCountry(String token, String countryName,
-      String currencyType, int energyRate) async {
+  static Future<Response> createCountry(
+      String token,
+      int id,
+      String countryName,
+      String currencyType,
+      double energyRate,
+      double factor,
+      double temperature) async {
     try {
       print('${url}api/master/create_update_country');
       String apiUrl = '${url}api/master/create_update_country';
@@ -567,10 +576,41 @@ class RemoteServices {
         'Authorization': 'Bearer $token',
       };
       Map<String, dynamic> requestBody = {
-        "id": 4,
+        "id": id,
         "name": countryName,
         "currency_type": currencyType,
-        "energy_rate": energyRate
+        "energy_rate": energyRate,
+        "factor": factor,
+        "temperature": temperature
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> deleteCountry(
+    String token,
+    int countryId,
+  ) async {
+    try {
+      print('${url}api/master/delete_country_details');
+      String apiUrl = '${url}api/master/delete_country_details';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+      Map<String, dynamic> requestBody = {
+        "id": countryId,
       };
       print(requestBody);
       String jsonBody = jsonEncode(requestBody);
