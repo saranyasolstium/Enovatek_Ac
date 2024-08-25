@@ -58,7 +58,15 @@ class EnergyData {
   }
 
   String getFormattedTime() {
-    return DateFormat('HH:mm').format(period);
+    int hour = period.hour;
+
+    if (hour >= 0 && hour < 8) {
+      return '00-07:59';
+    } else if (hour >= 8 && hour < 16) {
+      return '08-15:59';
+    } else {
+      return '16-23:59';
+    }
   }
 
   String getFormattedDate() {

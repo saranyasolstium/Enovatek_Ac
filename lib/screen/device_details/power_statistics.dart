@@ -20,6 +20,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:country_picker/country_picker.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -63,18 +64,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   ValueNotifier<bool> savingNotiifer = ValueNotifier(false);
   ValueNotifier<int> selectedTabIndex = ValueNotifier<int>(0);
   ValueNotifier<String> selectedCountryNotifier = ValueNotifier<String>('sg');
-  ValueNotifier<int> countryId = ValueNotifier<int>(4);
-
-  TooltipPosition _tooltipPosition = TooltipPosition.pointer;
+  ValueNotifier<int> countryId = ValueNotifier<int>(6);
+  ValueNotifier<String> currencyCodeNotifier = ValueNotifier<String>("SGD");
 
   @override
   void initState() {
     super.initState();
-    DateTime currentDate = DateTime.now();
-    String formattedDate =
-        "${currentDate.day}-${currentDate.month}-${currentDate.year}";
-    fetchData(energyType);
-    powerusages("day", formattedDate);
+    getCountryCurrency(selectedCountryNotifier.value);
+    powerusages(periodType);
     fetchCountry(false);
     if (widget.tabIndex == 1) {
       energyNotiifer.value = true;
@@ -95,8 +92,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   }
 
   int getCountryIdByCurrencyType(String currencyType) {
+    print('varshan $currencyType');
     for (var country in countryList) {
       if (country.currencyType.toLowerCase() == currencyType.toLowerCase()) {
+        print(country.id);
         return country.id;
       }
     }
@@ -105,16 +104,17 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
 
   Future<void> fetchData(String periodType) async {
     try {
+      getCountryCurrency(selectedCountryNotifier.value);
+
       int? userId = await SharedPreferencesHelper.instance.getUserID();
       int? countryId =
           getCountryIdByCurrencyType(selectedCountryNotifier.value);
       print(countryId);
       final data = await RemoteServices.fetchEnergyData(
-        deviceId: widget.deviceList,
-        periodType: periodType,
-        userId: userId!,
-        countryId: countryId
-      );
+          deviceId: widget.deviceList,
+          periodType: periodType.toLowerCase(),
+          userId: userId!,
+          countryId: countryId);
       setState(() {
         energyDataList = data;
         totalTree =
@@ -137,6 +137,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       final data = await RemoteServices.fetchCountryList(token: authToken!);
       setState(() {
         countryList = data;
+        fetchData('intraday');
+
         if (status) {
           countrySelection();
         }
@@ -147,12 +149,44 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
-  Future<void> powerusages(String periodType, String periodValue) async {
+  Future<void> getCountryCurrency(String countryCode) async {
+    final response = await http
+        .get(Uri.parse('https://restcountries.com/v3.1/alpha/$countryCode'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      // Check if the data contains the 'currencies' field
+      if (data.isNotEmpty && data[0].containsKey('currencies')) {
+        final currencies = data[0]['currencies'];
+
+        // Loop through the currencies map to get details
+        currencies.forEach((code, details) {
+          final name = details['name'];
+          final symbol = details['symbol'];
+          currencyCodeNotifier.value = code;
+          print('Currency Code: $code');
+          print('Currency Name: $name');
+          print('Currency Symbol: $symbol');
+        });
+      } else {
+        print('Currency information not found');
+      }
+    } else {
+      print('Failed to load country data');
+    }
+  }
+
+  Future<void> powerusages(String periodType) async {
+    DateTime currentDate = DateTime.now();
+    String formattedDate =
+        "${currentDate.day}-${currentDate.month}-${currentDate.year}";
+
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
 
     final response = await RemoteServices.powerusages(
-        authToken!, "", periodType, periodValue, "all", userId!);
+        authToken!, "", periodType, formattedDate, "all", userId!);
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (!mounted) return;
@@ -185,10 +219,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         acEnergy = double.parse(acEnergyStr);
         dcEnergy = double.parse(dcEnergyStr);
       });
-
-      print('Total Power: $totalPower');
-      print('AC Power: $acPower');
-      print('DC Power: $dcPower');
     } else {
       final Map<String, dynamic> responseData = json.decode(response.body);
 
@@ -506,6 +536,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             setState(() {
                               print(radioValue);
                               selectedCountryNotifier.value = radioValue;
+                              energyNotiifer.value = true;
+                              savingNotiifer.value = false;
+                              treeNotiifer.value = false;
+                              selectedTabIndex.value = 0;
+                              fetchData('intraday');
+                              energyType="intraday";
                               Navigator.pop(context);
                             });
                           }
@@ -892,7 +928,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             treeNotiifer.value = false;
                             savingNotiifer.value = true;
                             setState(() {
-                              energyType = "Intraday";
+                              energyType = "intraday";
                             });
                             fetchData("intraday");
                           },
@@ -1150,7 +1186,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      'Total saving in SGD',
+                                      'Total saving in ${currencyCodeNotifier.value}',
                                       style: GoogleFonts.roboto(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
