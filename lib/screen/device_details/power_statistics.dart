@@ -1,14 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:country_flags/country_flags.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
 import 'package:enavatek_mobile/model/energy.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
-import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all_device_screen.dart';
-import 'package:enavatek_mobile/screen/device_details/power_statistics_live_data.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
@@ -18,11 +15,11 @@ import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:country_picker/country_picker.dart';
+import 'dart:io';
+import 'package:intl/intl.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -57,6 +54,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
 
   String energyType = "intraday";
   String totalTree = "0";
+  String totalSavings = "0";
+  String totalEnergy = "0";
 
   String periodType = "day";
   ValueNotifier<bool> energyNotiifer = ValueNotifier(true);
@@ -64,6 +63,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   ValueNotifier<bool> savingNotiifer = ValueNotifier(false);
   ValueNotifier<int> selectedTabIndex = ValueNotifier<int>(0);
   ValueNotifier<String> selectedCountryNotifier = ValueNotifier<String>('sg');
+  ValueNotifier<int> countryId = ValueNotifier<int>(4);
+
+  TooltipPosition _tooltipPosition = TooltipPosition.pointer;
+
   @override
   void initState() {
     super.initState();
@@ -91,19 +94,35 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
+  int getCountryIdByCurrencyType(String currencyType) {
+    for (var country in countryList) {
+      if (country.currencyType.toLowerCase() == currencyType.toLowerCase()) {
+        return country.id;
+      }
+    }
+    throw Exception('Country with currency type $currencyType not found');
+  }
+
   Future<void> fetchData(String periodType) async {
     try {
       int? userId = await SharedPreferencesHelper.instance.getUserID();
-
+      int? countryId =
+          getCountryIdByCurrencyType(selectedCountryNotifier.value);
+      print(countryId);
       final data = await RemoteServices.fetchEnergyData(
         deviceId: widget.deviceList,
         periodType: periodType,
         userId: userId!,
+        countryId: countryId
       );
       setState(() {
         energyDataList = data;
         totalTree =
             calculateTotalTreesPlanted(energyDataList).toStringAsFixed(2);
+        totalSavings =
+            calculateAverageSavings(energyDataList).toStringAsFixed(2);
+        totalEnergy =
+            calculateTotalEnergySaving(energyDataList).toStringAsFixed(2);
       });
     } catch (e) {
       // Handle error
@@ -128,31 +147,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
-  // void updatePowerUsages(String periodType, String value) {
-  //   timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-  //     powerusages(periodType, value);
-  //   });
-  // }
-
-  // @override
-  // void dispose() {
-  //   _tabController!.dispose();
-  //   stopTimer();
-  //   super.dispose();
-  // }
-
-  // void stopTimer() {
-  //   if (timer != null && timer!.isActive) {
-  //     timer!.cancel();
-  //     print("Timer stopped");
-  //   }
-  // }
-
   Future<void> powerusages(String periodType, String periodValue) async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? userId = await SharedPreferencesHelper.instance.getUserID();
 
     final response = await RemoteServices.powerusages(
-        authToken!, "Env003", periodType, periodValue, "all");
+        authToken!, "", periodType, periodValue, "all", userId!);
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (!mounted) return;
@@ -215,12 +215,30 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     double totalDcTree = 0.0;
 
     for (var data in energyDataList) {
-      totalDcTree += data.dcTree;
+      totalDcTree += data.treesPlanted;
     }
     setState(() {
       totalTree = totalDcTree.toString();
     });
     return totalDcTree;
+  }
+
+  double calculateAverageSavings(List<EnergyData> energyDataList) {
+    if (energyDataList.isEmpty) {
+      return 0.0;
+    }
+    double totalSaving =
+        energyDataList.fold(0.0, (sum, data) => sum + data.energySaving);
+    return totalSaving / energyDataList.length;
+  }
+
+  double calculateTotalEnergySaving(List<EnergyData> energyDataList) {
+    if (energyDataList.isEmpty) {
+      return 0.0;
+    }
+    double totalenergy =
+        energyDataList.fold(0.0, (sum, data) => sum + data.totalEnergy);
+    return totalenergy / energyDataList.length;
   }
 
   Future<void> countrySelection() async {
@@ -504,6 +522,45 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     );
   }
 
+  Future<void> exportCSV(String csvContent, String fileName) async {
+    final path = '/storage/emulated/0/Download/$fileName';
+    final file = File(path);
+
+    await file.writeAsString(csvContent);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('CSV downloaded successfully to $path'),
+      ),
+    );
+
+    print('File saved at $path');
+  }
+
+  Future<void> exportPowerConsumptionData() async {
+    try {
+      int? userId = await SharedPreferencesHelper.instance.getUserID();
+      var response = await RemoteServices().export(
+        deviceId: widget.deviceList,
+        periodType: energyType,
+        userId: userId!,
+      );
+
+      if (response.statusCode == 200) {
+        final csvContent = response.body;
+        final fileName =
+            'power_consumption_data_${DateFormat('dd_MM_yyyy').format(DateTime.now())}.csv';
+
+        exportCSV(csvContent, fileName);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to download CSV ')),
+        );
+      }
+    } catch (e) {
+      print('Error exporting data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -522,17 +579,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      // GestureDetector(
-                      //   onTap: () {
-                      //     Navigator.pop(context);
-                      //   },
-                      //   child: Image.asset(
-                      //     ImgPath.pngArrowBack,
-                      //     height: 22,
-                      //     width: 22,
-                      //     color: ConstantColors.appColor,
-                      //   ),
-                      // ),
                       const SizedBox(width: 10),
                       Text(
                         'Power Statistics',
@@ -590,16 +636,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           ),
           GestureDetector(
             onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => const PowerStatisticsAllScreen(
-              //             businessUnits: [],
-              //             isFilter: false,
-              //             locationUnits: [],
-              //             roomUnits: [],
-              //           )),
-              // );
               Navigator.pushNamed(context, menuRoute);
             },
             child: Image.asset(
@@ -649,23 +685,28 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         const SizedBox(
                           width: 20,
                         ),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          color: ConstantColors.iconColr,
-                          size: 24.0,
+                        Image.asset(
+                          ImgPath.leftArrow1,
+                          height: 15,
                         ),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          color: ConstantColors.iconColr,
-                          size: 24.0,
+                        Image.asset(
+                          ImgPath.leftArrow1,
+                          height: 15,
                         ),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          color: ConstantColors.iconColr,
-                          size: 24.0,
+                        Image.asset(
+                          ImgPath.leftArrow1,
+                          height: 15,
+                        ),
+                        Image.asset(
+                          ImgPath.leftArrow1,
+                          height: 15,
+                        ),
+                        Image.asset(
+                          ImgPath.leftArrow2,
+                          height: 15,
                         ),
                         const SizedBox(
-                          width: 20,
+                          width: 30,
                         ),
                         Image.asset(
                           ImgPath.totalPower,
@@ -673,39 +714,31 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           height: 50,
                         ),
                         const SizedBox(
+                          width: 30,
+                        ),
+                        Image.asset(
+                          ImgPath.rightArrow1,
+                          height: 15,
+                        ),
+                        Image.asset(
+                          ImgPath.rightArrow2,
+                          height: 15,
+                        ),
+                        Image.asset(
+                          ImgPath.rightArrow3,
+                          height: 15,
+                        ),
+                        Image.asset(
+                          ImgPath.rightArrow4,
+                          height: 15,
+                        ),
+                        Image.asset(
+                          ImgPath.rightArrow5,
+                          height: 15,
+                        ),
+                        const SizedBox(
                           width: 20,
                         ),
-                        // Image.asset(
-                        //   ImgPath.pngArrowBack,
-                        //   color: ConstantColors.iconColr,
-                        //   height: 15,
-                        // ),
-                        // Image.asset(
-                        //   ImgPath.pngArrowBack,
-                        //   color: ConstantColors.iconColr,
-                        //   height: 15,
-                        // ),
-                        // Image.asset(
-                        //   ImgPath.pngArrowBack,
-                        //   color: ConstantColors.iconColr,
-                        //   height: 15,
-                        // ),
-                        const Icon(
-                          Icons.arrow_back_ios,
-                          color: ConstantColors.iconColr,
-                          size: 24.0,
-                        ),
-                        const Icon(
-                          Icons.arrow_back_ios,
-                          color: ConstantColors.iconColr,
-                          size: 24.0,
-                        ),
-                        const Icon(
-                          Icons.arrow_back_ios,
-                          color: ConstantColors.iconColr,
-                          size: 24.0,
-                        ),
-
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -727,7 +760,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -801,7 +834,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
@@ -897,9 +930,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             savingNotiifer.value = false;
                             fetchData("intraday");
                             setState(() {
-                              energyType = "Intraday";
+                              energyType = "intraday";
                             });
-                            fetchData("intraday");
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -966,7 +998,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      '45.29%',
+                                      '$totalEnergy %',
                                       style: GoogleFonts.roboto(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -976,7 +1008,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   ],
                                 ),
                                 const SizedBox(
-                                  width: 50,
+                                  width: 30,
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -1129,7 +1161,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      '20.38\$',
+                                      totalSavings,
                                       style: GoogleFonts.roboto(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -1229,7 +1261,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       height: 10,
                                     ),
                                     Text(
-                                      'Total tree planted',
+                                      'Total Tree Planted',
                                       style: GoogleFonts.roboto(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -1250,7 +1282,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   ],
                                 ),
                                 const SizedBox(
-                                  width: 30,
+                                  width: 10,
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1392,201 +1424,225 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     ),
                   );
                 }),
-            const SizedBox(
-              height: 20,
+            // const SizedBox(
+            //   height: 20,
+            // ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                GestureDetector(
+                    onTap: () {
+                      exportPowerConsumptionData();
+                    },
+                    child: Image.asset(
+                      ImgPath.export,
+                      height: 25,
+                      width: 25,
+                      color: ConstantColors.iconColr,
+                    )),
+                const SizedBox(width: 20),
+              ],
             ),
             ValueListenableBuilder(
               valueListenable: energyNotiifer,
               builder: (context, value, child) {
                 return Visibility(
-                  visible: energyNotiifer.value,
-                  child: energyDataList.isNotEmpty
-                      ? SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Container(
-                            height: 350,
-                            child: SfCartesianChart(
-                              primaryXAxis: const CategoryAxis(),
-                              tooltipBehavior: TooltipBehavior(
-                                enable: true,
-                                shared: false,
-                                format: 'point.y',
-                                tooltipPosition: TooltipPosition.auto,
-                              ),
-                              series: <CartesianSeries>[
-                                ColumnSeries<EnergyData, String>(
-                                  dataSource: energyDataList,
-                                  xValueMapper: (EnergyData data, _) {
-                                    if (energyType == "intraday") {
-                                      return data.getFormattedTime();
-                                    } else if (energyType == "day" ||
-                                        energyType == "week") {
-                                      return data.getFormattedDate();
-                                    } else if (energyType == "month") {
-                                      return data.getFormattedMonth();
-                                    } else if (energyType == "year") {
-                                      return data.getFormattedYear();
-                                    } else {
-                                      return "";
-                                    }
-                                  },
-                                  yValueMapper: (EnergyData data, _) =>
-                                      data.acEnergy,
-                                  name: 'AC Power',
-                                  color: ConstantColors.borderButtonColor,
-                                ),
-                                ColumnSeries<EnergyData, String>(
-                                  dataSource: energyDataList,
-                                  xValueMapper: (EnergyData data, _) {
-                                    if (energyType == "intraday") {
-                                      return data.getFormattedTime();
-                                    } else if (energyType == "day" ||
-                                        energyType == "week") {
-                                      return data.getFormattedDate();
-                                    } else if (energyType == "month") {
-                                      return data.getFormattedMonth();
-                                    } else if (energyType == "year") {
-                                      return data.getFormattedYear();
-                                    } else {
-                                      return "";
-                                    }
-                                  },
-                                  yValueMapper: (EnergyData data, _) =>
-                                      data.dcEnergy,
-                                  name: 'DC Power',
-                                  color: Colors.green,
-                                ),
-                              ],
-                            ),
+                    visible: energyNotiifer.value,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Container(
+                        height: 350,
+                        child: SfCartesianChart(
+                          primaryXAxis: const CategoryAxis(),
+                          tooltipBehavior: TooltipBehavior(
+                            enable: true,
+                            shared: true,
+                            tooltipPosition: TooltipPosition.auto,
                           ),
-                        )
-                      : const CircularProgressIndicator(),
-                );
+                          series: <CartesianSeries>[
+                            ColumnSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "intraday") {
+                                  return data.getFormattedTime();
+                                } else if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.acEnergyConsumed,
+                              name: 'AC Power',
+                              color: ConstantColors.borderButtonColor,
+                            ),
+                            ColumnSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "intraday") {
+                                  return data.getFormattedTime();
+                                } else if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.dcEnergyConsumed,
+                              name: 'DC Power',
+                              color: Colors.green,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ));
               },
             ),
             ValueListenableBuilder(
               valueListenable: savingNotiifer,
               builder: (context, value, child) {
                 return Visibility(
-                  visible: savingNotiifer.value,
-                  child: energyDataList.isNotEmpty
-                      ? SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Container(
-                            height: 350,
-                            child: SfCartesianChart(
-                              primaryXAxis: const CategoryAxis(),
-                              tooltipBehavior: TooltipBehavior(enable: true),
-                              series: <CartesianSeries>[
-                                LineSeries<EnergyData, String>(
-                                  dataSource: energyDataList,
-                                  xValueMapper: (EnergyData data, _) {
-                                    if (energyType == "intraday") {
-                                      return data.getFormattedTime();
-                                    } else if (energyType == "day" ||
-                                        energyType == "week") {
-                                      return data.getFormattedDate();
-                                    } else if (energyType == "month") {
-                                      return data.getFormattedMonth();
-                                    } else if (energyType == "year") {
-                                      return data.getFormattedYear();
-                                    } else {
-                                      return "";
-                                    }
-                                  },
-                                  yValueMapper: (EnergyData data, _) =>
-                                      data.saving,
-                                  name: 'Saving',
-                                  color: ConstantColors.borderButtonColor,
-                                ),
-                              ],
-                            ),
+                    visible: savingNotiifer.value,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Container(
+                        height: 350,
+                        child: SfCartesianChart(
+                          primaryXAxis: const CategoryAxis(),
+                          tooltipBehavior: TooltipBehavior(
+                            enable: true,
+                            header: 'Energy Saving',
+                            canShowMarker: true,
+                            decimalPlaces: 2,
+                            format: 'point.y',
+                            tooltipPosition: TooltipPosition.auto,
                           ),
-                        )
-                      : const CircularProgressIndicator(),
-                );
+                          series: <CartesianSeries>[
+                            LineSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "intraday") {
+                                  return data.getFormattedTime();
+                                } else if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.energySaving,
+                              markerSettings:
+                                  const MarkerSettings(isVisible: true),
+                              name: 'Saving',
+                              color: ConstantColors.borderButtonColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ));
               },
             ),
             ValueListenableBuilder(
               valueListenable: treeNotiifer,
               builder: (context, value, child) {
                 return Visibility(
-                  visible: treeNotiifer.value,
-                  child: energyDataList.isNotEmpty
-                      ? SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Container(
-                            height: 350,
-                            child: SfCartesianChart(
-                              primaryXAxis: const CategoryAxis(),
-                              tooltipBehavior: TooltipBehavior(enable: true),
-                              series: <CartesianSeries>[
-                                ColumnSeries<EnergyData, String>(
-                                  dataSource: energyDataList,
-                                  xValueMapper: (EnergyData data, _) {
-                                    if (energyType == "intraday") {
-                                      return data.getFormattedTime();
-                                    } else if (energyType == "day" ||
-                                        energyType == "week") {
-                                      return data.getFormattedDate();
-                                    } else if (energyType == "month") {
-                                      return data.getFormattedMonth();
-                                    } else if (energyType == "year") {
-                                      return data.getFormattedYear();
-                                    } else {
-                                      return "";
-                                    }
-                                  },
-                                  yValueMapper: (EnergyData data, _) =>
-                                      data.dcTree,
-                                  name: 'Tree Planted',
-                                  color: Colors.green,
-                                ),
-                                ColumnSeries<EnergyData, String>(
-                                  dataSource: energyDataList,
-                                  xValueMapper: (EnergyData data, _) {
-                                    if (energyType == "intraday") {
-                                      return data.getFormattedTime();
-                                    } else if (energyType == "day" ||
-                                        energyType == "week") {
-                                      return data.getFormattedDate();
-                                    } else if (energyType == "month") {
-                                      return data.getFormattedMonth();
-                                    } else if (energyType == "year") {
-                                      return data.getFormattedYear();
-                                    } else {
-                                      return "";
-                                    }
-                                  },
-                                  yValueMapper: (EnergyData data, _) =>
-                                      data.saving,
-                                  name: 'Saving',
-                                  color: ConstantColors.borderButtonColor,
-                                ),
-                                ColumnSeries<EnergyData, String>(
-                                  dataSource: energyDataList,
-                                  xValueMapper: (EnergyData data, _) {
-                                    if (energyType == "week") {
-                                      return data.getFormattedDate();
-                                    } else if (energyType == "month") {
-                                      return data.getFormattedMonth();
-                                    } else if (energyType == "year") {
-                                      return data.getFormattedYear();
-                                    } else {
-                                      return "";
-                                    }
-                                  },
-                                  yValueMapper: (EnergyData data, _) =>
-                                      data.dcCo2,
-                                  name: 'CO2',
-                                  color: ConstantColors.appColor,
-                                ),
-                              ],
-                            ),
+                    visible: treeNotiifer.value,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Container(
+                        height: 350,
+                        child: SfCartesianChart(
+                          primaryXAxis: const CategoryAxis(),
+                          tooltipBehavior: TooltipBehavior(
+                            enable: true,
+                            shared: true,
+                            tooltipPosition: TooltipPosition.auto,
                           ),
-                        )
-                      : const CircularProgressIndicator(),
-                );
+                          series: <CartesianSeries>[
+                            ColumnSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "intraday") {
+                                  return data.getFormattedTime();
+                                } else if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.energySaving,
+                              name: 'Saving',
+                              color: ConstantColors.borderButtonColor,
+                            ),
+                            ColumnSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "intraday") {
+                                  return data.getFormattedTime();
+                                } else if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.totalCo2Emission,
+                              name: 'Co2',
+                              color: ConstantColors.appColor,
+                            ),
+                            ColumnSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "intraday") {
+                                  return data.getFormattedTime();
+                                } else if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.treesPlanted,
+                              name: 'Tree Planted',
+                              color: Colors.green,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                    // : const CircularProgressIndicator(),
+                    );
               },
             ),
           ],

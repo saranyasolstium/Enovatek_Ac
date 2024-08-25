@@ -1,149 +1,75 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class EnergyData {
-  final DateTime date;
   final double totalEnergy;
-  final double acEnergy;
-  final double dcEnergy;
-  final double acCo2;
-  final double dcCo2;
-  final double acTree;
-  final double dcTree;
-  final double saving;
-  final double avgSaving;
+  final double acEnergyConsumed;
+  final double dcEnergyConsumed;
+  final double energySaving;
+  final double totalCo2Emission;
+  final double dcCo2Reduction;
+  final double treesPlanted;
+  final DateTime period;
 
-  EnergyData(
-      {required this.date,
-      required this.totalEnergy,
-      required this.acEnergy,
-      required this.dcEnergy,
-      required this.acCo2,
-      required this.dcCo2,
-      required this.acTree,
-      required this.dcTree,
-      required this.saving,
-      required this.avgSaving});
+  EnergyData({
+    required this.totalEnergy,
+    required this.acEnergyConsumed,
+    required this.dcEnergyConsumed,
+    required this.energySaving,
+    required this.totalCo2Emission,
+    required this.dcCo2Reduction,
+    required this.treesPlanted,
+    required this.period,
+  });
 
   factory EnergyData.fromJson(Map<String, dynamic> json) {
-    DateTime date;
-
     try {
-      if (json.containsKey('interval_start')) {
-        // Intraday
-        date = DateTime.parse(json['interval_start']);
-      } else if (json.containsKey('date')) {
-        // Day
-        date = DateTime.parse(json['date']);
-      } else if (json.containsKey('week')) {
-        // Week
-        date = DateTime.parse(json['week']);
-      } else if (json.containsKey('month')) {
-        // Month
-        date = DateTime.parse(json['month']);
-      } else if (json.containsKey('year')) {
-        // Year
-        date = DateTime.parse(json['year']);
-      } else {
-        throw Exception('Date information is missing.');
-      }
+      double totalEnergy = (json['total_energy'] as num).toDouble();
+      double acEnergyConsumed = (json['ac_energy_consumed'] as num).toDouble();
+      double dcEnergyConsumed = (json['dc_energy_consumed'] as num).toDouble();
+
+      // Ensure energySaving is correctly converted to double
+      double energySaving = (json['energy_saving'] is num)
+          ? (json['energy_saving'] as num).toDouble()
+          : double.tryParse(json['energy_saving'].toString()) ?? 0.0;
+
+      print('Parsed Energy Saving: $energySaving');
+
+      double totalCo2Emission = (json['total_co2_emission'] as num).toDouble();
+      double dcCo2Reduction = (json['dc_co2_reduction'] as num).toDouble();
+      double treesPlanted = (json['trees_planted'] as num).toDouble();
+      DateTime period = DateTime.parse(json['period'] as String);
+
+      return EnergyData(
+        totalEnergy: totalEnergy < 0 ? 0 : totalEnergy,
+        acEnergyConsumed: acEnergyConsumed < 0 ? 0 : acEnergyConsumed,
+        dcEnergyConsumed: dcEnergyConsumed < 0 ? 0 : dcEnergyConsumed,
+        energySaving: energySaving < 0 ? 0 : energySaving,
+        totalCo2Emission: totalCo2Emission < 0 ? 0 : totalCo2Emission,
+        dcCo2Reduction: dcCo2Reduction < 0 ? 0 : dcCo2Reduction,
+        treesPlanted: treesPlanted < 0 ? 0 : treesPlanted,
+        period: period,
+      );
     } catch (e) {
-      print('Error parsing date: $e');
-      print(
-          'Date string: ${json.containsKey('hour') ? json['hour'] : json['date']}');
+      print('Error parsing JSON: $e');
       rethrow;
-    }
-
-    double totalEnergy = _parseEnergyValue(json['total_energy']);
-    double acEnergy = _parseEnergyValue(json['ac_energy']);
-    double dcEnergy = _parseEnergyValue(json['dc_energy']);
-    double saving = dcEnergy * 3;
-    print('saving $saving');
-    // double totalEnergySaving = _parseDynamicValue(json['total_energy_saving']);
-    double avgSaving;
-    if (json.containsKey('avg_energy_saving')) {
-      print('saranya ${json['avg_energy_saving']}');
-
-      avgSaving = _parseDynamicValue(json['avg_energy_saving']);
-      print(avgSaving);
-    } else {
-      avgSaving = 0.0;
-    }
-
-    // Calculation for CO2 with rounding to two decimal places
-    double acCo2 = acEnergy > 0
-        ? double.parse((0.4168 * acEnergy).toStringAsFixed(4))
-        : 0.0;
-    double dcCo2 = dcEnergy > 0
-        ? double.parse((0.4168 * dcEnergy).toStringAsFixed(4))
-        : 0.0;
-    //print('dcEnergy $dcEnergy');
-
-   // print('dcCo2 $dcCo2');
-
-    // Calculation for CO2 Reduction
-    double reduction = (avgSaving * 0.4168);
-   // print('reduction $reduction');
-    double acCo2Reduction = reduction - acCo2;
-    double dcCo2Reduction = (reduction - dcCo2).abs();
-
-    print('dcCo2Reduction $dcCo2Reduction');
-
-    // Calculation for Trees Planted
-    double acTree = acCo2Reduction > 0
-        ? double.parse((acCo2Reduction / 25).toStringAsFixed(4))
-        : 0.0;
-    double dcTree = dcCo2Reduction > 0
-        ? double.parse((dcCo2Reduction / 25).toStringAsFixed(4))
-        : 0.0;
-
-    print('tree $dcTree');
-
-    return EnergyData(
-        date: date,
-        totalEnergy: totalEnergy,
-        acEnergy: acEnergy,
-        dcEnergy: dcEnergy,
-        acCo2: acCo2,
-        dcCo2: acCo2,
-        acTree: acTree,
-        dcTree: dcTree,
-        saving: saving,
-        avgSaving: avgSaving);
-  }
-
-  static double _parseEnergyValue(dynamic energy) {
-    if (energy is String) {
-      return double.parse(energy.replaceAll(' kWh', '').trim());
-    } else if (energy is double) {
-      return energy;
-    } else {
-      throw const FormatException('Invalid energy format');
-    }
-  }
-
-  static double _parseDynamicValue(dynamic value) {
-    if (value is int) {
-      return value.toDouble();
-    } else if (value is String) {
-      return double.parse(value.replaceAll('-', '').trim());
-    } else {
-      throw const FormatException('Invalid format for total energy saving');
     }
   }
 
   String getFormattedTime() {
-    return DateFormat('h:mm a').format(date);
+    return DateFormat('HH:mm').format(period);
   }
 
   String getFormattedDate() {
-    return DateFormat('d MMM').format(date);
+    return DateFormat('d MMM').format(period);
   }
 
   String getFormattedMonth() {
-    return DateFormat('MMM').format(date);
+    return DateFormat('MMM').format(period);
   }
 
   String getFormattedYear() {
-    return DateFormat('yyyy').format(date);
+    return DateFormat('yyyy').format(period);
   }
 }

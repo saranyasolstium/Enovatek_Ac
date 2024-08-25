@@ -38,6 +38,7 @@ class PowerStatisticsAllScreen extends StatefulWidget {
 class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
   List<Building> buildings = [];
   List<Device> devices = [];
+  final List<String> deviceList = [];
 
   @override
   void initState() {
@@ -66,8 +67,16 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
             buildingList.map((data) => Building.fromJson(data)).toList();
         setState(() {
           devices = getAllDevices(buildings);
+          deviceList.clear();
+          deviceList.addAll(
+            devices
+                .where((device) => device.power.toLowerCase() == 'on')
+                .map((device) => device.deviceId),
+          );
         });
-        print(buildings.length);
+        deviceList.forEach((deviceId) {
+          print('Device ID: $deviceId');
+        });
       } else {
         print('Response body does not contain buildings');
       }
@@ -103,8 +112,16 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
             buildingList.map((data) => Building.fromJson(data)).toList();
         setState(() {
           devices = getAllDevices(buildings);
+          deviceList.clear();
+          deviceList.addAll(
+            devices
+                .where((device) => device.power.toLowerCase() == 'on')
+                .map((device) => device.deviceId),
+          );
         });
-        print(devices.length);
+        deviceList.forEach((deviceId) {
+          print('Device ID: $deviceId');
+        });
       } else {
         print('Response body does not contain buildings');
       }
@@ -143,191 +160,194 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
     return DeviceLocation(null, null, null);
   }
 
+  Future<bool> _onWillPop() async {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PowerStatisticsScreen(
+          deviceId: "",
+          deviceList: deviceList,
+          tabIndex: 1,
+        ),
+      ),
+      (Route<dynamic> route) => false,
+    );
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
     final bool isTablet = screenWidth >= 600;
 
-    return Scaffold(
-      backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(
-          isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-          isTablet ? 0.05 * screenHeight : 0.05 * screenHeight,
-          isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-          isTablet ? 0.02 * screenHeight : 0.05 * screenHeight,
-        ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+    return WillPopScope(
+        onWillPop: _onWillPop,
+        child: Scaffold(
+          backgroundColor: ConstantColors.backgroundColor,
+          bottomNavigationBar: Footer(),
+          body: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+              isTablet ? 0.05 * screenHeight : 0.05 * screenHeight,
+              isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+              isTablet ? 0.02 * screenHeight : 0.05 * screenHeight,
+            ),
+            child: Column(
               children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          // Navigator.pop(context);
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const PowerStatisticsScreen(
-                                deviceId: "",
-                                deviceList: [],
-                                tabIndex: 1,
-                              ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              // Navigator.pop(context);
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PowerStatisticsScreen(
+                                    deviceId: "",
+                                    deviceList: deviceList,
+                                    tabIndex: 1,
+                                  ),
+                                ),
+                                (Route<dynamic> route) => false,
+                              );
+                            },
+                            child: Image.asset(
+                              ImgPath.pngArrowBack,
+                              height: 25,
+                              width: 25,
                             ),
-                            (Route<dynamic> route) => false,
-                          );
-                        },
-                        child: Image.asset(
-                          ImgPath.pngArrowBack,
-                          height: 25,
-                          width: 25,
-                        ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Devices',
+                            style: GoogleFonts.roboto(
+                                fontSize: screenWidth * 0.045,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantColors.black),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Devices',
-                        style: GoogleFonts.roboto(
-                            fontSize: screenWidth * 0.045,
-                            fontWeight: FontWeight.bold,
-                            color: ConstantColors.black),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const FilterScreen()),
+                        );
+                      },
+                      child: const Icon(
+                        Icons.filter_alt_rounded,
+                        color: ConstantColors.mainlyTextColor,
+                        size: 30,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 20),
+                  ],
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const FilterScreen()),
-                    );
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: devices.length,
+                  itemBuilder: (context, index) {
+                    final device = devices[index];
+                    print(device.power);
+                    final deviceLocation = findFloorAndRoomNameByDeviceId(
+                        buildings, device.deviceId);
+
+                    return GestureDetector(
+                        onTap: () {},
+                        child: Card(
+                          elevation: 10.0,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  color: ConstantColors.whiteColor,
+                                  borderRadius: BorderRadius.circular(10)),
+                              height: 100,
+                              child: Column(children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20, right: 20, top: 15, bottom: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: '${device.displayName}\n\n',
+                                              style: GoogleFonts.roboto(
+                                                color: ConstantColors
+                                                    .mainlyTextColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: screenWidth * 0.04,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text:
+                                                  '${deviceLocation.buildingName!} - ${deviceLocation.floorName!} - ${deviceLocation.roomName}',
+                                              style: GoogleFonts.roboto(
+                                                color: ConstantColors
+                                                    .mainlyTextColor,
+                                                fontSize: screenWidth * 0.035,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 20),
+                                      GFToggle(
+                                        onChanged: (val) async {
+                                          print(val);
+
+                                          String? authToken =
+                                              await SharedPreferencesHelper
+                                                  .instance
+                                                  .getAuthToken();
+                                          int? loginId =
+                                              await SharedPreferencesHelper
+                                                  .instance
+                                                  .getLoginID();
+                                          Response response =
+                                              await RemoteServices
+                                                  .actionCommand(
+                                                      authToken!,
+                                                      val! ? "On" : "Off",
+                                                      device.deviceId,
+                                                      1,
+                                                      loginId!);
+                                          var data = jsonDecode(response.body);
+                                          print(data);
+                                          if (response.statusCode == 200) {
+                                            print(data["message"]);
+                                            getAllDevice();
+                                          }
+                                        },
+                                        value:
+                                            device.power == 'On' ? true : false,
+                                        enabledThumbColor:
+                                            ConstantColors.whiteColor,
+                                        enabledTrackColor:
+                                            ConstantColors.lightBlueColor,
+                                        type: GFToggleType.ios,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ])),
+                        ));
                   },
-                  child: const Icon(
-                    Icons.filter_alt_rounded,
-                    color: ConstantColors.mainlyTextColor,
-                    size: 30,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                // const Icon(
-                //   Icons.search,
-                //   color: ConstantColors.mainlyTextColor,
-                //   size: 30,
-                // ),
-                // const SizedBox(width: 10),
+                )
               ],
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: devices.length,
-              itemBuilder: (context, index) {
-                final device = devices[index];
-                print(device.power);
-                final deviceLocation =
-                    findFloorAndRoomNameByDeviceId(buildings, device.deviceId);
-
-                return GestureDetector(
-                    onTap: () {
-                      // Navigator.pushReplacement(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => DeviceDetailScreen(
-                      //             deviceName: device.displayName,
-                      //             fanSpeed: device.fanSpeed,
-                      //             mode: device.mode,
-                      //             power: device.power,
-                      //             deviceId: device.deviceId,
-                      //           )),
-                      // );
-                    },
-                    child: Card(
-                      elevation: 10.0,
-                      child: Container(
-                          decoration: BoxDecoration(
-                              color: ConstantColors.whiteColor,
-                              borderRadius: BorderRadius.circular(10)),
-                          height: 100,
-                          child: Column(children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 20, right: 20, top: 15, bottom: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: '${device.displayName}\n\n',
-                                          style: GoogleFonts.roboto(
-                                            color:
-                                                ConstantColors.mainlyTextColor,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: screenWidth * 0.04,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text:
-                                              '${deviceLocation.buildingName!} - ${deviceLocation.floorName!} - ${deviceLocation.roomName}',
-                                          style: GoogleFonts.roboto(
-                                            color:
-                                                ConstantColors.mainlyTextColor,
-                                            fontSize: screenWidth * 0.035,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  GFToggle(
-                                    onChanged: (val) async {
-                                      print(val);
-
-                                      String? authToken =
-                                          await SharedPreferencesHelper.instance
-                                              .getAuthToken();
-                                      int? loginId =
-                                          await SharedPreferencesHelper.instance
-                                              .getLoginID();
-                                      Response response =
-                                          await RemoteServices.actionCommand(
-                                              authToken!,
-                                              val! ? "On" : "Off",
-                                              device.deviceId,
-                                              1,
-                                              loginId!);
-                                      var data = jsonDecode(response.body);
-                                      print(data);
-                                      if (response.statusCode == 200) {
-                                        print(data["message"]);
-                                        getAllDevice();
-                                      }
-                                    },
-                                    value: device.power == 'On' ? true : false,
-                                    enabledThumbColor:
-                                        ConstantColors.whiteColor,
-                                    enabledTrackColor:
-                                        ConstantColors.lightBlueColor,
-                                    type: GFToggleType.ios,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ])),
-                    ));
-              },
-            )
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

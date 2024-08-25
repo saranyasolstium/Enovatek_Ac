@@ -78,4 +78,14 @@ class ImgPath {
   static String energyIcon = "assets/energy_icon.png";
   static String treeIcon = "assets/tree_icon.png";
   static String totalPower = "assets/total_power_icon.png";
+
+  static String rightArrow1 = "assets/right_arrow_1.png";
+  static String rightArrow2 = "assets/right_arrow_2.png";
+  static String rightArrow3 = "assets/right_arrow_3.png";
+  static String rightArrow4 = "assets/right_arrow_4.png";
+  static String rightArrow5 = "assets/right_arrow_5.png";
+  static String leftArrow1 = "assets/left_arrow_1.png";
+  static String leftArrow2 = "assets/left_arrow_2.png";
+
+  static String export = "assets/export.png";
 }

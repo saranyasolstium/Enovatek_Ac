@@ -54,9 +54,10 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
 
   Future<void> powerusages(String periodType, String periodValue) async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? userId = await SharedPreferencesHelper.instance.getUserID();
 
     final response = await RemoteServices.powerusages(
-        authToken!, widget.deviceId, periodType, periodValue, "all");
+        authToken!, widget.deviceId, periodType, periodValue, "all", userId!);
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (!mounted) return;

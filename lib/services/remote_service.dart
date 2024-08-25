@@ -433,7 +433,7 @@ class RemoteServices {
 
   //get actionCommand
   static Future<Response> powerusages(String authToken, String deviceId,
-      String type, String typeValue, String consumptionType) async {
+      String type, String typeValue, String consumptionType, int userId) async {
     try {
       print('${url}api/user/consumption_data');
       String apiUrl = '${url}api/user/consumption_data';
@@ -443,7 +443,7 @@ class RemoteServices {
       };
       Map<String, dynamic> requestBody = {
         "device_id": deviceId,
-        //"uid":"D0EF76332D00",
+        "user_id": userId,
         "period_type": type,
         "period_value": typeValue,
         "consumption_type": consumptionType
@@ -483,29 +483,34 @@ class RemoteServices {
     }
   }
 
-  static Future<List<EnergyData>> fetchEnergyData({
-    required List<String> deviceId,
-    required String periodType,
-    required int userId,
-  }) async {
+  static Future<List<EnergyData>> fetchEnergyData(
+      {required List<String> deviceId,
+      required String periodType,
+      required int userId,
+      required int countryId}) async {
     final apiUrl = Uri.parse('${url}api/user/power_consumption_data');
+    print('${url}api/user/power_consumption_data');
     final response = await http.post(
       apiUrl,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'device_id': deviceId,
         'period_type': periodType,
-        'user_id': userId
+        'user_id': userId,
+        "country_id": countryId
       }),
     );
     print('request ${jsonEncode({
           'device_id': deviceId,
           'period_type': periodType,
-          'user_id': userId
+          'user_id': userId,
+          "country_id": countryId
         })}');
     print(response.body);
     if (response.statusCode == 200) {
-      final data = json.decode(response.body)['energy_data'] as List;
+      final List<dynamic> data =
+          json.decode(response.body)['energy_calculation']['chart'];
+      print(data);
       return data.map((json) => EnergyData.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load data');
@@ -705,5 +710,35 @@ class RemoteServices {
       headers: headers,
       body: body,
     );
+  }
+
+  Future<http.Response> export({
+    required List<String> deviceId,
+    required String periodType,
+    required int userId,
+  }) async {
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.post(
+      Uri.parse('${url}api/user/power_consumption_csv_data'),
+      body: jsonEncode({
+        'device_id': deviceId,
+        'period_type': periodType,
+        'user_id': userId
+      }),
+      headers: headers,
+    );
+    print(
+      jsonEncode({
+        'device_id': deviceId,
+        'period_type': periodType,
+        'user_id': userId
+      }),
+    );
+    print(response.body);
+
+    return response;
   }
 }

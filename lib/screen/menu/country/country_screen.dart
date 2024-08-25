@@ -27,7 +27,7 @@ class CountryScreen extends StatefulWidget {
 
 class CountryScreenState extends State<CountryScreen> {
   List<CountryData> countryList = [];
-  String CurrencyCode = "SGD";
+  ValueNotifier<String> currencyCodeNotifier = ValueNotifier<String>("SGD");
 
   @override
   void initState() {
@@ -50,9 +50,7 @@ class CountryScreenState extends State<CountryScreen> {
         currencies.forEach((code, details) {
           final name = details['name'];
           final symbol = details['symbol'];
-          setState(() {
-            CurrencyCode = code;
-          });
+          currencyCodeNotifier.value = code;
           print('Currency Code: $code');
           print('Currency Name: $name');
           print('Currency Symbol: $symbol');
@@ -329,35 +327,40 @@ class CountryScreenState extends State<CountryScreen> {
                           color: ConstantColors.inputColor,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: TextField(
-                          controller: energyController,
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
-                          textAlignVertical: TextAlignVertical.center,
-                          decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 15.0),
-                              child: Text(
-                                '$CurrencyCode | ',
-                                style: GoogleFonts.roboto(
+                        child: ValueListenableBuilder<String>(
+                          valueListenable: currencyCodeNotifier,
+                          builder: (context, currencyCode, child) {
+                            return TextField(
+                              controller: energyController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              textAlignVertical: TextAlignVertical.center,
+                              decoration: InputDecoration(
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 15.0),
+                                  child: Text(
+                                    '$currencyCode | ',
+                                    style: GoogleFonts.roboto(
+                                      fontSize: screenWidth * 0.04,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                border: InputBorder.none,
+                                hintStyle: GoogleFonts.roboto(
                                   fontSize: screenWidth * 0.04,
-                                  color: Colors.black,
+                                ),
+                                hintText: 'Energy rate',
+                                label: const Text(
+                                  "Energy rate",
                                 ),
                               ),
-                            ),
-                            border: InputBorder.none,
-                            hintStyle: GoogleFonts.roboto(
-                              fontSize: screenWidth * 0.04,
-                            ),
-                            hintText: 'Energy rate',
-                            label: const Text(
-                              "Energy rate",
-                            ),
-                          ),
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.04,
-                          ),
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.04,
+                              ),
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -597,6 +600,7 @@ class CountryScreenState extends State<CountryScreen> {
                             children: [
                               MaterialButton(
                                 onPressed: () {
+                                  getCountryCurrency(country.currencyType);
                                   countryAddUpdateDialog(country, "update");
                                 },
                                 color: ConstantColors.whiteColor,
