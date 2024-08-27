@@ -100,7 +100,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
-  
+
 
   int getCountryIdByCurrencyType(String currencyType) {
     print('varshan $currencyType');
@@ -1732,7 +1732,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               },
             ),
             ValueListenableBuilder(
-              valueListenable: _isTooltipEnabled,
+              valueListenable: savingNotiifer,
               builder: (context, value, child) {
                 return Visibility(
                     visible: savingNotiifer.value,
