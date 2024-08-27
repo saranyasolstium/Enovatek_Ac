@@ -76,6 +76,7 @@ dependencies:
   csv: ^6.0.0
   external_path: ^1.0.3
   money2: ^5.2.1
+  flutter_charts: ^0.5.2
 
 dev_dependencies:
   flutter_test:

@@ -19,7 +19,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:country_picker/country_picker.dart';
 import 'dart:io';
-import 'package:intl/number_symbols.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:money2/money2.dart';
@@ -74,13 +73,19 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   ValueNotifier<double> dcNotifier = ValueNotifier<double>(0);
   late TooltipBehavior _tooltipBehavior;
 
+  List<EnergyData> morningDataList = [];
+  List<EnergyData> afternoonDataList = [];
+  List<EnergyData> eveningDataList = [];
+
   @override
   void initState() {
     super.initState();
     getCountryCurrency(selectedCountryNotifier.value);
     powerusages(periodType);
     fetchCountry(false);
-    _tooltipBehavior = TooltipBehavior(enable: true,);
+    _tooltipBehavior = TooltipBehavior(
+      enable: true,
+    );
 
     if (widget.tabIndex == 1) {
       energyNotiifer.value = true;
@@ -100,7 +105,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
-
+  void updateTooltip() {
+    setState(() {
+      _tooltipBehavior = TooltipBehavior(enable: true);
+    });
+  }
 
   int getCountryIdByCurrencyType(String currencyType) {
     print('varshan $currencyType');
@@ -111,6 +120,26 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       }
     }
     throw Exception('Country with currency type $currencyType not found');
+  }
+
+  void splitDataByTime(List<EnergyData> energyDataList) {
+    morningDataList.clear();
+    afternoonDataList.clear();
+    eveningDataList.clear();
+
+    if (energyDataList.length == 24) {
+      morningDataList.addAll(energyDataList.sublist(0, 8)); // First 8 records
+      afternoonDataList.addAll(energyDataList.sublist(8, 16)); // Next 8 records
+      eveningDataList.addAll(energyDataList.sublist(16, 24)); // Last 8 records
+    } else {
+      // Handle cases where the list does not have exactly 24 records
+      // You can choose to either log an error, or handle the records differently
+      print('Error: The list does not contain exactly 24 records.');
+    }
+
+    print('Morning: ${morningDataList.length}');
+    print('Afternoon: ${afternoonDataList.length}');
+    print('Evening: ${eveningDataList.length}');
   }
 
   Future<void> fetchData(String periodType) async {
@@ -128,6 +157,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           countryId: countryId);
       setState(() {
         energyDataList = data;
+        morningDataList.clear();
+        afternoonDataList.clear();
+        eveningDataList.clear();
+        if (periodType == "intraday") {
+          splitDataByTime(energyDataList);
+        }
         totalTree =
             calculateTotalTreesPlanted(energyDataList).toStringAsFixed(2);
         totalSavings =
@@ -141,6 +176,90 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
+  Widget buildGraph({required List<EnergyData> data}) {
+    return Container(
+      height: 350,
+      width: 400,
+      child: SfCartesianChart(
+        primaryXAxis: DateTimeAxis(
+          dateFormat: DateFormat.Hm(),
+          intervalType: DateTimeIntervalType.hours,
+        ),
+        tooltipBehavior: TooltipBehavior(
+          enable: true,
+          shared: true,
+          tooltipPosition: TooltipPosition.auto,
+        ),
+        series: <CartesianSeries>[
+          ColumnSeries<EnergyData, DateTime>(
+            dataSource: data,
+            xValueMapper: (EnergyData data, _) {
+              return data.getFormattedTimeAsDateTime();
+            },
+            yValueMapper: (EnergyData data, _) => data.acEnergyConsumed,
+            name: 'AC Power',
+            color: ConstantColors.borderButtonColor,
+          ),
+          ColumnSeries<EnergyData, DateTime>(
+            dataSource: data,
+            xValueMapper: (EnergyData data, _) {
+              return data.getFormattedTimeAsDateTime();
+            },
+            yValueMapper: (EnergyData data, _) => data.dcEnergyConsumed,
+            name: 'DC Power',
+            color: Colors.green,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTreeGraph({required List<EnergyData> data}) {
+    return Container(
+      height: 350,
+      child: SfCartesianChart(
+        primaryXAxis: DateTimeAxis(
+          dateFormat: DateFormat.Hm(),
+          intervalType: DateTimeIntervalType.hours,
+        ),
+        tooltipBehavior: TooltipBehavior(
+          enable: true,
+          shared: true,
+          tooltipPosition: TooltipPosition.auto,
+        ),
+        series: <CartesianSeries>[
+          ColumnSeries<EnergyData, DateTime>(
+            dataSource: data,
+            xValueMapper: (EnergyData data, _) {
+              return data.getFormattedTimeAsDateTime();
+            },
+            yValueMapper: (EnergyData data, _) => data.energySaving,
+            name: 'Saving',
+            color: ConstantColors.borderButtonColor,
+          ),
+          ColumnSeries<EnergyData, DateTime>(
+            dataSource: data,
+            xValueMapper: (EnergyData data, _) {
+              return data.getFormattedTimeAsDateTime();
+            },
+            yValueMapper: (EnergyData data, _) => data.dcCo2Reduction,
+            name: 'Co2',
+            color: ConstantColors.appColor,
+          ),
+          ColumnSeries<EnergyData, DateTime>(
+            dataSource: data,
+            xValueMapper: (EnergyData data, _) {
+              return data.getFormattedTimeAsDateTime();
+            },
+            yValueMapper: (EnergyData data, _) => data.treesPlanted,
+            name: 'Tree Planted',
+            color: Colors.green,
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> fetchCountry(bool status) async {
     try {
       String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
@@ -149,7 +268,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       setState(() {
         countryList = data;
         fetchData('intraday');
-
         if (status) {
           countrySelection();
         }
@@ -184,7 +302,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           final name = details['name'];
           final symbol = details['symbol'];
           currencyCodeNotifier.value = code;
-          currencySymbolNotifier.value = getCurrencySymbol(code)!;
+          setState(() {
+            currencySymbolNotifier.value = getCurrencySymbol(code)!;
+          });
           print('Currency Code: $code');
           print('Currency Name: $name');
           print('Currency Symbol1: ${currencySymbolNotifier.value}');
@@ -217,29 +337,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         dcPower = responseData['dc_power'];
         String acPowerValueStr = acPower!.replaceAll(RegExp(r'[^0-9.]'), '');
         String dcPowerValueStr = dcPower!.replaceAll(RegExp(r'[^0-9.]'), '');
-        String acVoltageStr =
-            responseData['ac_voltage'].replaceAll(RegExp(r'[^0-9.]'), '');
-        String dcVoltageStr =
-            responseData['dc_voltage'].replaceAll(RegExp(r'[^0-9.]'), '');
-        String acCurrentStr =
-            responseData['ac_current'].replaceAll(RegExp(r'[^0-9.]'), '');
-        String dcCurrentStr =
-            responseData['dc_current'].replaceAll(RegExp(r'[^0-9.]'), '');
-        String acEnergyStr =
-            responseData['ac_energy'].replaceAll(RegExp(r'[^0-9.]'), '');
-        String dcEnergyStr =
-            responseData['dc_energy'].replaceAll(RegExp(r'[^0-9.]'), '');
-
         acNotifier.value = double.parse(acPowerValueStr);
         dcNotifier.value = double.parse(dcPowerValueStr);
-        // acNotifier.value = double.parse("18.0");
-        // dcNotifier.value = double.parse("16.0");
-        // acVoltage = double.parse(acVoltageStr);
-        // dcVoltgae = double.parse(dcVoltageStr);
-        // acCurrent = double.parse(acCurrentStr);
-        // dcCurrent = double.parse(dcCurrentStr);
-        // acEnergy = double.parse(acEnergyStr);
-        // dcEnergy = double.parse(dcEnergyStr);
       });
     } else {
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -250,14 +349,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           totalPower = "0W";
           acPower = "0W";
           dcPower = "0W";
-          // acValue = 0;
-          // dcValue = 0;
-          // acVoltage = 0;
-          // dcVoltgae = 0;
-          // acCurrent = 0;
-          // dcCurrent = 0;
-          // acEnergy = 0;
-          // dcEnergy = 0;
         });
       }
     }
@@ -746,40 +837,39 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         ValueListenableBuilder<double>(
                           valueListenable: dcNotifier,
                           builder: (context, dcValue, child) {
-                            return ValueListenableBuilder<double>(
-                              valueListenable: acNotifier,
-                              builder: (context, acValue, child) {
-                                return Row(
-                                  children: [
-                                    Image.asset(
-                                      ImgPath.leftArrow1,
-                                      height: 15,
-                                    ),
-                                    Image.asset(
-                                      dcValue > acValue
-                                          ? ImgPath.leftArrow1
-                                          : ImgPath.leftArrow2,
-                                      height: 15,
-                                    ),
-                                    Image.asset(
-                                      dcValue > acValue
-                                          ? ImgPath.leftArrow1
-                                          : ImgPath.leftArrow2,
-                                      height: 15,
-                                    ),
-                                    Image.asset(
-                                      dcValue > acValue
-                                          ? ImgPath.leftArrow1
-                                          : ImgPath.leftArrow2,
-                                      height: 15,
-                                    ),
-                                    Image.asset(
-                                      ImgPath.leftArrow2,
-                                      height: 15,
-                                    ),
-                                  ],
-                                );
-                              },
+                            return Row(
+                              children: [
+                                Image.asset(
+                                  dcValue == 0
+                                      ? ImgPath.leftArrow2
+                                      : ImgPath.leftArrow1,
+                                  height: 15,
+                                ),
+                                Image.asset(
+                                  dcValue > 10
+                                      ? ImgPath.leftArrow1
+                                      : ImgPath.leftArrow2,
+                                  height: 15,
+                                ),
+                                Image.asset(
+                                  dcValue > 20
+                                      ? ImgPath.leftArrow1
+                                      : ImgPath.leftArrow2,
+                                  height: 15,
+                                ),
+                                Image.asset(
+                                  dcValue > 30
+                                      ? ImgPath.leftArrow1
+                                      : ImgPath.leftArrow2,
+                                  height: 15,
+                                ),
+                                Image.asset(
+                                  dcValue > 40
+                                      ? ImgPath.leftArrow1
+                                      : ImgPath.leftArrow2,
+                                  height: 15,
+                                ),
+                              ],
                             );
                           },
                         ),
@@ -797,40 +887,39 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         ValueListenableBuilder<double>(
                           valueListenable: acNotifier,
                           builder: (context, acValue, child) {
-                            return ValueListenableBuilder<double>(
-                              valueListenable: dcNotifier,
-                              builder: (context, dcValue, child) {
-                                return Row(
-                                  children: [
-                                    Image.asset(
-                                      ImgPath.rightArrow1,
-                                      height: 15,
-                                    ),
-                                    Image.asset(
-                                      acValue > dcValue
-                                          ? ImgPath.rightArrow5
-                                          : ImgPath.rightArrow2,
-                                      height: 15,
-                                    ),
-                                    Image.asset(
-                                      acValue > dcValue
-                                          ? ImgPath.rightArrow5
-                                          : ImgPath.rightArrow3,
-                                      height: 15,
-                                    ),
-                                    Image.asset(
-                                      acValue > dcValue
-                                          ? ImgPath.rightArrow5
-                                          : ImgPath.rightArrow4,
-                                      height: 15,
-                                    ),
-                                    Image.asset(
-                                      ImgPath.rightArrow5,
-                                      height: 15,
-                                    ),
-                                  ],
-                                );
-                              },
+                            return Row(
+                              children: [
+                                Image.asset(
+                                  acValue > 40
+                                      ? ImgPath.rightArrow5
+                                      : ImgPath.rightArrow1,
+                                  height: 15,
+                                ),
+                                Image.asset(
+                                  acValue > 30
+                                      ? ImgPath.rightArrow5
+                                      : ImgPath.rightArrow2,
+                                  height: 15,
+                                ),
+                                Image.asset(
+                                  acValue > 20
+                                      ? ImgPath.rightArrow5
+                                      : ImgPath.rightArrow3,
+                                  height: 15,
+                                ),
+                                Image.asset(
+                                  acValue > 10
+                                      ? ImgPath.rightArrow5
+                                      : ImgPath.rightArrow4,
+                                  height: 15,
+                                ),
+                                Image.asset(
+                                  acValue > 0
+                                      ? ImgPath.rightArrow5
+                                      : ImgPath.rightArrow4,
+                                  height: 15,
+                                ),
+                              ],
                             );
                           },
                         ),
@@ -858,122 +947,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       ],
                     ),
                   ),
-
-                  // Center(
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: [
-                  //       Column(
-                  //         crossAxisAlignment: CrossAxisAlignment.center,
-                  //         children: [
-                  //           Image.asset(
-                  //             ImgPath.pngSolarPlane,
-                  //             width: 50,
-                  //             height: 50,
-                  //           ),
-                  //           Text(
-                  //             '2 W',
-                  //             style: GoogleFonts.roboto(
-                  //               fontSize: 12,
-                  //               fontWeight: FontWeight.bold,
-                  //               color: ConstantColors.black,
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //       const SizedBox(
-                  //         width: 20,
-                  //       ),
-                  //       Image.asset(
-                  //         ImgPath.leftArrow1,
-                  //         height: 15,
-                  //       ),
-                  //       Image.asset(
-                  //         dcNotifier.value < acNotifier.value
-                  //             ? ImgPath.leftArrow1
-                  //             : ImgPath.leftArrow2,
-                  //         height: 15,
-                  //       ),
-                  //       Image.asset(
-                  //         dcNotifier.value < acNotifier.value
-                  //             ? ImgPath.leftArrow1
-                  //             : ImgPath.leftArrow2,
-                  //         height: 15,
-                  //       ),
-                  //       Image.asset(
-                  //         dcNotifier.value < acNotifier.value
-                  //             ? ImgPath.leftArrow1
-                  //             : ImgPath.leftArrow2,
-                  //         height: 15,
-                  //       ),
-                  //       Image.asset(
-                  //         dcNotifier.value < acNotifier.value
-                  //             ? ImgPath.leftArrow1
-                  //             : ImgPath.leftArrow2,
-                  //         height: 15,
-                  //       ),
-                  //       const SizedBox(
-                  //         width: 30,
-                  //       ),
-                  //       Image.asset(
-                  //         ImgPath.totalPower,
-                  //         width: 50,
-                  //         height: 50,
-                  //       ),
-                  //       const SizedBox(
-                  //         width: 30,
-                  //       ),
-                  //       Image.asset(
-                  //         ImgPath.rightArrow1,
-                  //         height: 15,
-                  //       ),
-                  //       Image.asset(
-                  //         acNotifier.value < dcNotifier.value
-                  //             ? ImgPath.rightArrow5
-                  //             : ImgPath.rightArrow2,
-                  //         height: 15,
-                  //       ),
-                  //       Image.asset(
-                  //         acNotifier.value < dcNotifier.value
-                  //             ? ImgPath.rightArrow5
-                  //             : ImgPath.rightArrow3,
-                  //         height: 15,
-                  //       ),
-                  //       Image.asset(
-                  //         acNotifier.value < dcNotifier.value
-                  //             ? ImgPath.rightArrow5
-                  //             : ImgPath.rightArrow4,
-                  //         height: 15,
-                  //       ),
-                  //       Image.asset(
-                  //         ImgPath.rightArrow5,
-                  //         height: 15,
-                  //       ),
-                  //       const SizedBox(
-                  //         width: 20,
-                  //       ),
-                  //       Column(
-                  //         crossAxisAlignment: CrossAxisAlignment.center,
-                  //         children: [
-                  //           Image.asset(
-                  //             ImgPath.pngTower,
-                  //             width: 50,
-                  //             height: 50,
-                  //           ),
-                  //           Text(
-                  //             '912 W',
-                  //             style: GoogleFonts.roboto(
-                  //               fontSize: 12,
-                  //               fontWeight: FontWeight.bold,
-                  //               color: ConstantColors.black,
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-
                   const SizedBox(height: 5),
                   Center(
                     child: Row(
@@ -1123,7 +1096,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               //       : ConstantColors.appColor,
                               // ),
                               Text(
-                                '${currencySymbolNotifier.value}',
+                                currencySymbolNotifier.value == "\$"
+                                    ? 'S${currencySymbolNotifier.value}'
+                                    : currencySymbolNotifier.value,
                                 style: GoogleFonts.roboto(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
@@ -1673,61 +1648,75 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     visible: energyNotiifer.value,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Container(
-                        height: 350,
-                        child: SfCartesianChart(
-                          primaryXAxis: const CategoryAxis(),
-                          tooltipBehavior: TooltipBehavior(
-                            enable: true,
-                            shared: true,
-                            tooltipPosition: TooltipPosition.auto,
-                          ),
-                          series: <CartesianSeries>[
-                            ColumnSeries<EnergyData, String>(
-                              dataSource: energyDataList,
-                              xValueMapper: (EnergyData data, _) {
-                                if (energyType == "intraday") {
-                                  return data.getFormattedTime();
-                                } else if (energyType == "day" ||
-                                    energyType == "week") {
-                                  return data.getFormattedDate();
-                                } else if (energyType == "month") {
-                                  return data.getFormattedMonth();
-                                } else if (energyType == "year") {
-                                  return data.getFormattedYear();
-                                } else {
-                                  return "";
-                                }
-                              },
-                              yValueMapper: (EnergyData data, _) =>
-                                  data.acEnergyConsumed,
-                              name: 'AC Power',
-                              color: ConstantColors.borderButtonColor,
+                      child: energyType == "intraday"
+                          ? Column(children: [
+                              buildGraph(
+                                data: morningDataList,
+                              ),
+                              const SizedBox(height: 20),
+                              buildGraph(
+                                data: afternoonDataList,
+                              ),
+                              const SizedBox(height: 20),
+                              buildGraph(
+                                data: eveningDataList,
+                              )
+                            ])
+                          : Container(
+                              height: 350,
+                              child: SfCartesianChart(
+                                primaryXAxis: const CategoryAxis(),
+                                tooltipBehavior: TooltipBehavior(
+                                  enable: true,
+                                  shared: true,
+                                  tooltipPosition: TooltipPosition.auto,
+                                ),
+                                series: <CartesianSeries>[
+                                  ColumnSeries<EnergyData, String>(
+                                    dataSource: energyDataList,
+                                    xValueMapper: (EnergyData data, _) {
+                                      if (energyType == "intraday") {
+                                        return data.getFormattedTime();
+                                      } else if (energyType == "day" ||
+                                          energyType == "week") {
+                                        return data.getFormattedDate();
+                                      } else if (energyType == "month") {
+                                        return data.getFormattedMonth();
+                                      } else if (energyType == "year") {
+                                        return data.getFormattedYear();
+                                      } else {
+                                        return "";
+                                      }
+                                    },
+                                    yValueMapper: (EnergyData data, _) =>
+                                        data.acEnergyConsumed,
+                                    name: 'AC Power',
+                                    color: ConstantColors.borderButtonColor,
+                                  ),
+                                  ColumnSeries<EnergyData, String>(
+                                    dataSource: energyDataList,
+                                    xValueMapper: (EnergyData data, _) {
+                                      if (energyType == "intraday") {
+                                        return data.getFormattedTime();
+                                      } else if (energyType == "day" ||
+                                          energyType == "week") {
+                                        return data.getFormattedDate();
+                                      } else if (energyType == "month") {
+                                        return data.getFormattedMonth();
+                                      } else if (energyType == "year") {
+                                        return data.getFormattedYear();
+                                      } else {
+                                        return "";
+                                      }
+                                    },
+                                    yValueMapper: (EnergyData data, _) =>
+                                        data.dcEnergyConsumed,
+                                    name: 'DC Power',
+                                    color: Colors.green,
+                                  ),
+                                ],
+                              ),
                             ),
-                            ColumnSeries<EnergyData, String>(
-                              dataSource: energyDataList,
-                              xValueMapper: (EnergyData data, _) {
-                                if (energyType == "intraday") {
-                                  return data.getFormattedTime();
-                                } else if (energyType == "day" ||
-                                    energyType == "week") {
-                                  return data.getFormattedDate();
-                                } else if (energyType == "month") {
-                                  return data.getFormattedMonth();
-                                } else if (energyType == "year") {
-                                  return data.getFormattedYear();
-                                } else {
-                                  return "";
-                                }
-                              },
-                              yValueMapper: (EnergyData data, _) =>
-                                  data.dcEnergyConsumed,
-                              name: 'DC Power',
-                              color: Colors.green,
-                            ),
-                          ],
-                        ),
-                      ),
                     ));
               },
             ),
@@ -1774,6 +1763,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     ));
               },
             ),
+
             ValueListenableBuilder(
               valueListenable: treeNotiifer,
               builder: (context, value, child) {
@@ -1781,82 +1771,96 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     visible: treeNotiifer.value,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Container(
-                        height: 350,
-                        child: SfCartesianChart(
-                          primaryXAxis: const CategoryAxis(),
-                          tooltipBehavior: TooltipBehavior(
-                            enable: true,
-                            shared: true,
-                            tooltipPosition: TooltipPosition.auto,
-                          ),
-                          series: <CartesianSeries>[
-                            ColumnSeries<EnergyData, String>(
-                              dataSource: energyDataList,
-                              xValueMapper: (EnergyData data, _) {
-                                if (energyType == "intraday") {
-                                  return data.getFormattedTime();
-                                } else if (energyType == "day" ||
-                                    energyType == "week") {
-                                  return data.getFormattedDate();
-                                } else if (energyType == "month") {
-                                  return data.getFormattedMonth();
-                                } else if (energyType == "year") {
-                                  return data.getFormattedYear();
-                                } else {
-                                  return "";
-                                }
-                              },
-                              yValueMapper: (EnergyData data, _) =>
-                                  data.energySaving,
-                              name: 'Saving',
-                              color: ConstantColors.borderButtonColor,
+                      child: energyType == "intraday"
+                          ? Column(children: [
+                              buildTreeGraph(
+                                data: morningDataList,
+                              ),
+                              const SizedBox(height: 20),
+                              buildTreeGraph(
+                                data: afternoonDataList,
+                              ),
+                              const SizedBox(height: 20),
+                              buildTreeGraph(
+                                data: eveningDataList,
+                              )
+                            ])
+                          : Container(
+                              height: 350,
+                              child: SfCartesianChart(
+                                primaryXAxis: const CategoryAxis(),
+                                tooltipBehavior: TooltipBehavior(
+                                  enable: true,
+                                  shared: true,
+                                  tooltipPosition: TooltipPosition.auto,
+                                ),
+                                series: <CartesianSeries>[
+                                  ColumnSeries<EnergyData, String>(
+                                    dataSource: energyDataList,
+                                    xValueMapper: (EnergyData data, _) {
+                                      if (energyType == "intraday") {
+                                        return data.getFormattedTime();
+                                      } else if (energyType == "day" ||
+                                          energyType == "week") {
+                                        return data.getFormattedDate();
+                                      } else if (energyType == "month") {
+                                        return data.getFormattedMonth();
+                                      } else if (energyType == "year") {
+                                        return data.getFormattedYear();
+                                      } else {
+                                        return "";
+                                      }
+                                    },
+                                    yValueMapper: (EnergyData data, _) =>
+                                        data.energySaving,
+                                    name: 'Saving',
+                                    color: ConstantColors.borderButtonColor,
+                                  ),
+                                  ColumnSeries<EnergyData, String>(
+                                    dataSource: energyDataList,
+                                    xValueMapper: (EnergyData data, _) {
+                                      if (energyType == "intraday") {
+                                        return data.getFormattedTime();
+                                      } else if (energyType == "day" ||
+                                          energyType == "week") {
+                                        return data.getFormattedDate();
+                                      } else if (energyType == "month") {
+                                        return data.getFormattedMonth();
+                                      } else if (energyType == "year") {
+                                        return data.getFormattedYear();
+                                      } else {
+                                        return "";
+                                      }
+                                    },
+                                    yValueMapper: (EnergyData data, _) =>
+                                        data.dcCo2Reduction,
+                                    name: 'Co2',
+                                    color: ConstantColors.appColor,
+                                  ),
+                                  ColumnSeries<EnergyData, String>(
+                                    dataSource: energyDataList,
+                                    xValueMapper: (EnergyData data, _) {
+                                      if (energyType == "intraday") {
+                                        return data.getFormattedTime();
+                                      } else if (energyType == "day" ||
+                                          energyType == "week") {
+                                        return data.getFormattedDate();
+                                      } else if (energyType == "month") {
+                                        return data.getFormattedMonth();
+                                      } else if (energyType == "year") {
+                                        return data.getFormattedYear();
+                                      } else {
+                                        return "";
+                                      }
+                                    },
+                                    yValueMapper: (EnergyData data, _) =>
+                                        data.treesPlanted,
+                                    name: 'Tree Planted',
+                                    color: Colors.green,
+                                  ),
+                                ],
+                              ),
                             ),
-                            ColumnSeries<EnergyData, String>(
-                              dataSource: energyDataList,
-                              xValueMapper: (EnergyData data, _) {
-                                if (energyType == "intraday") {
-                                  return data.getFormattedTime();
-                                } else if (energyType == "day" ||
-                                    energyType == "week") {
-                                  return data.getFormattedDate();
-                                } else if (energyType == "month") {
-                                  return data.getFormattedMonth();
-                                } else if (energyType == "year") {
-                                  return data.getFormattedYear();
-                                } else {
-                                  return "";
-                                }
-                              },
-                              yValueMapper: (EnergyData data, _) =>
-                                  data.totalCo2Emission,
-                              name: 'Co2',
-                              color: ConstantColors.appColor,
-                            ),
-                            ColumnSeries<EnergyData, String>(
-                              dataSource: energyDataList,
-                              xValueMapper: (EnergyData data, _) {
-                                if (energyType == "intraday") {
-                                  return data.getFormattedTime();
-                                } else if (energyType == "day" ||
-                                    energyType == "week") {
-                                  return data.getFormattedDate();
-                                } else if (energyType == "month") {
-                                  return data.getFormattedMonth();
-                                } else if (energyType == "year") {
-                                  return data.getFormattedYear();
-                                } else {
-                                  return "";
-                                }
-                              },
-                              yValueMapper: (EnergyData data, _) =>
-                                  data.treesPlanted,
-                              name: 'Tree Planted',
-                              color: Colors.green,
-                            ),
-                          ],
-                        ),
-                      ),
                     )
                     // : const CircularProgressIndicator(),
                     );

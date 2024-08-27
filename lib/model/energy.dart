@@ -40,7 +40,7 @@ class EnergyData {
       double dcCo2Reduction = (json['dc_co2_reduction'] as num).toDouble();
       double treesPlanted = (json['trees_planted'] as num).toDouble();
       DateTime period = DateTime.parse(json['period'] as String);
-
+      print(period);
       return EnergyData(
         totalEnergy: totalEnergy < 0 ? 0 : totalEnergy,
         acEnergyConsumed: acEnergyConsumed < 0 ? 0 : acEnergyConsumed,
@@ -56,17 +56,19 @@ class EnergyData {
       rethrow;
     }
   }
+  DateTime getFormattedTimeAsDateTime() {
+    // Return DateTime with only hours, minutes and seconds as zero
+    return DateTime(
+      period.year,
+      period.month,
+      period.day,
+      period.hour,
+    );
+  }
 
   String getFormattedTime() {
-    int hour = period.hour;
-
-    if (hour >= 0 && hour < 8) {
-      return '00-07:59';
-    } else if (hour >= 8 && hour < 16) {
-      return '08-15:59';
-    } else {
-      return '16-23:59';
-    }
+    // Use DateFormat to return time in 'HH' format (e.g., '14' for 2 PM)
+    return DateFormat('HH').format(period);
   }
 
   String getFormattedDate() {
