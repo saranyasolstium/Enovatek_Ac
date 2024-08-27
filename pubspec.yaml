@@ -75,6 +75,7 @@ dependencies:
   excel: ^4.0.3
   csv: ^6.0.0
   external_path: ^1.0.3
+  money2: ^5.2.1
 
 dev_dependencies:
   flutter_test:

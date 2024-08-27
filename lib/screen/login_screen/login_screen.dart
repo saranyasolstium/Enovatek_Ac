@@ -60,53 +60,66 @@ class LoginScreenState extends State<LoginScreen> {
       print(deviceID);
       Response response =
           await RemoteServices.login(emailId, password, deviceID!);
+      print(response.statusCode);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        String accessToken = data['accessToken'];
-        int loginId = data['loginId'];
-        Map<String, dynamic> profile = data['profile'];
-        String profileName = profile['name'];
-        String profileEmailId = profile['emailId'];
-        int userId = profile['userId'];
-        int userType = profile['userTypeId'] ?? 2;
-        await SharedPreferencesHelper.instance.setAuthToken(accessToken);
-        await SharedPreferencesHelper.instance.setLoginID(loginId);
-        await SharedPreferencesHelper.instance.setUserID(userId);
-        await SharedPreferencesHelper.instance.setUserTypeID(userType);
-        await SharedPreferencesHelper.instance
-            .saveUserDataToSharedPreferences(profileName, profileEmailId);
-        AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
-        authHelper.setLoggedIn(true);
-        //userType == 1 Enginner
-        if (userType == 1) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil(enginnerHomeRounte, (route) => false);
-        } else {
-          // Navigator.of(context)
-          //     .pushNamedAndRemoveUntil(homedRoute, (route) => false);
 
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const PowerStatisticsScreen(
-                deviceId: "",
-                deviceList: [],
-                tabIndex: 1,
+        if (data.containsKey("error")) {
+          String errorMessage =
+              data["error_description"] ?? "Unknown error occurred.";
+          SnackbarHelper.showSnackBar(context, errorMessage);
+          return; // Stop further processing since it's an error
+        } else {
+          String accessToken = data['accessToken'];
+          int loginId = data['loginId'];
+          Map<String, dynamic> profile = data['profile'];
+          String profileName = profile['name'];
+          String profileEmailId = profile['emailId'];
+          int userId = profile['userId'];
+          int userType = profile['userTypeId'] ?? 2;
+          await SharedPreferencesHelper.instance.setAuthToken(accessToken);
+          await SharedPreferencesHelper.instance.setLoginID(loginId);
+          await SharedPreferencesHelper.instance.setUserID(userId);
+          await SharedPreferencesHelper.instance.setUserTypeID(userType);
+          await SharedPreferencesHelper.instance
+              .saveUserDataToSharedPreferences(profileName, profileEmailId);
+          AuthHelper authHelper =
+              Provider.of<AuthHelper>(context, listen: false);
+          authHelper.setLoggedIn(true);
+          //userType == 1 Enginner
+          if (userType == 1) {
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(enginnerHomeRounte, (route) => false);
+          } else {
+            // Navigator.of(context)
+            //     .pushNamedAndRemoveUntil(homedRoute, (route) => false);
+
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PowerStatisticsScreen(
+                  deviceId: "",
+                  deviceList: [],
+                  tabIndex: 1,
+                ),
               ),
-            ),
-            (Route<dynamic> route) => false,
-          );
+              (Route<dynamic> route) => false,
+            );
+          }
+          SnackbarHelper.showSnackBar(context, "Login Successful");
         }
-        SnackbarHelper.showSnackBar(context, "Login Successful");
       } else {
         var data = jsonDecode(response.body);
-
-        if (data.containsKey("message")) {
+        print(data);
+        if (data.containsKey("error_description")) {
+          String errorMessage = data["error_description"];
+          SnackbarHelper.showSnackBar(context, errorMessage);
+        } else if (data.containsKey("message")) {
           String errorMessage = data["message"];
           SnackbarHelper.showSnackBar(context, errorMessage);
         } else {
           SnackbarHelper.showSnackBar(
-              context, "Login failed! Please try again!");
+              context, "Login failed! Please try again.");
         }
       }
     } catch (error) {
@@ -300,6 +313,7 @@ class LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(20),
               child: TextField(
                 controller: passwordController,
+                obscureText: obscureText,
                 style: GoogleFonts.roboto(
                   color: ConstantColors.mainlyTextColor,
                   fontWeight: FontWeight.w500,

@@ -251,100 +251,124 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                     const SizedBox(width: 20),
                   ],
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: devices.length,
-                  itemBuilder: (context, index) {
-                    final device = devices[index];
-                    print(device.power);
-                    final deviceLocation = findFloorAndRoomNameByDeviceId(
-                        buildings, device.deviceId);
+                devices.isEmpty
+                    ? Container(
+                        height: 500,
+                        child: Center(
+                          child: Text(
+                            'No Device Found',
+                            style: GoogleFonts.roboto(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantColors.appColor),
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: devices.length,
+                        itemBuilder: (context, index) {
+                          final device = devices[index];
+                          print(device.power);
+                          final deviceLocation = findFloorAndRoomNameByDeviceId(
+                              buildings, device.deviceId);
 
-                    return GestureDetector(
-                        onTap: () {},
-                        child: Card(
-                          elevation: 10.0,
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  color: ConstantColors.whiteColor,
-                                  borderRadius: BorderRadius.circular(10)),
-                              height: 100,
-                              child: Column(children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 20, right: 20, top: 15, bottom: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      RichText(
-                                        text: TextSpan(
+                          return GestureDetector(
+                              onTap: () {},
+                              child: Card(
+                                elevation: 10.0,
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        color: ConstantColors.whiteColor,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    height: 100,
+                                    child: Column(children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 20,
+                                            right: 20,
+                                            top: 15,
+                                            bottom: 10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            TextSpan(
-                                              text: '${device.displayName}\n\n',
-                                              style: GoogleFonts.roboto(
-                                                color: ConstantColors
-                                                    .mainlyTextColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: screenWidth * 0.04,
+                                            RichText(
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text:
+                                                        '${device.displayName}\n\n',
+                                                    style: GoogleFonts.roboto(
+                                                      color: ConstantColors
+                                                          .mainlyTextColor,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize:
+                                                          screenWidth * 0.04,
+                                                    ),
+                                                  ),
+                                                  TextSpan(
+                                                    text:
+                                                        '${deviceLocation.buildingName!} - ${deviceLocation.floorName!} - ${deviceLocation.roomName}',
+                                                    style: GoogleFonts.roboto(
+                                                      color: ConstantColors
+                                                          .mainlyTextColor,
+                                                      fontSize:
+                                                          screenWidth * 0.035,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                            TextSpan(
-                                              text:
-                                                  '${deviceLocation.buildingName!} - ${deviceLocation.floorName!} - ${deviceLocation.roomName}',
-                                              style: GoogleFonts.roboto(
-                                                color: ConstantColors
-                                                    .mainlyTextColor,
-                                                fontSize: screenWidth * 0.035,
-                                              ),
-                                            ),
+                                            const SizedBox(width: 20),
+                                            GFToggle(
+                                              onChanged: (val) async {
+                                                print(val);
+
+                                                String? authToken =
+                                                    await SharedPreferencesHelper
+                                                        .instance
+                                                        .getAuthToken();
+                                                int? loginId =
+                                                    await SharedPreferencesHelper
+                                                        .instance
+                                                        .getLoginID();
+                                                Response response =
+                                                    await RemoteServices
+                                                        .actionCommand(
+                                                            authToken!,
+                                                            val! ? "On" : "Off",
+                                                            device.deviceId,
+                                                            1,
+                                                            loginId!);
+                                                var data =
+                                                    jsonDecode(response.body);
+                                                print(data);
+                                                if (response.statusCode ==
+                                                    200) {
+                                                  print(data["message"]);
+                                                  getAllDevice();
+                                                }
+                                              },
+                                              value: device.power == 'On'
+                                                  ? true
+                                                  : false,
+                                              enabledThumbColor:
+                                                  ConstantColors.whiteColor,
+                                              enabledTrackColor:
+                                                  ConstantColors.lightBlueColor,
+                                              type: GFToggleType.ios,
+                                            )
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(width: 20),
-                                      GFToggle(
-                                        onChanged: (val) async {
-                                          print(val);
-
-                                          String? authToken =
-                                              await SharedPreferencesHelper
-                                                  .instance
-                                                  .getAuthToken();
-                                          int? loginId =
-                                              await SharedPreferencesHelper
-                                                  .instance
-                                                  .getLoginID();
-                                          Response response =
-                                              await RemoteServices
-                                                  .actionCommand(
-                                                      authToken!,
-                                                      val! ? "On" : "Off",
-                                                      device.deviceId,
-                                                      1,
-                                                      loginId!);
-                                          var data = jsonDecode(response.body);
-                                          print(data);
-                                          if (response.statusCode == 200) {
-                                            print(data["message"]);
-                                            getAllDevice();
-                                          }
-                                        },
-                                        value:
-                                            device.power == 'On' ? true : false,
-                                        enabledThumbColor:
-                                            ConstantColors.whiteColor,
-                                        enabledTrackColor:
-                                            ConstantColors.lightBlueColor,
-                                        type: GFToggleType.ios,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ])),
-                        ));
-                  },
-                )
+                                    ])),
+                              ));
+                        },
+                      )
               ],
             ),
           ),

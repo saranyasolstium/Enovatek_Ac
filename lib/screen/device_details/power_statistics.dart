@@ -19,8 +19,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:country_picker/country_picker.dart';
 import 'dart:io';
+import 'package:intl/number_symbols.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:money2/money2.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -41,14 +43,14 @@ class PowerStatisticsScreen extends StatefulWidget {
 class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     with SingleTickerProviderStateMixin {
   String? totalPower = "", acPower = "", dcPower = "";
-  double? acValue = 0,
-      dcValue = 0,
-      acVoltage = 0,
-      dcVoltgae = 0,
-      acCurrent = 0,
-      dcCurrent = 0,
-      acEnergy = 0,
-      dcEnergy = 0;
+  // double? acValue = 0,
+  //     dcValue = 0,
+  //     acVoltage = 0,
+  //     dcVoltgae = 0,
+  //     acCurrent = 0,
+  //     dcCurrent = 0,
+  //     acEnergy = 0,
+  //     dcEnergy = 0;
   Timer? timer;
   List<EnergyData> energyDataList = [];
   List<CountryData> countryList = [];
@@ -66,6 +68,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   ValueNotifier<String> selectedCountryNotifier = ValueNotifier<String>('sg');
   ValueNotifier<int> countryId = ValueNotifier<int>(6);
   ValueNotifier<String> currencyCodeNotifier = ValueNotifier<String>("SGD");
+  ValueNotifier<String> currencySymbolNotifier = ValueNotifier<String>("\$");
+
+  ValueNotifier<double> acNotifier = ValueNotifier<double>(0);
+  ValueNotifier<double> dcNotifier = ValueNotifier<double>(0);
+  late TooltipBehavior _tooltipBehavior;
 
   @override
   void initState() {
@@ -73,6 +80,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     getCountryCurrency(selectedCountryNotifier.value);
     powerusages(periodType);
     fetchCountry(false);
+    _tooltipBehavior = TooltipBehavior(enable: true,);
+
     if (widget.tabIndex == 1) {
       energyNotiifer.value = true;
       savingNotiifer.value = false;
@@ -90,6 +99,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       selectedTabIndex.value = 2;
     }
   }
+
+  
 
   int getCountryIdByCurrencyType(String currencyType) {
     print('varshan $currencyType');
@@ -149,6 +160,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
+  String? getCurrencySymbol(String currencyCode) {
+    try {
+      final currency = Currencies().find(currencyCode);
+      return currency?.symbol;
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
+
   Future<void> getCountryCurrency(String countryCode) async {
     final response = await http
         .get(Uri.parse('https://restcountries.com/v3.1/alpha/$countryCode'));
@@ -156,18 +177,17 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
-      // Check if the data contains the 'currencies' field
       if (data.isNotEmpty && data[0].containsKey('currencies')) {
         final currencies = data[0]['currencies'];
 
-        // Loop through the currencies map to get details
         currencies.forEach((code, details) {
           final name = details['name'];
           final symbol = details['symbol'];
           currencyCodeNotifier.value = code;
+          currencySymbolNotifier.value = getCurrencySymbol(code)!;
           print('Currency Code: $code');
           print('Currency Name: $name');
-          print('Currency Symbol: $symbol');
+          print('Currency Symbol1: ${currencySymbolNotifier.value}');
         });
       } else {
         print('Currency information not found');
@@ -185,8 +205,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
 
-    final response = await RemoteServices.powerusages(
-        authToken!, "", periodType, formattedDate, "all", userId!);
+    final response = await RemoteServices.powerusages(authToken!,
+        widget.deviceList, periodType, formattedDate, "all", userId!);
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (!mounted) return;
@@ -210,14 +230,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         String dcEnergyStr =
             responseData['dc_energy'].replaceAll(RegExp(r'[^0-9.]'), '');
 
-        acValue = double.parse(acPowerValueStr);
-        dcValue = double.parse(dcPowerValueStr);
-        acVoltage = double.parse(acVoltageStr);
-        dcVoltgae = double.parse(dcVoltageStr);
-        acCurrent = double.parse(acCurrentStr);
-        dcCurrent = double.parse(dcCurrentStr);
-        acEnergy = double.parse(acEnergyStr);
-        dcEnergy = double.parse(dcEnergyStr);
+        acNotifier.value = double.parse(acPowerValueStr);
+        dcNotifier.value = double.parse(dcPowerValueStr);
+        // acNotifier.value = double.parse("18.0");
+        // dcNotifier.value = double.parse("16.0");
+        // acVoltage = double.parse(acVoltageStr);
+        // dcVoltgae = double.parse(dcVoltageStr);
+        // acCurrent = double.parse(acCurrentStr);
+        // dcCurrent = double.parse(dcCurrentStr);
+        // acEnergy = double.parse(acEnergyStr);
+        // dcEnergy = double.parse(dcEnergyStr);
       });
     } else {
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -228,14 +250,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           totalPower = "0W";
           acPower = "0W";
           dcPower = "0W";
-          acValue = 0;
-          dcValue = 0;
-          acVoltage = 0;
-          dcVoltgae = 0;
-          acCurrent = 0;
-          dcCurrent = 0;
-          acEnergy = 0;
-          dcEnergy = 0;
+          // acValue = 0;
+          // dcValue = 0;
+          // acVoltage = 0;
+          // dcVoltgae = 0;
+          // acCurrent = 0;
+          // dcCurrent = 0;
+          // acEnergy = 0;
+          // dcEnergy = 0;
         });
       }
     }
@@ -541,7 +563,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               treeNotiifer.value = false;
                               selectedTabIndex.value = 0;
                               fetchData('intraday');
-                              energyType="intraday";
+                              energyType = "intraday";
                               Navigator.pop(context);
                             });
                           }
@@ -721,25 +743,45 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         const SizedBox(
                           width: 20,
                         ),
-                        Image.asset(
-                          ImgPath.leftArrow1,
-                          height: 15,
-                        ),
-                        Image.asset(
-                          ImgPath.leftArrow1,
-                          height: 15,
-                        ),
-                        Image.asset(
-                          ImgPath.leftArrow1,
-                          height: 15,
-                        ),
-                        Image.asset(
-                          ImgPath.leftArrow1,
-                          height: 15,
-                        ),
-                        Image.asset(
-                          ImgPath.leftArrow2,
-                          height: 15,
+                        ValueListenableBuilder<double>(
+                          valueListenable: dcNotifier,
+                          builder: (context, dcValue, child) {
+                            return ValueListenableBuilder<double>(
+                              valueListenable: acNotifier,
+                              builder: (context, acValue, child) {
+                                return Row(
+                                  children: [
+                                    Image.asset(
+                                      ImgPath.leftArrow1,
+                                      height: 15,
+                                    ),
+                                    Image.asset(
+                                      dcValue > acValue
+                                          ? ImgPath.leftArrow1
+                                          : ImgPath.leftArrow2,
+                                      height: 15,
+                                    ),
+                                    Image.asset(
+                                      dcValue > acValue
+                                          ? ImgPath.leftArrow1
+                                          : ImgPath.leftArrow2,
+                                      height: 15,
+                                    ),
+                                    Image.asset(
+                                      dcValue > acValue
+                                          ? ImgPath.leftArrow1
+                                          : ImgPath.leftArrow2,
+                                      height: 15,
+                                    ),
+                                    Image.asset(
+                                      ImgPath.leftArrow2,
+                                      height: 15,
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
                         ),
                         const SizedBox(
                           width: 30,
@@ -752,25 +794,45 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         const SizedBox(
                           width: 30,
                         ),
-                        Image.asset(
-                          ImgPath.rightArrow1,
-                          height: 15,
-                        ),
-                        Image.asset(
-                          ImgPath.rightArrow2,
-                          height: 15,
-                        ),
-                        Image.asset(
-                          ImgPath.rightArrow3,
-                          height: 15,
-                        ),
-                        Image.asset(
-                          ImgPath.rightArrow4,
-                          height: 15,
-                        ),
-                        Image.asset(
-                          ImgPath.rightArrow5,
-                          height: 15,
+                        ValueListenableBuilder<double>(
+                          valueListenable: acNotifier,
+                          builder: (context, acValue, child) {
+                            return ValueListenableBuilder<double>(
+                              valueListenable: dcNotifier,
+                              builder: (context, dcValue, child) {
+                                return Row(
+                                  children: [
+                                    Image.asset(
+                                      ImgPath.rightArrow1,
+                                      height: 15,
+                                    ),
+                                    Image.asset(
+                                      acValue > dcValue
+                                          ? ImgPath.rightArrow5
+                                          : ImgPath.rightArrow2,
+                                      height: 15,
+                                    ),
+                                    Image.asset(
+                                      acValue > dcValue
+                                          ? ImgPath.rightArrow5
+                                          : ImgPath.rightArrow3,
+                                      height: 15,
+                                    ),
+                                    Image.asset(
+                                      acValue > dcValue
+                                          ? ImgPath.rightArrow5
+                                          : ImgPath.rightArrow4,
+                                      height: 15,
+                                    ),
+                                    Image.asset(
+                                      ImgPath.rightArrow5,
+                                      height: 15,
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
                         ),
                         const SizedBox(
                           width: 20,
@@ -796,6 +858,122 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       ],
                     ),
                   ),
+
+                  // Center(
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Column(
+                  //         crossAxisAlignment: CrossAxisAlignment.center,
+                  //         children: [
+                  //           Image.asset(
+                  //             ImgPath.pngSolarPlane,
+                  //             width: 50,
+                  //             height: 50,
+                  //           ),
+                  //           Text(
+                  //             '2 W',
+                  //             style: GoogleFonts.roboto(
+                  //               fontSize: 12,
+                  //               fontWeight: FontWeight.bold,
+                  //               color: ConstantColors.black,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //       const SizedBox(
+                  //         width: 20,
+                  //       ),
+                  //       Image.asset(
+                  //         ImgPath.leftArrow1,
+                  //         height: 15,
+                  //       ),
+                  //       Image.asset(
+                  //         dcNotifier.value < acNotifier.value
+                  //             ? ImgPath.leftArrow1
+                  //             : ImgPath.leftArrow2,
+                  //         height: 15,
+                  //       ),
+                  //       Image.asset(
+                  //         dcNotifier.value < acNotifier.value
+                  //             ? ImgPath.leftArrow1
+                  //             : ImgPath.leftArrow2,
+                  //         height: 15,
+                  //       ),
+                  //       Image.asset(
+                  //         dcNotifier.value < acNotifier.value
+                  //             ? ImgPath.leftArrow1
+                  //             : ImgPath.leftArrow2,
+                  //         height: 15,
+                  //       ),
+                  //       Image.asset(
+                  //         dcNotifier.value < acNotifier.value
+                  //             ? ImgPath.leftArrow1
+                  //             : ImgPath.leftArrow2,
+                  //         height: 15,
+                  //       ),
+                  //       const SizedBox(
+                  //         width: 30,
+                  //       ),
+                  //       Image.asset(
+                  //         ImgPath.totalPower,
+                  //         width: 50,
+                  //         height: 50,
+                  //       ),
+                  //       const SizedBox(
+                  //         width: 30,
+                  //       ),
+                  //       Image.asset(
+                  //         ImgPath.rightArrow1,
+                  //         height: 15,
+                  //       ),
+                  //       Image.asset(
+                  //         acNotifier.value < dcNotifier.value
+                  //             ? ImgPath.rightArrow5
+                  //             : ImgPath.rightArrow2,
+                  //         height: 15,
+                  //       ),
+                  //       Image.asset(
+                  //         acNotifier.value < dcNotifier.value
+                  //             ? ImgPath.rightArrow5
+                  //             : ImgPath.rightArrow3,
+                  //         height: 15,
+                  //       ),
+                  //       Image.asset(
+                  //         acNotifier.value < dcNotifier.value
+                  //             ? ImgPath.rightArrow5
+                  //             : ImgPath.rightArrow4,
+                  //         height: 15,
+                  //       ),
+                  //       Image.asset(
+                  //         ImgPath.rightArrow5,
+                  //         height: 15,
+                  //       ),
+                  //       const SizedBox(
+                  //         width: 20,
+                  //       ),
+                  //       Column(
+                  //         crossAxisAlignment: CrossAxisAlignment.center,
+                  //         children: [
+                  //           Image.asset(
+                  //             ImgPath.pngTower,
+                  //             width: 50,
+                  //             height: 50,
+                  //           ),
+                  //           Text(
+                  //             '912 W',
+                  //             style: GoogleFonts.roboto(
+                  //               fontSize: 12,
+                  //               fontWeight: FontWeight.bold,
+                  //               color: ConstantColors.black,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+
                   const SizedBox(height: 5),
                   Center(
                     child: Row(
@@ -936,15 +1114,24 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const SizedBox(height: 10),
-                              Image.asset(
-                                ImgPath.dollerSymbol,
-                                width: 30,
-                                height: 30,
-                                color: value == 1
-                                    ? ConstantColors.borderButtonColor
-                                    : ConstantColors.appColor,
+                              // Image.asset(
+                              //   ImgPath.dollerSymbol,
+                              //   width: 30,
+                              //   height: 30,
+                              //   color: value == 1
+                              //       ? ConstantColors.borderButtonColor
+                              //       : ConstantColors.appColor,
+                              // ),
+                              Text(
+                                '${currencySymbolNotifier.value}',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  color: value == 1
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.appColor,
+                                ),
                               ),
-                              const SizedBox(height: 10),
                               Text(
                                 'Saving',
                                 style: GoogleFonts.roboto(
@@ -1545,7 +1732,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               },
             ),
             ValueListenableBuilder(
-              valueListenable: savingNotiifer,
+              valueListenable: _isTooltipEnabled,
               builder: (context, value, child) {
                 return Visibility(
                     visible: savingNotiifer.value,
@@ -1555,17 +1742,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         height: 350,
                         child: SfCartesianChart(
                           primaryXAxis: const CategoryAxis(),
-                          tooltipBehavior: TooltipBehavior(
-                            enable: true,
-                            header: 'Energy Saving',
-                            canShowMarker: true,
-                            decimalPlaces: 2,
-                            format: 'point.y',
-                            tooltipPosition: TooltipPosition.auto,
-                          ),
+                          tooltipBehavior: _tooltipBehavior,
                           series: <CartesianSeries>[
                             LineSeries<EnergyData, String>(
                               dataSource: energyDataList,
+                              enableTooltip: true,
                               xValueMapper: (EnergyData data, _) {
                                 if (energyType == "intraday") {
                                   return data.getFormattedTime();

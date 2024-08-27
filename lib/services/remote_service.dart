@@ -432,7 +432,7 @@ class RemoteServices {
   }
 
   //get actionCommand
-  static Future<Response> powerusages(String authToken, String deviceId,
+  static Future<Response> powerusages(String authToken, List<String> deviceId,
       String type, String typeValue, String consumptionType, int userId) async {
     try {
       print('${url}api/user/consumption_data');
