@@ -349,16 +349,21 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 30),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Text(
-                  'Forgot password',
-                  style: GoogleFonts.lato(
-                      color: ConstantColors.blueColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: screenWidth * 0.035),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, forgetPasswordRoute);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 30),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Text(
+                    'Forgot password',
+                    style: GoogleFonts.lato(
+                        color: ConstantColors.blueColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: screenWidth * 0.035),
+                  ),
                 ),
               ),
             ),

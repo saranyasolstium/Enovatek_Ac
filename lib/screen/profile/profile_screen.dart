@@ -407,14 +407,17 @@ class ProfileScreenState extends State<ProfileScreen> {
                   if (response.statusCode == 200) {
                     var data = jsonDecode(response.body);
                     if (data.containsKey("message")) {
-                      String errorMessage = data["message"];
-                      SnackbarHelper.showSnackBar(context, errorMessage);
-                    } else {
-                      await SharedPreferencesHelper.instance
-                          .saveUserDataToSharedPreferences(name, email);
+                      SnackbarHelper.showSnackBar(
+                          context, "Successfully registered the account.");
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                          homedRoute, (route) => false);
+                          loginRoute, (route) => false);
                     }
+                    //  else {
+                    //   await SharedPreferencesHelper.instance
+                    //       .saveUserDataToSharedPreferences(name, email);
+                    //   Navigator.of(context).pushNamedAndRemoveUntil(
+                    //       homedRoute, (route) => false);
+                    // }
                   } else {
                     var data = jsonDecode(response.body);
                     if (data.containsKey("message")) {

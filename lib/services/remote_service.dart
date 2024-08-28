@@ -39,6 +39,53 @@ class RemoteServices {
     }
   }
 
+  static Future<Response> resetPasswordToken(String emailId) async {
+    try {
+      print('${url}api/token/resetpasswordtoken?_emailId=$emailId');
+      String apiUrl = '${url}api/token/resetpasswordtoken?_emailId=$emailId';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> resetPassword(
+      String emailId, String token, String password) async {
+    try {
+      print('${url}api/token/resetpassword');
+      String apiUrl = '${url}api/token/resetpassword';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+      Map<String, dynamic> requestBody = {
+        "token": token,
+        "emailId": emailId,
+        "password": password,
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
 //google login
   static Future<Response> googleApiLogin(
       String name, String emailId, String deviceID) async {

@@ -5,6 +5,8 @@ const String introduceRoute = "introduce";
 // Auth Route
 const String loginRoute = "login";
 const String profileRoute = "profile";
+const String forgetPasswordRoute = "forgetPassword";
+
 const String homedRoute = "home";
 const String enginnerMenuRoute = "enginnerMenu";
 

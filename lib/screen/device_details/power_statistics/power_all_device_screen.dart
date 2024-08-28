@@ -161,17 +161,18 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
   }
 
   Future<bool> _onWillPop() async {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PowerStatisticsScreen(
-          deviceId: "",
-          deviceList: deviceList,
-          tabIndex: 1,
-        ),
-      ),
-      (Route<dynamic> route) => false,
-    );
+    // Navigator.pushAndRemoveUntil(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => PowerStatisticsScreen(
+    //       deviceId: "",
+    //       deviceList: deviceList,
+    //       tabIndex: 1,
+    //     ),
+    //   ),
+    //   (Route<dynamic> route) => false,
+    // );
+    Navigator.pop(context);
     return true;
   }
 
@@ -205,17 +206,18 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                           GestureDetector(
                             onTap: () {
                               // Navigator.pop(context);
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PowerStatisticsScreen(
-                                    deviceId: "",
-                                    deviceList: deviceList,
-                                    tabIndex: 1,
-                                  ),
-                                ),
-                                (Route<dynamic> route) => false,
-                              );
+                              // Navigator.pushAndRemoveUntil(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => PowerStatisticsScreen(
+                              //       deviceId: "",
+                              //       deviceList: deviceList,
+                              //       tabIndex: 1,
+                              //     ),
+                              //   ),
+                              //   (Route<dynamic> route) => false,
+                              // );
+                              Navigator.pop(context);
                             },
                             child: Image.asset(
                               ImgPath.pngArrowBack,

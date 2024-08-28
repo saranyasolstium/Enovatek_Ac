@@ -1,4 +1,5 @@
 import 'package:enavatek_mobile/value/constant_colors.dart';
+import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -44,13 +45,13 @@ class RoundedButton extends StatelessWidget {
         // },
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: isTablet ?screenWidth * 0.05  : screenWidth * 0.02,
-            vertical: isTablet ?screenHeight * 0.02 : screenHeight * 0.015,
+            horizontal:15.dynamic,
+            vertical: 15.dynamic,
           ),
           child: Text(
             text,
             style: GoogleFonts.roboto(
-              fontSize: screenWidth * 0.04,
+              fontSize: 16.dynamic,
             ),
           ),
         ),

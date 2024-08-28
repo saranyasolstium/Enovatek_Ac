@@ -8,6 +8,7 @@ import 'package:enavatek_mobile/screen/enginner_access/enginner_home.dart';
 import 'package:enavatek_mobile/screen/enginner_access/enginner_menu.dart';
 import 'package:enavatek_mobile/screen/home/home_screen.dart';
 import 'package:enavatek_mobile/screen/introduce/introduce_screen.dart';
+import 'package:enavatek_mobile/screen/login_screen/forgetpassword.dart';
 import 'package:enavatek_mobile/screen/login_screen/login_screen.dart';
 import 'package:enavatek_mobile/screen/menu/building/add_building.dart';
 import 'package:enavatek_mobile/screen/menu/building/building_screen.dart';
@@ -45,6 +46,12 @@ class Routers {
       case profileRoute:
         return PageTransition(
           child: const ProfileScreen(),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case forgetPasswordRoute:
+        return PageTransition(
+          child: const ForgetPasswordScreen(),
           type: PageTransitionType.rightToLeft,
         );
 

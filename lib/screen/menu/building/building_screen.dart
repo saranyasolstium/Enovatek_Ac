@@ -86,8 +86,9 @@ class BuildingScreenState extends State<BuildingScreen> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              homedRoute, (route) => false);
+                          // Navigator.of(context).pushNamedAndRemoveUntil(
+                          //     homedRoute, (route) => false);
+                          Navigator.pop(context);
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,

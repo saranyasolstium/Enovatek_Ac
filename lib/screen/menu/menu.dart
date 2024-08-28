@@ -7,6 +7,7 @@ import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all
 import 'package:enavatek_mobile/screen/menu/country/country_screen.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
+import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/dialog_logout.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
@@ -152,11 +153,11 @@ class MenuScreenState extends State<MenuScreen> {
                     ),
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: ConstantColors.mainlyTextColor,
-                  size: screenWidth * 0.07,
-                ),
+                // Icon(
+                //   Icons.arrow_forward_ios,
+                //   color: ConstantColors.mainlyTextColor,
+                //   size: screenWidth * 0.07,
+                // ),
               ],
             ),
             SizedBox(
@@ -217,7 +218,7 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const PowerStatisticsAllScreen(
@@ -426,12 +427,14 @@ class MenuScreenState extends State<MenuScreen> {
                         const SizedBox(
                           width: 10,
                         ),
-                        Image.asset(
-                          ImgPath.treeIcon,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
-                          color: ConstantColors.iconColr,
-                        ),
+                          Container(
+                            height: 25.dynamic,
+                            width: 25.dynamic,
+                            decoration: const BoxDecoration(
+                              color: ConstantColors.iconColr,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
                         SizedBox(
                           width: 0.02 * screenHeight,
                         ),
@@ -485,7 +488,7 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, calculateRoute);
+                     // Navigator.pushNamed(context, calculateRoute);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -540,7 +543,7 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, supportRoute);
+                     // Navigator.pushNamed(context, supportRoute);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -570,7 +573,7 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, requestRoute);
+                      //Navigator.pushNamed(context, requestRoute);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,

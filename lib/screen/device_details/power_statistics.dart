@@ -7,13 +7,16 @@ import 'package:enavatek_mobile/model/country_data.dart';
 import 'package:enavatek_mobile/model/energy.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
+import 'package:enavatek_mobile/screen/menu/menu.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
+import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/dropdown.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -22,6 +25,8 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:money2/money2.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -132,8 +137,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       afternoonDataList.addAll(energyDataList.sublist(8, 16)); // Next 8 records
       eveningDataList.addAll(energyDataList.sublist(16, 24)); // Last 8 records
     } else {
-      // Handle cases where the list does not have exactly 24 records
-      // You can choose to either log an error, or handle the records differently
       print('Error: The list does not contain exactly 24 records.');
     }
 
@@ -179,11 +182,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   Widget buildGraph({required List<EnergyData> data}) {
     return Container(
       height: 350,
-      width: 400,
+      width: 500,
       child: SfCartesianChart(
         primaryXAxis: DateTimeAxis(
           dateFormat: DateFormat.Hm(),
           intervalType: DateTimeIntervalType.hours,
+          interval: 1,
         ),
         tooltipBehavior: TooltipBehavior(
           enable: true,
@@ -214,13 +218,47 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     );
   }
 
-  Widget buildTreeGraph({required List<EnergyData> data}) {
+  Widget buildSavingGraph({required List<EnergyData> data}) {
     return Container(
       height: 350,
+      width: 500,
       child: SfCartesianChart(
         primaryXAxis: DateTimeAxis(
           dateFormat: DateFormat.Hm(),
           intervalType: DateTimeIntervalType.hours,
+          interval: 1,
+        ),
+        tooltipBehavior: TooltipBehavior(
+          enable: true,
+          shared: true,
+          tooltipPosition: TooltipPosition.auto,
+        ),
+        series: <CartesianSeries>[
+          LineSeries<EnergyData, DateTime>(
+            dataSource: data,
+            enableTooltip: true,
+            xValueMapper: (EnergyData data, _) {
+              return data.getFormattedTimeAsDateTime();
+            },
+            yValueMapper: (EnergyData data, _) => data.energySaving,
+            // markerSettings: const MarkerSettings(isVisible: true),
+            name: 'Saving',
+            color: ConstantColors.borderButtonColor,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTreeGraph({required List<EnergyData> data}) {
+    return Container(
+      height: 350,
+      width: 500,
+      child: SfCartesianChart(
+        primaryXAxis: DateTimeAxis(
+          dateFormat: DateFormat.Hm(),
+          intervalType: DateTimeIntervalType.hours,
+          interval: 1,
         ),
         tooltipBehavior: TooltipBehavior(
           enable: true,
@@ -388,27 +426,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isTablet = screenWidth >= 600;
 
-    // Future<void> createCountry(
-    //     String countryName, String currencyType, double energyRate) async {
-    //   String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-    //   print(authToken);
-    //   Response response = await RemoteServices.createCountry(
-    //       authToken!, countryName, currencyType, energyRate);
-    //   var data = jsonDecode(response.body);
-
-    //   if (response.statusCode == 200) {
-    //     if (data.containsKey("message")) {
-    //       String message = data["message"];
-    //       SnackbarHelper.showSnackBar(context, message);
-    //       Navigator.pop(context);
-    //     }
-    //   } else {
-    //     SnackbarHelper.showSnackBar(context, "Failed to create country");
-    //   }
-    // }
-
+    // Set the default selected value to the current selected country
+    String radioValue = selectedCountryNotifier.value
+        .toUpperCase(); // Ensure it's uppercase to match the country code format
     String currency = "";
-    String radioValue = "";
     TextEditingController countryController = TextEditingController();
     TextEditingController energyController = TextEditingController();
 
@@ -503,45 +524,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         );
                       }).toList(),
                       const SizedBox(height: 10),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.start,
-                      //   children: [
-                      //     Container(
-                      //       height: 25,
-                      //       width: 25,
-                      //       decoration: const BoxDecoration(
-                      //         color: ConstantColors.iconColr,
-                      //         shape: BoxShape.circle,
-                      //       ),
-                      //     ),
-                      //     const SizedBox(width: 20),
-                      //     Text(
-                      //       'Custom',
-                      //       style: GoogleFonts.roboto(
-                      //         fontSize: 14,
-                      //         color: ConstantColors.appColor,
-                      //       ),
-                      //     ),
-                      //     const Spacer(),
-                      //     Transform.scale(
-                      //       scale: 1,
-                      //       child: Radio(
-                      //         value: "Custom",
-                      //         groupValue: radioValue,
-                      //         hoverColor: ConstantColors.borderButtonColor,
-                      //         fillColor: MaterialStateColor.resolveWith(
-                      //             (states) => ConstantColors.borderButtonColor),
-                      //         onChanged: (value) {
-                      //           setState(() {
-                      //             radioValue = value.toString();
-                      //           });
-                      //         },
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                      // const SizedBox(height: 10),
-                      // Conditional Display of Country Picker and Energy Rate Input
                       if (radioValue == "Custom") ...[
                         Container(
                           padding: EdgeInsets.only(
@@ -685,6 +667,45 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     print('File saved at $path');
   }
 
+// Future<void> exportCSV(String csvContent, String fileName) async {
+//   // Request storage permission
+//   final permissionStatus = await Permission.storage.request();
+
+//   if (permissionStatus != PermissionStatus.granted) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text('Storage permission denied')),
+//     );
+//     return; // Exit the function if permission is denied
+//   }
+
+//   // Get the external storage directory
+//   final externalDirectoryPath = "${await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOCUMENTS)}/sub";
+//   final dir = Directory(externalDirectoryPath);
+
+//   if (!await dir.exists()) {
+//     await dir.create(recursive: true);
+//   }
+
+//   // Create the file path
+//   final filePath = '${dir.path}/$fileName';
+
+//   final file = File(filePath);
+
+//   try {
+//     await file.writeAsString(csvContent);
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text('CSV downloaded successfully to $filePath'),
+//       ),
+//     );
+//     print('File saved at $filePath');
+//   } catch (e) {
+//     print('Error exporting data: $e');
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text('Failed to download CSV')),
+//     );
+//   }
+// }
   Future<void> exportPowerConsumptionData() async {
     try {
       int? userId = await SharedPreferencesHelper.instance.getUserID();
@@ -728,11 +749,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10.dynamic),
                       Text(
                         'Power Statistics',
                         style: GoogleFonts.roboto(
-                          fontSize: 18,
+                          fontSize: 18.dynamic,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),
@@ -755,8 +776,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                 return CountryFlag.fromCountryCode(
                   value,
                   shape: const Circle(),
-                  height: 30,
-                  width: 30,
+                  height: 30.dynamic,
+                  width: 30.dynamic,
                 );
               },
             ),
@@ -776,8 +797,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             },
             child: Image.asset(
               ImgPath.liveData,
-              height: 30,
-              width: 30,
+              height: 30.dynamic,
+              width: 30.dynamic,
             ),
           ),
           const SizedBox(
@@ -789,8 +810,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             },
             child: Image.asset(
               ImgPath.pngMenu,
-              height: 30,
-              width: 30,
+              height: 30.dynamic,
+              width: 30.dynamic,
               color: ConstantColors.borderButtonColor,
             ),
           ),
@@ -806,8 +827,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               color: ConstantColors.darkBackgroundColor,
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 10,
+                  SizedBox(
+                    height: 10.dynamic,
                   ),
                   Center(
                     child: Row(
@@ -818,21 +839,21 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           children: [
                             Image.asset(
                               ImgPath.pngSolarPlane,
-                              width: 50,
-                              height: 50,
+                              width: 50.dynamic,
+                              height: 50.dynamic,
                             ),
                             Text(
                               '2 W',
                               style: GoogleFonts.roboto(
-                                fontSize: 12,
+                                fontSize: 12.dynamic,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.black,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          width: 20,
+                        SizedBox(
+                          width: 20.dynamic,
                         ),
                         ValueListenableBuilder<double>(
                           valueListenable: dcNotifier,
@@ -843,46 +864,46 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   dcValue == 0
                                       ? ImgPath.leftArrow2
                                       : ImgPath.leftArrow1,
-                                  height: 15,
+                                  height: 15.dynamic,
                                 ),
                                 Image.asset(
                                   dcValue > 10
                                       ? ImgPath.leftArrow1
                                       : ImgPath.leftArrow2,
-                                  height: 15,
+                                  height: 15.dynamic,
                                 ),
                                 Image.asset(
                                   dcValue > 20
                                       ? ImgPath.leftArrow1
                                       : ImgPath.leftArrow2,
-                                  height: 15,
+                                  height: 15.dynamic,
                                 ),
                                 Image.asset(
                                   dcValue > 30
                                       ? ImgPath.leftArrow1
                                       : ImgPath.leftArrow2,
-                                  height: 15,
+                                  height: 15.dynamic,
                                 ),
                                 Image.asset(
                                   dcValue > 40
                                       ? ImgPath.leftArrow1
                                       : ImgPath.leftArrow2,
-                                  height: 15,
+                                  height: 15.dynamic,
                                 ),
                               ],
                             );
                           },
                         ),
-                        const SizedBox(
-                          width: 30,
+                        SizedBox(
+                          width: 30.dynamic,
                         ),
                         Image.asset(
                           ImgPath.totalPower,
-                          width: 50,
-                          height: 50,
+                          width: 50.dynamic,
+                          height: 50.dynamic,
                         ),
-                        const SizedBox(
-                          width: 30,
+                        SizedBox(
+                          width: 30.dynamic,
                         ),
                         ValueListenableBuilder<double>(
                           valueListenable: acNotifier,
@@ -893,31 +914,31 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   acValue > 40
                                       ? ImgPath.rightArrow5
                                       : ImgPath.rightArrow1,
-                                  height: 15,
+                                  height: 15.dynamic,
                                 ),
                                 Image.asset(
                                   acValue > 30
                                       ? ImgPath.rightArrow5
                                       : ImgPath.rightArrow2,
-                                  height: 15,
+                                  height: 15.dynamic,
                                 ),
                                 Image.asset(
                                   acValue > 20
                                       ? ImgPath.rightArrow5
                                       : ImgPath.rightArrow3,
-                                  height: 15,
+                                  height: 15.dynamic,
                                 ),
                                 Image.asset(
                                   acValue > 10
                                       ? ImgPath.rightArrow5
                                       : ImgPath.rightArrow4,
-                                  height: 15,
+                                  height: 15.dynamic,
                                 ),
                                 Image.asset(
                                   acValue > 0
                                       ? ImgPath.rightArrow5
                                       : ImgPath.rightArrow4,
-                                  height: 15,
+                                  height: 15.dynamic,
                                 ),
                               ],
                             );
@@ -1634,8 +1655,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     },
                     child: Image.asset(
                       ImgPath.export,
-                      height: 25,
-                      width: 25,
+                      height: 25.dynamic,
+                      width: 25.dynamic,
                       color: ConstantColors.iconColr,
                     )),
                 const SizedBox(width: 20),
@@ -1727,39 +1748,53 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     visible: savingNotiifer.value,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Container(
-                        height: 350,
-                        child: SfCartesianChart(
-                          primaryXAxis: const CategoryAxis(),
-                          tooltipBehavior: _tooltipBehavior,
-                          series: <CartesianSeries>[
-                            LineSeries<EnergyData, String>(
-                              dataSource: energyDataList,
-                              enableTooltip: true,
-                              xValueMapper: (EnergyData data, _) {
-                                if (energyType == "intraday") {
-                                  return data.getFormattedTime();
-                                } else if (energyType == "day" ||
-                                    energyType == "week") {
-                                  return data.getFormattedDate();
-                                } else if (energyType == "month") {
-                                  return data.getFormattedMonth();
-                                } else if (energyType == "year") {
-                                  return data.getFormattedYear();
-                                } else {
-                                  return "";
-                                }
-                              },
-                              yValueMapper: (EnergyData data, _) =>
-                                  data.energySaving,
-                              markerSettings:
-                                  const MarkerSettings(isVisible: true),
-                              name: 'Saving',
-                              color: ConstantColors.borderButtonColor,
+                      child: energyType == "intraday"
+                          ? Column(children: [
+                              buildSavingGraph(
+                                data: morningDataList,
+                              ),
+                              const SizedBox(height: 20),
+                              buildSavingGraph(
+                                data: afternoonDataList,
+                              ),
+                              const SizedBox(height: 20),
+                              buildSavingGraph(
+                                data: eveningDataList,
+                              )
+                            ])
+                          : Container(
+                              height: 350,
+                              child: SfCartesianChart(
+                                primaryXAxis: const CategoryAxis(),
+                                tooltipBehavior: _tooltipBehavior,
+                                series: <CartesianSeries>[
+                                  LineSeries<EnergyData, String>(
+                                    dataSource: energyDataList,
+                                    enableTooltip: true,
+                                    xValueMapper: (EnergyData data, _) {
+                                      if (energyType == "intraday") {
+                                        return data.getFormattedTime();
+                                      } else if (energyType == "day" ||
+                                          energyType == "week") {
+                                        return data.getFormattedDate();
+                                      } else if (energyType == "month") {
+                                        return data.getFormattedMonth();
+                                      } else if (energyType == "year") {
+                                        return data.getFormattedYear();
+                                      } else {
+                                        return "";
+                                      }
+                                    },
+                                    yValueMapper: (EnergyData data, _) =>
+                                        data.energySaving,
+                                    markerSettings:
+                                        const MarkerSettings(isVisible: true),
+                                    name: 'Saving',
+                                    color: ConstantColors.borderButtonColor,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
-                      ),
                     ));
               },
             ),
@@ -1865,6 +1900,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     // : const CircularProgressIndicator(),
                     );
               },
+            ),
+            const SizedBox(
+              height: 20,
             ),
           ],
         ),

@@ -12,6 +12,7 @@ import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -409,9 +410,13 @@ class CountryScreenState extends State<CountryScreen> {
                         ),
                         child: TextField(
                           controller: factorController,
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           textAlignVertical: TextAlignVertical.center,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d*\.?\d*')),
+                          ],
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintStyle: GoogleFonts.roboto(
