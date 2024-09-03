@@ -133,9 +133,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     eveningDataList.clear();
 
     if (energyDataList.length == 24) {
-      morningDataList.addAll(energyDataList.sublist(0, 8)); // First 8 records
-      afternoonDataList.addAll(energyDataList.sublist(8, 16)); // Next 8 records
-      eveningDataList.addAll(energyDataList.sublist(16, 24)); // Last 8 records
+      morningDataList.addAll(energyDataList.sublist(0, 9));
+      afternoonDataList.addAll(energyDataList.sublist(9, 17));
+      eveningDataList.addAll(energyDataList.sublist(17, 24));
     } else {
       print('Error: The list does not contain exactly 24 records.');
     }
@@ -1685,8 +1685,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             ])
                           : Container(
                               height: 350,
+                              width: energyType == "day"
+                                  ? 1500.dynamic
+                                  : 400.dynamic,
                               child: SfCartesianChart(
-                                primaryXAxis: const CategoryAxis(),
+                                primaryXAxis: const CategoryAxis(
+                                  interval: 1,
+                                ),
                                 tooltipBehavior: TooltipBehavior(
                                   enable: true,
                                   shared: true,
@@ -1764,6 +1769,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             ])
                           : Container(
                               height: 350,
+                              width: energyType == "day"
+                                  ? 1500.dynamic
+                                  : 400.dynamic,
                               child: SfCartesianChart(
                                 primaryXAxis: const CategoryAxis(),
                                 tooltipBehavior: _tooltipBehavior,
@@ -1787,8 +1795,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     },
                                     yValueMapper: (EnergyData data, _) =>
                                         data.energySaving,
-                                    markerSettings:
-                                        const MarkerSettings(isVisible: true),
                                     name: 'Saving',
                                     color: ConstantColors.borderButtonColor,
                                   ),
@@ -1822,6 +1828,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             ])
                           : Container(
                               height: 350,
+                              width: energyType == "day"
+                                  ? 1500.dynamic
+                                  : 400.dynamic,
                               child: SfCartesianChart(
                                 primaryXAxis: const CategoryAxis(),
                                 tooltipBehavior: TooltipBehavior(
