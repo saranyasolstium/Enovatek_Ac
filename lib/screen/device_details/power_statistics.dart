@@ -6,6 +6,7 @@ import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
 import 'package:enavatek_mobile/model/energy.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
 import 'package:enavatek_mobile/screen/menu/menu.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
@@ -19,6 +20,7 @@ import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:country_picker/country_picker.dart';
 import 'dart:io';
@@ -82,12 +84,15 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   List<EnergyData> afternoonDataList = [];
   List<EnergyData> eveningDataList = [];
 
+  List<Building> buildings = [];
+  List<Device> devices = [];
+  final List<String> deviceList = [];
+
   @override
   void initState() {
     super.initState();
     getCountryCurrency(selectedCountryNotifier.value);
-    powerusages(periodType);
-    fetchCountry(false);
+    getAllDevice();
     _tooltipBehavior = TooltipBehavior(
       enable: true,
     );
@@ -107,6 +112,56 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       savingNotiifer.value = false;
       treeNotiifer.value = true;
       selectedTabIndex.value = 2;
+    }
+  }
+
+  List<Device> getAllDevices(List<Building> buildings) {
+    List<Device> allDevices = [];
+    for (var building in buildings) {
+      for (var floor in building.floors) {
+        for (var room in floor.rooms) {
+          allDevices.addAll(room.devices);
+        }
+      }
+    }
+
+    return allDevices;
+  }
+
+  Future<void> getAllDevice() async {
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? userId = await SharedPreferencesHelper.instance.getUserID();
+
+    Response response =
+        await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
+
+    if (response.statusCode == 200) {
+      String responseBody = response.body;
+      Map<String, dynamic> jsonData = json.decode(responseBody);
+
+      if (jsonData.containsKey("buildings")) {
+        List<dynamic> buildingList = jsonData["buildings"];
+        buildings =
+            buildingList.map((data) => Building.fromJson(data)).toList();
+        setState(() {
+          devices = getAllDevices(buildings);
+          deviceList.clear();
+          deviceList.addAll(
+            devices
+                .where((device) => device.power.toLowerCase() == 'on')
+                .map((device) => device.deviceId),
+          );
+        });
+        deviceList.forEach((deviceId) {
+          print('Device ID: $deviceId');
+        });
+        fetchCountry(false);
+        powerusages(periodType);
+      } else {
+        print('Response body does not contain buildings');
+      }
+    } else {
+      print('Response body: ${response.body}');
     }
   }
 
@@ -154,7 +209,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           getCountryIdByCurrencyType(selectedCountryNotifier.value);
       print(countryId);
       final data = await RemoteServices.fetchEnergyData(
-          deviceId: widget.deviceList,
+          deviceId: deviceList,
           periodType: periodType.toLowerCase(),
           userId: userId!,
           countryId: countryId);
@@ -364,7 +419,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     int? userId = await SharedPreferencesHelper.instance.getUserID();
 
     final response = await RemoteServices.powerusages(authToken!,
-        widget.deviceList, periodType, formattedDate, "all", userId!);
+        deviceList, periodType, formattedDate, "all", userId!);
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (!mounted) return;
