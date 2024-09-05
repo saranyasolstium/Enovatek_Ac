@@ -418,8 +418,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
 
-    final response = await RemoteServices.powerusages(authToken!,
-        deviceList, periodType, formattedDate, "all", userId!);
+    final response = await RemoteServices.powerusages(
+        authToken!, deviceList, periodType, formattedDate, "all", userId!);
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (!mounted) return;
@@ -709,7 +709,18 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   }
 
   Future<void> exportCSV(String csvContent, String fileName) async {
-    final path = '/storage/emulated/0/Download/$fileName';
+    // final path = '/storage/emulated/0/Download/$fileName';
+    // final file = File(path);
+
+    Directory directory;
+    if (Platform.isIOS) {
+      directory = await getApplicationDocumentsDirectory();
+    } else if (Platform.isAndroid) {
+      directory = Directory('/storage/emulated/0');
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
+    final path = '${directory.path}/Download/$fileName';
     final file = File(path);
 
     await file.writeAsString(csvContent);
@@ -897,14 +908,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               width: 50.dynamic,
                               height: 50.dynamic,
                             ),
-                            Text(
-                              '2 W',
-                              style: GoogleFonts.roboto(
-                                fontSize: 12.dynamic,
-                                fontWeight: FontWeight.bold,
-                                color: ConstantColors.black,
-                              ),
-                            ),
+                            // Text(
+                            //   '2 W',
+                            //   style: GoogleFonts.roboto(
+                            //     fontSize: 12.dynamic,
+                            //     fontWeight: FontWeight.bold,
+                            //     color: ConstantColors.black,
+                            //   ),
+                            // ),
                           ],
                         ),
                         SizedBox(
@@ -1010,14 +1021,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               width: 50,
                               height: 50,
                             ),
-                            Text(
-                              '912 W',
-                              style: GoogleFonts.roboto(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: ConstantColors.black,
-                              ),
-                            ),
+                            // Text(
+                            //   '912 W',
+                            //   style: GoogleFonts.roboto(
+                            //     fontSize: 12,
+                            //     fontWeight: FontWeight.bold,
+                            //     color: ConstantColors.black,
+                            //   ),
+                            // ),
                           ],
                         ),
                       ],

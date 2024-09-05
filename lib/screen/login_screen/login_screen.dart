@@ -35,8 +35,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final GoogleSignIn _googleSignIn = GoogleSignIn();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -127,127 +127,127 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
+  // Future<void> signInWithGoogle() async {
+  //   try {
+  //     final GoogleSignInAccount? googleSignInAccount =
+  //         await _googleSignIn.signIn();
+  //     final GoogleSignInAuthentication googleSignInAuthentication =
+  //         await googleSignInAccount!.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
+  //     final AuthCredential credential = GoogleAuthProvider.credential(
+  //       accessToken: googleSignInAuthentication.accessToken,
+  //       idToken: googleSignInAuthentication.idToken,
+  //     );
 
-      final UserCredential authResult =
-          await _auth.signInWithCredential(credential);
-      _user = authResult.user;
+  //     final UserCredential authResult =
+  //         await _auth.signInWithCredential(credential);
+  //     _user = authResult.user;
 
-      assert(!_user!.isAnonymous);
-      assert(await _user!.getIdToken() != null);
+  //     assert(!_user!.isAnonymous);
+  //     assert(await _user!.getIdToken() != null);
 
-      final User currentUser = _auth.currentUser!;
+  //     final User currentUser = _auth.currentUser!;
 
-      assert(_user!.uid == currentUser.uid);
+  //     assert(_user!.uid == currentUser.uid);
 
-      print("User Name: ${_user!.displayName}");
-      print("User Email: ${_user!.email}");
+  //     print("User Name: ${_user!.displayName}");
+  //     print("User Email: ${_user!.email}");
 
-      print('Google Sign-In Successful');
-      String? displayname = _user!.displayName;
-      String? email = _user!.email;
-      deviceID = await SharedPreferencesHelper.instance.getDeviceId();
-      Response response =
-          await RemoteServices.googleApiLogin(displayname!, email!, deviceID!);
-      if (response.statusCode == 200) {
-        AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
-        signOutGoogle();
-        var data = jsonDecode(response.body);
-        String accessToken = data['accessToken'];
-        int loginId = data['loginId'];
-        Map<String, dynamic> profile = data['profile'];
-        int userId = profile['userId'];
-        await SharedPreferencesHelper.instance.setUserID(userId);
-        await SharedPreferencesHelper.instance.setAuthToken(accessToken);
-        await SharedPreferencesHelper.instance.setLoginID(loginId);
-        await SharedPreferencesHelper.instance
-            .saveUserDataToSharedPreferences(displayname, email);
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(homedRoute, (route) => false);
-        authHelper.setLoggedIn(true);
-        SnackbarHelper.showSnackBar(context, "Login Successful");
-      } else {
-        SnackbarHelper.showSnackBar(
-            context, "Login  failed! Please try again!");
-      }
-    } catch (error) {
-      print(error);
-    }
-  }
+  //     print('Google Sign-In Successful');
+  //     String? displayname = _user!.displayName;
+  //     String? email = _user!.email;
+  //     deviceID = await SharedPreferencesHelper.instance.getDeviceId();
+  //     Response response =
+  //         await RemoteServices.googleApiLogin(displayname!, email!, deviceID!);
+  //     if (response.statusCode == 200) {
+  //       AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
+  //       signOutGoogle();
+  //       var data = jsonDecode(response.body);
+  //       String accessToken = data['accessToken'];
+  //       int loginId = data['loginId'];
+  //       Map<String, dynamic> profile = data['profile'];
+  //       int userId = profile['userId'];
+  //       await SharedPreferencesHelper.instance.setUserID(userId);
+  //       await SharedPreferencesHelper.instance.setAuthToken(accessToken);
+  //       await SharedPreferencesHelper.instance.setLoginID(loginId);
+  //       await SharedPreferencesHelper.instance
+  //           .saveUserDataToSharedPreferences(displayname, email);
+  //       Navigator.of(context)
+  //           .pushNamedAndRemoveUntil(homedRoute, (route) => false);
+  //       authHelper.setLoggedIn(true);
+  //       SnackbarHelper.showSnackBar(context, "Login Successful");
+  //     } else {
+  //       SnackbarHelper.showSnackBar(
+  //           context, "Login  failed! Please try again!");
+  //     }
+  //   } catch (error) {
+  //     print(error);
+  //   }
+  // }
 
-  Future<void> signInWithFacebook() async {
-    final LoginResult loginResult = await FacebookAuth.instance.login(
-      permissions: ['email'], // Request the 'email' permission.
-    );
+  // Future<void> signInWithFacebook() async {
+  //   final LoginResult loginResult = await FacebookAuth.instance.login(
+  //     permissions: ['email'], // Request the 'email' permission.
+  //   );
 
-    if (loginResult.status == LoginStatus.success) {
-      final userData = await FacebookAuth.instance.getUserData();
-      if (userData.containsKey('email') && userData['email'] != null) {
-        final userEmail = userData['email'];
-        print("User Email: $userEmail");
-      } else {
-        print("Email not found in user data or is null.");
-      }
+  //   if (loginResult.status == LoginStatus.success) {
+  //     final userData = await FacebookAuth.instance.getUserData();
+  //     if (userData.containsKey('email') && userData['email'] != null) {
+  //       final userEmail = userData['email'];
+  //       print("User Email: $userEmail");
+  //     } else {
+  //       print("Email not found in user data or is null.");
+  //     }
 
-      print("User Name: ${userData['name']}");
-      print("User Email: ${userData['email']}");
-      String displayname = userData['name'];
-      String email = userData['email'] ?? "";
+  //     print("User Name: ${userData['name']}");
+  //     print("User Email: ${userData['email']}");
+  //     String displayname = userData['name'];
+  //     String email = userData['email'] ?? "";
 
-      deviceID = await SharedPreferencesHelper.instance.getDeviceId();
-      Response response =
-          await RemoteServices.fbApiLogin(displayname, email, deviceID!);
-      signOutWithFacebook();
+  //     deviceID = await SharedPreferencesHelper.instance.getDeviceId();
+  //     Response response =
+  //         await RemoteServices.fbApiLogin(displayname, email, deviceID!);
+  //     signOutWithFacebook();
 
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        String accessToken = data['accessToken'];
-        int loginId = data['loginId'];
-        Map<String, dynamic> profile = data['profile'];
-        int userId = profile['userId'];
-        await SharedPreferencesHelper.instance.setUserID(userId);
-        await SharedPreferencesHelper.instance.setAuthToken(accessToken);
-        await SharedPreferencesHelper.instance.setLoginID(loginId);
-        await SharedPreferencesHelper.instance
-            .saveUserDataToSharedPreferences(displayname, email);
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(homedRoute, (route) => false);
-        AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
-        authHelper.setLoggedIn(true);
-        SnackbarHelper.showSnackBar(context, "Login Successful");
-      } else {
-        SnackbarHelper.showSnackBar(
-            context, "Login  failed! Please try again!");
-      }
-    } else {
-      // Handle login failure.
-      print("Facebook login failed: ${loginResult.status}");
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       var data = jsonDecode(response.body);
+  //       String accessToken = data['accessToken'];
+  //       int loginId = data['loginId'];
+  //       Map<String, dynamic> profile = data['profile'];
+  //       int userId = profile['userId'];
+  //       await SharedPreferencesHelper.instance.setUserID(userId);
+  //       await SharedPreferencesHelper.instance.setAuthToken(accessToken);
+  //       await SharedPreferencesHelper.instance.setLoginID(loginId);
+  //       await SharedPreferencesHelper.instance
+  //           .saveUserDataToSharedPreferences(displayname, email);
+  //       Navigator.of(context)
+  //           .pushNamedAndRemoveUntil(homedRoute, (route) => false);
+  //       AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
+  //       authHelper.setLoggedIn(true);
+  //       SnackbarHelper.showSnackBar(context, "Login Successful");
+  //     } else {
+  //       SnackbarHelper.showSnackBar(
+  //           context, "Login  failed! Please try again!");
+  //     }
+  //   } else {
+  //     // Handle login failure.
+  //     print("Facebook login failed: ${loginResult.status}");
+  //   }
+  // }
 
-  Future<void> signOutWithFacebook() async {
-    await FacebookAuth.instance.logOut();
-    print("User Signed Out");
-  }
+  // Future<void> signOutWithFacebook() async {
+  //   await FacebookAuth.instance.logOut();
+  //   print("User Signed Out");
+  // }
 
-  Future<void> signOutGoogle() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      await _googleSignIn.signOut();
-    } catch (error) {
-      print(error);
-    }
-  }
+  // Future<void> signOutGoogle() async {
+  //   try {
+  //     await FirebaseAuth.instance.signOut();
+  //     await _googleSignIn.signOut();
+  //   } catch (error) {
+  //     print(error);
+  //   }
+  // }
 
   bool isEmailValid(String email) {
     final emailRegExp = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
