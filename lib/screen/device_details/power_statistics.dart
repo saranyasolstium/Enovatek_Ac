@@ -8,7 +8,6 @@ import 'package:enavatek_mobile/model/energy.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
-import 'package:enavatek_mobile/screen/menu/menu.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/dynamic_font.dart';
@@ -17,10 +16,10 @@ import 'package:enavatek_mobile/widget/dropdown.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
-import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:country_picker/country_picker.dart';
 import 'dart:io';
@@ -28,7 +27,11 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:money2/money2.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:share_extend/share_extend.dart';
+
+
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -80,9 +83,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   ValueNotifier<double> dcNotifier = ValueNotifier<double>(0);
   late TooltipBehavior _tooltipBehavior;
 
-  List<EnergyData> morningDataList = [];
-  List<EnergyData> afternoonDataList = [];
-  List<EnergyData> eveningDataList = [];
+  List<EnergyData> intradayList = [];
 
   List<Building> buildings = [];
   List<Device> devices = [];
@@ -102,16 +103,19 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       savingNotiifer.value = false;
       treeNotiifer.value = false;
       selectedTabIndex.value = 0;
+      energyType = "intraday";
     } else if (widget.tabIndex == 2) {
       energyNotiifer.value = false;
       savingNotiifer.value = true;
       treeNotiifer.value = false;
       selectedTabIndex.value = 1;
+      energyType = "day";
     } else if (widget.tabIndex == 3) {
       energyNotiifer.value = false;
       savingNotiifer.value = false;
       treeNotiifer.value = true;
       selectedTabIndex.value = 2;
+      energyType = "day";
     }
   }
 
@@ -182,26 +186,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     throw Exception('Country with currency type $currencyType not found');
   }
 
-  void splitDataByTime(List<EnergyData> energyDataList) {
-    morningDataList.clear();
-    afternoonDataList.clear();
-    eveningDataList.clear();
-
-    if (energyDataList.length == 24) {
-      morningDataList.addAll(energyDataList.sublist(0, 9));
-      afternoonDataList.addAll(energyDataList.sublist(9, 17));
-      eveningDataList.addAll(energyDataList.sublist(17, 24));
-    } else {
-      print('Error: The list does not contain exactly 24 records.');
-    }
-
-    print('Morning: ${morningDataList.length}');
-    print('Afternoon: ${afternoonDataList.length}');
-    print('Evening: ${eveningDataList.length}');
-  }
-
   Future<void> fetchData(String periodType) async {
     try {
+      energyDataList = [];
+      print(selectedCountryNotifier.value);
       getCountryCurrency(selectedCountryNotifier.value);
 
       int? userId = await SharedPreferencesHelper.instance.getUserID();
@@ -215,12 +203,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           countryId: countryId);
       setState(() {
         energyDataList = data;
-        morningDataList.clear();
-        afternoonDataList.clear();
-        eveningDataList.clear();
-        if (periodType == "intraday") {
-          splitDataByTime(energyDataList);
-        }
+
         totalTree =
             calculateTotalTreesPlanted(energyDataList).toStringAsFixed(2);
         totalSavings =
@@ -237,12 +220,22 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   Widget buildGraph({required List<EnergyData> data}) {
     return Container(
       height: 350,
-      width: 500,
+      width: 1800,
       child: SfCartesianChart(
         primaryXAxis: DateTimeAxis(
           dateFormat: DateFormat.Hm(),
           intervalType: DateTimeIntervalType.hours,
           interval: 1,
+        ),
+        primaryYAxis: const NumericAxis(
+          labelFormat: '{value}',
+          title: AxisTitle(
+            text: 'Energy Consumed (KW)',
+            textStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+            ),
+          ),
         ),
         tooltipBehavior: TooltipBehavior(
           enable: true,
@@ -273,86 +266,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     );
   }
 
-  Widget buildSavingGraph({required List<EnergyData> data}) {
-    return Container(
-      height: 350,
-      width: 500,
-      child: SfCartesianChart(
-        primaryXAxis: DateTimeAxis(
-          dateFormat: DateFormat.Hm(),
-          intervalType: DateTimeIntervalType.hours,
-          interval: 1,
-        ),
-        tooltipBehavior: TooltipBehavior(
-          enable: true,
-          shared: true,
-          tooltipPosition: TooltipPosition.auto,
-        ),
-        series: <CartesianSeries>[
-          LineSeries<EnergyData, DateTime>(
-            dataSource: data,
-            enableTooltip: true,
-            xValueMapper: (EnergyData data, _) {
-              return data.getFormattedTimeAsDateTime();
-            },
-            yValueMapper: (EnergyData data, _) => data.energySaving,
-            // markerSettings: const MarkerSettings(isVisible: true),
-            name: 'Saving',
-            color: ConstantColors.borderButtonColor,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildTreeGraph({required List<EnergyData> data}) {
-    return Container(
-      height: 350,
-      width: 500,
-      child: SfCartesianChart(
-        primaryXAxis: DateTimeAxis(
-          dateFormat: DateFormat.Hm(),
-          intervalType: DateTimeIntervalType.hours,
-          interval: 1,
-        ),
-        tooltipBehavior: TooltipBehavior(
-          enable: true,
-          shared: true,
-          tooltipPosition: TooltipPosition.auto,
-        ),
-        series: <CartesianSeries>[
-          ColumnSeries<EnergyData, DateTime>(
-            dataSource: data,
-            xValueMapper: (EnergyData data, _) {
-              return data.getFormattedTimeAsDateTime();
-            },
-            yValueMapper: (EnergyData data, _) => data.energySaving,
-            name: 'Saving',
-            color: ConstantColors.borderButtonColor,
-          ),
-          ColumnSeries<EnergyData, DateTime>(
-            dataSource: data,
-            xValueMapper: (EnergyData data, _) {
-              return data.getFormattedTimeAsDateTime();
-            },
-            yValueMapper: (EnergyData data, _) => data.dcCo2Reduction,
-            name: 'Co2',
-            color: ConstantColors.appColor,
-          ),
-          ColumnSeries<EnergyData, DateTime>(
-            dataSource: data,
-            xValueMapper: (EnergyData data, _) {
-              return data.getFormattedTimeAsDateTime();
-            },
-            yValueMapper: (EnergyData data, _) => data.treesPlanted,
-            name: 'Tree Planted',
-            color: Colors.green,
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> fetchCountry(bool status) async {
     try {
       String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
@@ -360,7 +273,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       final data = await RemoteServices.fetchCountryList(token: authToken!);
       setState(() {
         countryList = data;
-        fetchData('intraday');
+        fetchData(energyType);
         if (status) {
           countrySelection();
         }
@@ -708,70 +621,84 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     );
   }
 
-  Future<void> exportCSV(String csvContent, String fileName) async {
-    // final path = '/storage/emulated/0/Download/$fileName';
-    // final file = File(path);
 
-    Directory directory;
-    if (Platform.isIOS) {
-      directory = await getApplicationDocumentsDirectory();
-    } else if (Platform.isAndroid) {
-      directory = Directory('/storage/emulated/0');
-    } else {
-      throw UnsupportedError('Unsupported platform');
+Future<void> requestStoragePermission() async {
+  if (Platform.isAndroid) {
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      var result = await Permission.storage.request();
+      if (!result.isGranted) {
+        throw Exception('Storage permission not granted');
+      }
     }
-    final path = '${directory.path}/Download/$fileName';
-    final file = File(path);
+  }
+}
 
-    await file.writeAsString(csvContent);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('CSV downloaded successfully to $path'),
-      ),
-    );
 
-    print('File saved at $path');
+Future<void> exportCSV(String csvContent, String fileName, BuildContext context) async {
+  await requestStoragePermission();
+
+  Directory? directory;
+
+  if (Platform.isIOS) {
+    directory = await getApplicationDocumentsDirectory();
+  } else if (Platform.isAndroid) {
+    // Use app-specific external directory on Android
+    directory = await getDownloadsDirectory();
+  } else {
+    throw UnsupportedError('Unsupported platform');
   }
 
-// Future<void> exportCSV(String csvContent, String fileName) async {
-//   // Request storage permission
-//   final permissionStatus = await Permission.storage.request();
+  if (directory != null) {
+    final path = '${directory.path}/$fileName';
+    final file = File(path);
+    
+    try {
+      await file.writeAsString(csvContent);
 
-//   if (permissionStatus != PermissionStatus.granted) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('Storage permission denied')),
-//     );
-//     return; // Exit the function if permission is denied
-//   }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('CSV downloaded successfully to $path')),
+      );
 
-//   // Get the external storage directory
-//   final externalDirectoryPath = "${await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOCUMENTS)}/sub";
-//   final dir = Directory(externalDirectoryPath);
+      print('File saved at $path');
 
-//   if (!await dir.exists()) {
-//     await dir.create(recursive: true);
-//   }
+      // Share the file after download
+      ShareExtend.share(file.path, "file");
+    } catch (e) {
+      print('Error writing file: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to download CSV: $e')),
+      );
+    }
+  }
+}
 
-//   // Create the file path
-//   final filePath = '${dir.path}/$fileName';
 
-//   final file = File(filePath);
+  // Future<void> exportCSV(String csvContent, String fileName) async {
+  //   // final path = '/storage/emulated/0/Download/$fileName';
+  //   // final file = File(path);
 
-//   try {
-//     await file.writeAsString(csvContent);
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(
-//         content: Text('CSV downloaded successfully to $filePath'),
-//       ),
-//     );
-//     print('File saved at $filePath');
-//   } catch (e) {
-//     print('Error exporting data: $e');
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('Failed to download CSV')),
-//     );
-//   }
-// }
+  //   Directory directory;
+  //   if (Platform.isIOS) {
+  //     directory = await getApplicationDocumentsDirectory();
+  //   } else if (Platform.isAndroid) {
+  //     directory = Directory('/storage/emulated/0/Download');
+  //   } else {
+  //     throw UnsupportedError('Unsupported platform');
+  //   }
+  //   final path = '${directory.path}/$fileName';
+  //   final file = File(path);
+
+  //   await file.writeAsString(csvContent);
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text('CSV downloaded successfully to $path'),
+  //     ),
+  //   );
+
+  //   print('File saved at $path');
+  // }
+
   Future<void> exportPowerConsumptionData() async {
     try {
       int? userId = await SharedPreferencesHelper.instance.getUserID();
@@ -786,7 +713,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         final fileName =
             'power_consumption_data_${DateFormat('dd_MM_yyyy').format(DateTime.now())}.csv';
 
-        exportCSV(csvContent, fileName);
+        exportCSV(csvContent, fileName,context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to download CSV ')),
@@ -896,6 +823,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                   SizedBox(
                     height: 10.dynamic,
                   ),
+
                   Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -908,14 +836,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               width: 50.dynamic,
                               height: 50.dynamic,
                             ),
-                            // Text(
-                            //   '2 W',
-                            //   style: GoogleFonts.roboto(
-                            //     fontSize: 12.dynamic,
-                            //     fontWeight: FontWeight.bold,
-                            //     color: ConstantColors.black,
-                            //   ),
-                            // ),
                           ],
                         ),
                         SizedBox(
@@ -926,35 +846,76 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           builder: (context, dcValue, child) {
                             return Row(
                               children: [
-                                Image.asset(
-                                  dcValue == 0
-                                      ? ImgPath.leftArrow2
-                                      : ImgPath.leftArrow1,
-                                  height: 15.dynamic,
+                                Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: dcValue > 0
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.strokeColor,
+                                  enabled: true,
+                                  direction: ShimmerDirection.ltr,
+                                  period: const Duration(seconds: 5),
+                                  child: Image.asset(
+                                    dcValue > 0
+                                        ? ImgPath.leftArrow1
+                                        : ImgPath.leftArrow2,
+                                    height: 15.dynamic,
+                                  ),
                                 ),
-                                Image.asset(
-                                  dcValue > 10
-                                      ? ImgPath.leftArrow1
-                                      : ImgPath.leftArrow2,
-                                  height: 15.dynamic,
+                                Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: dcValue > 10
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.strokeColor,
+                                  direction: ShimmerDirection.ltr,
+                                  period: const Duration(seconds: 5),
+                                  child: Image.asset(
+                                    dcValue > 10
+                                        ? ImgPath.leftArrow1
+                                        : ImgPath.leftArrow2,
+                                    height: 15.dynamic,
+                                  ),
                                 ),
-                                Image.asset(
-                                  dcValue > 20
-                                      ? ImgPath.leftArrow1
-                                      : ImgPath.leftArrow2,
-                                  height: 15.dynamic,
+                                Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: dcValue > 20
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.strokeColor,
+                                  direction: ShimmerDirection.ltr,
+                                  period: const Duration(seconds: 5),
+                                  child: Image.asset(
+                                    dcValue > 20
+                                        ? ImgPath.leftArrow1
+                                        : ImgPath.leftArrow2,
+                                    height: 15.dynamic,
+                                  ),
                                 ),
-                                Image.asset(
-                                  dcValue > 30
-                                      ? ImgPath.leftArrow1
-                                      : ImgPath.leftArrow2,
-                                  height: 15.dynamic,
+                                Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: dcValue > 30
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.strokeColor,
+                                  direction: ShimmerDirection.ltr,
+                                  period: const Duration(seconds: 5),
+                                  child: Image.asset(
+                                    dcValue > 30
+                                        ? ImgPath.leftArrow1
+                                        : ImgPath.leftArrow2,
+                                    height: 15.dynamic,
+                                  ),
                                 ),
-                                Image.asset(
-                                  dcValue > 40
-                                      ? ImgPath.leftArrow1
-                                      : ImgPath.leftArrow2,
-                                  height: 15.dynamic,
+                                Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: dcValue > 40
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.strokeColor,
+                                  direction: ShimmerDirection.ltr,
+                                  period: const Duration(seconds: 5),
+                                  child: Image.asset(
+                                    dcValue > 40
+                                        ? ImgPath.leftArrow1
+                                        : ImgPath.leftArrow2,
+                                    height: 15.dynamic,
+                                  ),
                                 ),
                               ],
                             );
@@ -976,35 +937,75 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           builder: (context, acValue, child) {
                             return Row(
                               children: [
-                                Image.asset(
-                                  acValue > 40
-                                      ? ImgPath.rightArrow5
-                                      : ImgPath.rightArrow1,
-                                  height: 15.dynamic,
+                                Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: acValue > 40
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.strokeColor,
+                                  direction: ShimmerDirection.rtl,
+                                  period: const Duration(seconds: 5),
+                                  child: Image.asset(
+                                    acValue > 40
+                                        ? ImgPath.rightArrow5
+                                        : ImgPath.rightArrow1,
+                                    height: 15.dynamic,
+                                  ),
                                 ),
-                                Image.asset(
-                                  acValue > 30
-                                      ? ImgPath.rightArrow5
-                                      : ImgPath.rightArrow2,
-                                  height: 15.dynamic,
+                                Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: acValue > 30
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.strokeColor,
+                                  direction: ShimmerDirection.rtl,
+                                  period: const Duration(seconds: 5),
+                                  child: Image.asset(
+                                    acValue > 30
+                                        ? ImgPath.rightArrow5
+                                        : ImgPath.rightArrow2,
+                                    height: 15.dynamic,
+                                  ),
                                 ),
-                                Image.asset(
-                                  acValue > 20
-                                      ? ImgPath.rightArrow5
-                                      : ImgPath.rightArrow3,
-                                  height: 15.dynamic,
+                                Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: acValue > 20
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.strokeColor,
+                                  direction: ShimmerDirection.rtl,
+                                  period: const Duration(seconds: 5),
+                                  child: Image.asset(
+                                    acValue > 20
+                                        ? ImgPath.rightArrow5
+                                        : ImgPath.rightArrow3,
+                                    height: 15.dynamic,
+                                  ),
                                 ),
-                                Image.asset(
-                                  acValue > 10
-                                      ? ImgPath.rightArrow5
-                                      : ImgPath.rightArrow4,
-                                  height: 15.dynamic,
+                                Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: acValue > 10
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.strokeColor,
+                                  direction: ShimmerDirection.rtl,
+                                  period: const Duration(seconds: 5),
+                                  child: Image.asset(
+                                    acValue > 10
+                                        ? ImgPath.rightArrow5
+                                        : ImgPath.rightArrow4,
+                                    height: 15.dynamic,
+                                  ),
                                 ),
-                                Image.asset(
-                                  acValue > 0
-                                      ? ImgPath.rightArrow5
-                                      : ImgPath.rightArrow4,
-                                  height: 15.dynamic,
+                                Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: acValue > 0
+                                      ? ConstantColors.borderButtonColor
+                                      : ConstantColors.strokeColor,
+                                  direction: ShimmerDirection.rtl,
+                                  period: const Duration(seconds: 5),
+                                  child: Image.asset(
+                                    acValue > 0
+                                        ? ImgPath.rightArrow5
+                                        : ImgPath.rightArrow4,
+                                    height: 15.dynamic,
+                                  ),
                                 ),
                               ],
                             );
@@ -1021,19 +1022,136 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               width: 50,
                               height: 50,
                             ),
-                            // Text(
-                            //   '912 W',
-                            //   style: GoogleFonts.roboto(
-                            //     fontSize: 12,
-                            //     fontWeight: FontWeight.bold,
-                            //     color: ConstantColors.black,
-                            //   ),
-                            // ),
                           ],
                         ),
                       ],
                     ),
                   ),
+
+                  // Center(
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Column(
+                  //         crossAxisAlignment: CrossAxisAlignment.center,
+                  //         children: [
+                  //           Image.asset(
+                  //             ImgPath.pngSolarPlane,
+                  //             width: 50.dynamic,
+                  //             height: 50.dynamic,
+                  //           ),
+
+                  //         ],
+                  //       ),
+                  //       SizedBox(
+                  //         width: 20.dynamic,
+                  //       ),
+                  //       ValueListenableBuilder<double>(
+                  //         valueListenable: dcNotifier,
+                  //         builder: (context, dcValue, child) {
+                  //           return Row(
+                  //             children: [
+                  //               Image.asset(
+                  //                 dcValue == 0
+                  //                     ? ImgPath.leftArrow2
+                  //                     : ImgPath.leftArrow1,
+                  //                 height: 15.dynamic,
+                  //               ),
+                  //               Image.asset(
+                  //                 dcValue > 10
+                  //                     ? ImgPath.leftArrow1
+                  //                     : ImgPath.leftArrow2,
+                  //                 height: 15.dynamic,
+                  //               ),
+                  //               Image.asset(
+                  //                 dcValue > 20
+                  //                     ? ImgPath.leftArrow1
+                  //                     : ImgPath.leftArrow2,
+                  //                 height: 15.dynamic,
+                  //               ),
+                  //               Image.asset(
+                  //                 dcValue > 30
+                  //                     ? ImgPath.leftArrow1
+                  //                     : ImgPath.leftArrow2,
+                  //                 height: 15.dynamic,
+                  //               ),
+                  //               Image.asset(
+                  //                 dcValue > 40
+                  //                     ? ImgPath.leftArrow1
+                  //                     : ImgPath.leftArrow2,
+                  //                 height: 15.dynamic,
+                  //               ),
+                  //             ],
+                  //           );
+                  //         },
+                  //       ),
+                  //       SizedBox(
+                  //         width: 30.dynamic,
+                  //       ),
+                  //       Image.asset(
+                  //         ImgPath.totalPower,
+                  //         width: 50.dynamic,
+                  //         height: 50.dynamic,
+                  //       ),
+                  //       SizedBox(
+                  //         width: 30.dynamic,
+                  //       ),
+                  //       ValueListenableBuilder<double>(
+                  //         valueListenable: acNotifier,
+                  //         builder: (context, acValue, child) {
+                  //           return Row(
+                  //             children: [
+                  //               Image.asset(
+                  //                 acValue > 40
+                  //                     ? ImgPath.rightArrow5
+                  //                     : ImgPath.rightArrow1,
+                  //                 height: 15.dynamic,
+                  //               ),
+                  //               Image.asset(
+                  //                 acValue > 30
+                  //                     ? ImgPath.rightArrow5
+                  //                     : ImgPath.rightArrow2,
+                  //                 height: 15.dynamic,
+                  //               ),
+                  //               Image.asset(
+                  //                 acValue > 20
+                  //                     ? ImgPath.rightArrow5
+                  //                     : ImgPath.rightArrow3,
+                  //                 height: 15.dynamic,
+                  //               ),
+                  //               Image.asset(
+                  //                 acValue > 10
+                  //                     ? ImgPath.rightArrow5
+                  //                     : ImgPath.rightArrow4,
+                  //                 height: 15.dynamic,
+                  //               ),
+                  //               Image.asset(
+                  //                 acValue > 0
+                  //                     ? ImgPath.rightArrow5
+                  //                     : ImgPath.rightArrow4,
+                  //                 height: 15.dynamic,
+                  //               ),
+                  //             ],
+                  //           );
+                  //         },
+                  //       ),
+                  //       const SizedBox(
+                  //         width: 20,
+                  //       ),
+                  //       Column(
+                  //         crossAxisAlignment: CrossAxisAlignment.center,
+                  //         children: [
+                  //           Image.asset(
+                  //             ImgPath.pngTower,
+                  //             width: 50,
+                  //             height: 50,
+                  //           ),
+
+                  //         ],
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   const SizedBox(height: 5),
                   Center(
                     child: Row(
@@ -1166,22 +1284,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             treeNotiifer.value = false;
                             savingNotiifer.value = true;
                             setState(() {
-                              energyType = "intraday";
+                              energyType = "day";
                             });
-                            fetchData("intraday");
+                            fetchData("day");
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const SizedBox(height: 10),
-                              // Image.asset(
-                              //   ImgPath.dollerSymbol,
-                              //   width: 30,
-                              //   height: 30,
-                              //   color: value == 1
-                              //       ? ConstantColors.borderButtonColor
-                              //       : ConstantColors.appColor,
-                              // ),
                               Text(
                                 currencySymbolNotifier.value == "\$"
                                     ? 'S${currencySymbolNotifier.value}'
@@ -1213,9 +1323,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             energyNotiifer.value = false;
                             treeNotiifer.value = true;
                             savingNotiifer.value = false;
-                            fetchData("intraday");
+                            fetchData("day");
                             setState(() {
-                              energyType = "intraday";
+                              energyType = "day";
                             });
                           },
                           child: Column(
@@ -1461,12 +1571,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 SizedBox(
                                   width: 120,
                                   child: CustomDropdownButton(
-                                    value: "Intraday",
+                                    value: "Day",
                                     items: const [
-                                      DropdownMenuItem(
-                                        value: 'Intraday',
-                                        child: Text('Intraday'),
-                                      ),
                                       DropdownMenuItem(
                                         value: 'Day',
                                         child: Text('Day'),
@@ -1486,12 +1592,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     ],
                                     onChanged: (value) {
                                       print(' selected: $value');
-                                      if (value == "Intraday") {
-                                        setState(() {
-                                          energyType = "intraday";
-                                        });
-                                        fetchData("intraday");
-                                      } else if (value == "Day") {
+                                      if (value == "Day") {
                                         setState(() {
                                           energyType = "day";
                                         });
@@ -1647,12 +1748,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 SizedBox(
                                   width: 120,
                                   child: CustomDropdownButton(
-                                    value: "Intraday",
+                                    value: "Day",
                                     items: const [
-                                      DropdownMenuItem(
-                                        value: 'Intraday',
-                                        child: Text('Intraday'),
-                                      ),
                                       DropdownMenuItem(
                                         value: 'Day',
                                         child: Text('Day'),
@@ -1672,12 +1769,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     ],
                                     onChanged: (value) {
                                       print(' selected: $value');
-                                      if (value == "Intraday") {
-                                        setState(() {
-                                          energyType = "intraday";
-                                        });
-                                        fetchData("intraday");
-                                      } else if (value == "Day") {
+                                      if (value == "Day") {
                                         setState(() {
                                           energyType = "day";
                                         });
@@ -1738,25 +1830,29 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       child: energyType == "intraday"
                           ? Column(children: [
                               buildGraph(
-                                data: morningDataList,
+                                data: energyDataList,
                               ),
-                              const SizedBox(height: 20),
-                              buildGraph(
-                                data: afternoonDataList,
-                              ),
-                              const SizedBox(height: 20),
-                              buildGraph(
-                                data: eveningDataList,
-                              )
                             ])
                           : Container(
                               height: 350,
                               width: energyType == "day"
-                                  ? 1500.dynamic
-                                  : 400.dynamic,
+                                  ? 1800.dynamic
+                                  : energyType == "month"
+                                      ? 600.dynamic
+                                      : 400.dynamic,
                               child: SfCartesianChart(
                                 primaryXAxis: const CategoryAxis(
                                   interval: 1,
+                                ),
+                                primaryYAxis: const NumericAxis(
+                                  labelFormat: '{value}',
+                                  title: AxisTitle(
+                                    text: 'Energy Consumed (KW)',
+                                    textStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                  ),
                                 ),
                                 tooltipBehavior: TooltipBehavior(
                                   enable: true,
@@ -1819,54 +1915,40 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     visible: savingNotiifer.value,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: energyType == "intraday"
-                          ? Column(children: [
-                              buildSavingGraph(
-                                data: morningDataList,
-                              ),
-                              const SizedBox(height: 20),
-                              buildSavingGraph(
-                                data: afternoonDataList,
-                              ),
-                              const SizedBox(height: 20),
-                              buildSavingGraph(
-                                data: eveningDataList,
-                              )
-                            ])
-                          : Container(
-                              height: 350,
-                              width: energyType == "day"
-                                  ? 1500.dynamic
-                                  : 400.dynamic,
-                              child: SfCartesianChart(
-                                primaryXAxis: const CategoryAxis(),
-                                tooltipBehavior: _tooltipBehavior,
-                                series: <CartesianSeries>[
-                                  LineSeries<EnergyData, String>(
-                                    dataSource: energyDataList,
-                                    enableTooltip: true,
-                                    xValueMapper: (EnergyData data, _) {
-                                      if (energyType == "intraday") {
-                                        return data.getFormattedTime();
-                                      } else if (energyType == "day" ||
-                                          energyType == "week") {
-                                        return data.getFormattedDate();
-                                      } else if (energyType == "month") {
-                                        return data.getFormattedMonth();
-                                      } else if (energyType == "year") {
-                                        return data.getFormattedYear();
-                                      } else {
-                                        return "";
-                                      }
-                                    },
-                                    yValueMapper: (EnergyData data, _) =>
-                                        data.energySaving,
-                                    name: 'Saving',
-                                    color: ConstantColors.borderButtonColor,
-                                  ),
-                                ],
-                              ),
+                      child: Container(
+                        height: 350,
+                        width: energyType == "day"
+                            ? 1800.dynamic
+                            : energyType == "month"
+                                ? 600.dynamic
+                                : 400.dynamic,
+                        child: SfCartesianChart(
+                          primaryXAxis: const CategoryAxis(),
+                          tooltipBehavior: _tooltipBehavior,
+                          series: <CartesianSeries>[
+                            LineSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              enableTooltip: true,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.energySaving,
+                              name: 'Saving',
+                              color: ConstantColors.borderButtonColor,
                             ),
+                          ],
+                        ),
+                      ),
                     ));
               },
             ),
@@ -1878,99 +1960,87 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     visible: treeNotiifer.value,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: energyType == "intraday"
-                          ? Column(children: [
-                              buildTreeGraph(
-                                data: morningDataList,
-                              ),
-                              const SizedBox(height: 20),
-                              buildTreeGraph(
-                                data: afternoonDataList,
-                              ),
-                              const SizedBox(height: 20),
-                              buildTreeGraph(
-                                data: eveningDataList,
-                              )
-                            ])
-                          : Container(
-                              height: 350,
-                              width: energyType == "day"
-                                  ? 1500.dynamic
-                                  : 400.dynamic,
-                              child: SfCartesianChart(
-                                primaryXAxis: const CategoryAxis(),
-                                tooltipBehavior: TooltipBehavior(
-                                  enable: true,
-                                  shared: true,
-                                  tooltipPosition: TooltipPosition.auto,
-                                ),
-                                series: <CartesianSeries>[
-                                  ColumnSeries<EnergyData, String>(
-                                    dataSource: energyDataList,
-                                    xValueMapper: (EnergyData data, _) {
-                                      if (energyType == "intraday") {
-                                        return data.getFormattedTime();
-                                      } else if (energyType == "day" ||
-                                          energyType == "week") {
-                                        return data.getFormattedDate();
-                                      } else if (energyType == "month") {
-                                        return data.getFormattedMonth();
-                                      } else if (energyType == "year") {
-                                        return data.getFormattedYear();
-                                      } else {
-                                        return "";
-                                      }
-                                    },
-                                    yValueMapper: (EnergyData data, _) =>
-                                        data.energySaving,
-                                    name: 'Saving',
-                                    color: ConstantColors.borderButtonColor,
-                                  ),
-                                  ColumnSeries<EnergyData, String>(
-                                    dataSource: energyDataList,
-                                    xValueMapper: (EnergyData data, _) {
-                                      if (energyType == "intraday") {
-                                        return data.getFormattedTime();
-                                      } else if (energyType == "day" ||
-                                          energyType == "week") {
-                                        return data.getFormattedDate();
-                                      } else if (energyType == "month") {
-                                        return data.getFormattedMonth();
-                                      } else if (energyType == "year") {
-                                        return data.getFormattedYear();
-                                      } else {
-                                        return "";
-                                      }
-                                    },
-                                    yValueMapper: (EnergyData data, _) =>
-                                        data.dcCo2Reduction,
-                                    name: 'Co2',
-                                    color: ConstantColors.appColor,
-                                  ),
-                                  ColumnSeries<EnergyData, String>(
-                                    dataSource: energyDataList,
-                                    xValueMapper: (EnergyData data, _) {
-                                      if (energyType == "intraday") {
-                                        return data.getFormattedTime();
-                                      } else if (energyType == "day" ||
-                                          energyType == "week") {
-                                        return data.getFormattedDate();
-                                      } else if (energyType == "month") {
-                                        return data.getFormattedMonth();
-                                      } else if (energyType == "year") {
-                                        return data.getFormattedYear();
-                                      } else {
-                                        return "";
-                                      }
-                                    },
-                                    yValueMapper: (EnergyData data, _) =>
-                                        data.treesPlanted,
-                                    name: 'Tree Planted',
-                                    color: Colors.green,
-                                  ),
-                                ],
-                              ),
+                      child: Container(
+                        height: 350,
+                        width: energyType == "day"
+                            ? 2000.dynamic
+                            : energyType == "month"
+                                ? 800.dynamic
+                                : 400.dynamic,
+                        child: SfCartesianChart(
+                          primaryXAxis: const CategoryAxis(),
+                          tooltipBehavior: TooltipBehavior(
+                            enable: true,
+                            shared: true,
+                            tooltipPosition: TooltipPosition.auto,
+                          ),
+                          series: <CartesianSeries>[
+                            ColumnSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "intraday") {
+                                  return data.getFormattedTime();
+                                } else if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.energySaving,
+                              name: 'Saving',
+                              color: ConstantColors.borderButtonColor,
                             ),
+                            ColumnSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "intraday") {
+                                  return data.getFormattedTime();
+                                } else if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.dcCo2Reduction,
+                              name: 'Co2',
+                              color: ConstantColors.appColor,
+                            ),
+                            ColumnSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "intraday") {
+                                  return data.getFormattedTime();
+                                } else if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.treesPlanted,
+                              name: 'Tree Planted',
+                              color: Colors.green,
+                            ),
+                          ],
+                        ),
+                      ),
                     )
                     // : const CircularProgressIndicator(),
                     );

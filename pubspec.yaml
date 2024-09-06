@@ -80,7 +80,11 @@ dependencies:
   device_preview: ^1.2.0
   file_picker: ^8.1.2
   android_intent_plus: ^5.1.0
+  shimmer: ^3.0.0
+  share_plus: ^10.0.2
+  share_extend: ^2.0.0
 
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -96,6 +100,8 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+
+
 flutter:
 
   # The following line ensures that the Material Icons font is

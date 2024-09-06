@@ -258,7 +258,7 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const LiveDataScreen(),

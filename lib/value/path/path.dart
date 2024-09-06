@@ -1,4 +1,5 @@
 class ImgPath {
+  static String pngLogo = "assets/enovatek_logo.png";
   static String pngSplashBg = "assets/splash_bg.png";
   static String pngName = "assets/name_icon.png";
   static String pngIntro1 = "assets/intro_icon1.png";

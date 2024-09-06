@@ -2,17 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
-import 'package:enavatek_mobile/model/energy.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
+import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/circular_bar.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:fl_animated_linechart/fl_animated_linechart.dart';
-import 'package:easy_date_timeline/easy_date_timeline.dart';
-import 'package:intl/intl.dart';
 
 class PowerStatisticsLiveScreen extends StatefulWidget {
   final String deviceId;
@@ -28,8 +26,6 @@ class PowerStatisticsLiveScreen extends StatefulWidget {
 
 class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
     with SingleTickerProviderStateMixin {
-  DateTime _selectedDate = DateTime.now();
-  TabController? _tabController;
   String? totalPower = "", acPower = "", dcPower = "";
   double? acValue = 0,
       dcValue = 0,
@@ -45,7 +41,6 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     DateTime currentDate = DateTime.now();
     String formattedDate =
         "${currentDate.day}-${currentDate.month}-${currentDate.year}";
@@ -163,6 +158,30 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
             ),
           ],
         ),
+        actions: [
+          SizedBox(width: 20.dynamic),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PowerStatisticsScreen(
+                    deviceId: "",
+                    deviceList: [],
+                    tabIndex: 1,
+                  ),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+            child: const Icon(
+              Icons.home,
+              color: ConstantColors.mainlyTextColor,
+              size: 30,
+            ),
+          ),
+          SizedBox(width: 20.dynamic),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),

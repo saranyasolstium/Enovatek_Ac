@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/screen/all_device/devicelocation.dart';
 import 'package:enavatek_mobile/screen/device_details/device_details_screen.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics/filter_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics_live_data.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
@@ -140,14 +141,29 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                     ],
                   ),
                 ),
-
                 const SizedBox(width: 20),
-                // const Icon(
-                //   Icons.search,
-                //   color: ConstantColors.mainlyTextColor,
-                //   size: 30,
-                // ),
-                // const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PowerStatisticsScreen(
+                          deviceId: "",
+                          deviceList: [],
+                          tabIndex: 1,
+                        ),
+                      ),
+                      (Route<dynamic> route) => false,
+                    );
+                    // Navigator.pop(context);
+                  },
+                  child: const Icon(
+                    Icons.home,
+                    color: ConstantColors.mainlyTextColor,
+                    size: 30,
+                  ),
+                ),
+                const SizedBox(width: 10),
               ],
             ),
             ListView.builder(

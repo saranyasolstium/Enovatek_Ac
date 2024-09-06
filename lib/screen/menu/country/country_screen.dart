@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:country_picker/country_picker.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -547,6 +548,29 @@ class CountryScreenState extends State<CountryScreen> {
               ImgPath.pngPlus,
               width: isTablet ? 0.03 * screenWidth : 0.03 * screenWidth,
               height: isTablet ? 0.03 * screenHeight : 0.03 * screenHeight,
+            ),
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PowerStatisticsScreen(
+                    deviceId: "",
+                    deviceList: [],
+                    tabIndex: 1,
+                  ),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+            child: const Icon(
+              Icons.home,
+              color: ConstantColors.mainlyTextColor,
+              size: 30,
             ),
           ),
           const SizedBox(

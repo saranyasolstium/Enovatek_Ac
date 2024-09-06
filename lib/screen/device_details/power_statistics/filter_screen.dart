@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/all_device/devicelocation.dart';
+import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all_device_screen.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
@@ -194,6 +195,29 @@ class FilterScreenState extends State<FilterScreen> {
                 decoration: TextDecoration.underline,
               ),
             ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PowerStatisticsScreen(
+                    deviceId: "",
+                    deviceList: [],
+                    tabIndex: 1,
+                  ),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+            child: const Icon(
+              Icons.home,
+              color: ConstantColors.mainlyTextColor,
+              size: 30,
+            ),
+          ),
+          const SizedBox(
+            width: 20,
           ),
         ],
         foregroundColor: Colors.black,

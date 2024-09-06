@@ -172,7 +172,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
       ),
       (Route<dynamic> route) => false,
     );
-   // Navigator.pop(context);
+    // Navigator.pop(context);
     return true;
   }
 
@@ -216,7 +216,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                                 ),
                                 (Route<dynamic> route) => false,
                               );
-                             // Navigator.pop(context);
+                              // Navigator.pop(context);
                             },
                             child: Image.asset(
                               ImgPath.pngArrowBack,
@@ -250,6 +250,29 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                       ),
                     ),
                     const SizedBox(width: 20),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PowerStatisticsScreen(
+                              deviceId: "",
+                              deviceList: [],
+                              tabIndex: 1,
+                            ),
+                          ),
+                          (Route<dynamic> route) => false,
+                        );
+                      },
+                      child: const Icon(
+                        Icons.home,
+                        color: ConstantColors.mainlyTextColor,
+                        size: 30,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
                   ],
                 ),
                 devices.isEmpty
