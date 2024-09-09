@@ -245,7 +245,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                       },
                       child: const Icon(
                         Icons.filter_alt_rounded,
-                        color: ConstantColors.mainlyTextColor,
+                        color: ConstantColors.iconColr,
                         size: 30,
                       ),
                     ),
@@ -266,7 +266,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                       },
                       child: const Icon(
                         Icons.home,
-                        color: ConstantColors.mainlyTextColor,
+                        color: ConstantColors.iconColr,
                         size: 30,
                       ),
                     ),

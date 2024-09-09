@@ -176,7 +176,7 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
             },
             child: const Icon(
               Icons.home,
-              color: ConstantColors.mainlyTextColor,
+              color: ConstantColors.iconColr,
               size: 30,
             ),
           ),

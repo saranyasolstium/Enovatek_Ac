@@ -31,8 +31,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:share_extend/share_extend.dart';
 
-
-
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
   final List<String> deviceList;
@@ -52,14 +50,7 @@ class PowerStatisticsScreen extends StatefulWidget {
 class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     with SingleTickerProviderStateMixin {
   String? totalPower = "", acPower = "", dcPower = "";
-  // double? acValue = 0,
-  //     dcValue = 0,
-  //     acVoltage = 0,
-  //     dcVoltgae = 0,
-  //     acCurrent = 0,
-  //     dcCurrent = 0,
-  //     acEnergy = 0,
-  //     dcEnergy = 0;
+
   Timer? timer;
   List<EnergyData> energyDataList = [];
   List<CountryData> countryList = [];
@@ -88,6 +79,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   List<Building> buildings = [];
   List<Device> devices = [];
   final List<String> deviceList = [];
+  late AnimationController _animationController;
+  late Animation<int> _animation;
+  final int _numberOfArrows = 5; // Number of arrows or indicators
 
   @override
   void initState() {
@@ -117,6 +111,21 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       selectedTabIndex.value = 2;
       energyType = "day";
     }
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: false); // Set to repeat indefinitely or change as needed
+
+    _animation = IntTween(begin: 0, end: _numberOfArrows - 1).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.linear),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   List<Device> getAllDevices(List<Building> buildings) {
@@ -230,7 +239,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         primaryYAxis: const NumericAxis(
           labelFormat: '{value}',
           title: AxisTitle(
-            text: 'Energy Consumed (KW)',
+            text: 'Energy Consumed (kWh)',
             textStyle: TextStyle(
               color: Colors.black,
               fontSize: 14,
@@ -621,58 +630,56 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     );
   }
 
-
-Future<void> requestStoragePermission() async {
-  if (Platform.isAndroid) {
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      var result = await Permission.storage.request();
-      if (!result.isGranted) {
-        throw Exception('Storage permission not granted');
+  Future<void> requestStoragePermission() async {
+    if (Platform.isAndroid) {
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        var result = await Permission.storage.request();
+        if (!result.isGranted) {
+          throw Exception('Storage permission not granted');
+        }
       }
     }
   }
-}
 
+  Future<void> exportCSV(
+      String csvContent, String fileName, BuildContext context) async {
+    await requestStoragePermission();
 
-Future<void> exportCSV(String csvContent, String fileName, BuildContext context) async {
-  await requestStoragePermission();
+    Directory? directory;
 
-  Directory? directory;
+    if (Platform.isIOS) {
+      directory = await getApplicationDocumentsDirectory();
+    } else if (Platform.isAndroid) {
+      // Use app-specific external directory on Android
+      directory = await getDownloadsDirectory();
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
 
-  if (Platform.isIOS) {
-    directory = await getApplicationDocumentsDirectory();
-  } else if (Platform.isAndroid) {
-    // Use app-specific external directory on Android
-    directory = await getDownloadsDirectory();
-  } else {
-    throw UnsupportedError('Unsupported platform');
-  }
+    if (directory != null) {
+      final path = '${directory.path}/$fileName';
+      final file = File(path);
 
-  if (directory != null) {
-    final path = '${directory.path}/$fileName';
-    final file = File(path);
-    
-    try {
-      await file.writeAsString(csvContent);
+      try {
+        await file.writeAsString(csvContent);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('CSV downloaded successfully to $path')),
-      );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('CSV downloaded successfully to $path')),
+        // );
 
-      print('File saved at $path');
+        print('File saved at $path');
 
-      // Share the file after download
-      ShareExtend.share(file.path, "file");
-    } catch (e) {
-      print('Error writing file: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to download CSV: $e')),
-      );
+        // Share the file after download
+        ShareExtend.share(file.path, "file");
+      } catch (e) {
+        print('Error writing file: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to download CSV: $e')),
+        );
+      }
     }
   }
-}
-
 
   // Future<void> exportCSV(String csvContent, String fileName) async {
   //   // final path = '/storage/emulated/0/Download/$fileName';
@@ -713,7 +720,7 @@ Future<void> exportCSV(String csvContent, String fileName, BuildContext context)
         final fileName =
             'power_consumption_data_${DateFormat('dd_MM_yyyy').format(DateTime.now())}.csv';
 
-        exportCSV(csvContent, fileName,context);
+        exportCSV(csvContent, fileName, context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to download CSV ')),
@@ -823,7 +830,6 @@ Future<void> exportCSV(String csvContent, String fileName, BuildContext context)
                   SizedBox(
                     height: 10.dynamic,
                   ),
-
                   Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -833,187 +839,113 @@ Future<void> exportCSV(String csvContent, String fileName, BuildContext context)
                           children: [
                             Image.asset(
                               ImgPath.pngSolarPlane,
-                              width: 50.dynamic,
-                              height: 50.dynamic,
+                              width: 50,
+                              height: 50,
                             ),
                           ],
                         ),
-                        SizedBox(
-                          width: 20.dynamic,
-                        ),
+                        const SizedBox(width: 20),
                         ValueListenableBuilder<double>(
                           valueListenable: dcNotifier,
-                          builder: (context, dcValue, child) {
-                            return Row(
-                              children: [
-                                Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: dcValue > 0
-                                      ? ConstantColors.borderButtonColor
-                                      : ConstantColors.strokeColor,
-                                  enabled: true,
-                                  direction: ShimmerDirection.ltr,
-                                  period: const Duration(seconds: 5),
-                                  child: Image.asset(
-                                    dcValue > 0
-                                        ? ImgPath.leftArrow1
-                                        : ImgPath.leftArrow2,
-                                    height: 15.dynamic,
-                                  ),
-                                ),
-                                Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: dcValue > 10
-                                      ? ConstantColors.borderButtonColor
-                                      : ConstantColors.strokeColor,
-                                  direction: ShimmerDirection.ltr,
-                                  period: const Duration(seconds: 5),
-                                  child: Image.asset(
-                                    dcValue > 10
-                                        ? ImgPath.leftArrow1
-                                        : ImgPath.leftArrow2,
-                                    height: 15.dynamic,
-                                  ),
-                                ),
-                                Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: dcValue > 20
-                                      ? ConstantColors.borderButtonColor
-                                      : ConstantColors.strokeColor,
-                                  direction: ShimmerDirection.ltr,
-                                  period: const Duration(seconds: 5),
-                                  child: Image.asset(
-                                    dcValue > 20
-                                        ? ImgPath.leftArrow1
-                                        : ImgPath.leftArrow2,
-                                    height: 15.dynamic,
-                                  ),
-                                ),
-                                Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: dcValue > 30
-                                      ? ConstantColors.borderButtonColor
-                                      : ConstantColors.strokeColor,
-                                  direction: ShimmerDirection.ltr,
-                                  period: const Duration(seconds: 5),
-                                  child: Image.asset(
-                                    dcValue > 30
-                                        ? ImgPath.leftArrow1
-                                        : ImgPath.leftArrow2,
-                                    height: 15.dynamic,
-                                  ),
-                                ),
-                                Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: dcValue > 40
-                                      ? ConstantColors.borderButtonColor
-                                      : ConstantColors.strokeColor,
-                                  direction: ShimmerDirection.ltr,
-                                  period: const Duration(seconds: 5),
-                                  child: Image.asset(
-                                    dcValue > 40
-                                        ? ImgPath.leftArrow1
-                                        : ImgPath.leftArrow2,
-                                    height: 15.dynamic,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                          builder: (context, dcValue, child) => Row(
+                            children: List.generate(
+                              _numberOfArrows,
+                              (index) => AnimatedBuilder(
+                                animation: _animation,
+                                builder: (context, child) {
+                                  bool isLit = index == _animation.value;
+                                  bool shouldAnimate =
+                                      dcValue > 0 && dcValue <= 50;
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 1),
+                                    child: AnimatedOpacity(
+                                      opacity: (dcValue == 0 ||
+                                              dcValue > 50 ||
+                                              !shouldAnimate)
+                                          ? 1.0
+                                          : (isLit ? 1.0 : 0.2),
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      child: Image.asset(
+                                        dcValue > (index * 10)
+                                            ? ImgPath.leftArrow1
+                                            : ImgPath.leftArrow2,
+                                        height: 15,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
                         ),
-                        SizedBox(
-                          width: 30.dynamic,
-                        ),
+                        const SizedBox(width: 30),
                         Image.asset(
                           ImgPath.totalPower,
-                          width: 50.dynamic,
-                          height: 50.dynamic,
+                          width: 50,
+                          height: 50,
                         ),
-                        SizedBox(
-                          width: 30.dynamic,
-                        ),
+                        const SizedBox(width: 30),
                         ValueListenableBuilder<double>(
                           valueListenable: acNotifier,
-                          builder: (context, acValue, child) {
-                            return Row(
-                              children: [
-                                Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: acValue > 40
-                                      ? ConstantColors.borderButtonColor
-                                      : ConstantColors.strokeColor,
-                                  direction: ShimmerDirection.rtl,
-                                  period: const Duration(seconds: 5),
-                                  child: Image.asset(
-                                    acValue > 40
+                          builder: (context, acValue, child) => Row(
+                            children: List.generate(_numberOfArrows, (index) {
+                              return AnimatedBuilder(
+                                animation: _animation,
+                                builder: (context, child) {
+                                  bool isLit = (_numberOfArrows - 1) - index ==
+                                      _animation.value;
+                                  bool shouldAnimate =
+                                      acValue > 0 && acValue <= 50;
+
+                                  // Determine the image path based on the index and acValue
+                                  String imagePath;
+                                  if (index == 0) {
+                                    imagePath = acValue > 40
                                         ? ImgPath.rightArrow5
-                                        : ImgPath.rightArrow1,
-                                    height: 15.dynamic,
-                                  ),
-                                ),
-                                Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: acValue > 30
-                                      ? ConstantColors.borderButtonColor
-                                      : ConstantColors.strokeColor,
-                                  direction: ShimmerDirection.rtl,
-                                  period: const Duration(seconds: 5),
-                                  child: Image.asset(
-                                    acValue > 30
+                                        : ImgPath.rightArrow4;
+                                  } else if (index == 1) {
+                                    imagePath = acValue > 30
                                         ? ImgPath.rightArrow5
-                                        : ImgPath.rightArrow2,
-                                    height: 15.dynamic,
-                                  ),
-                                ),
-                                Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: acValue > 20
-                                      ? ConstantColors.borderButtonColor
-                                      : ConstantColors.strokeColor,
-                                  direction: ShimmerDirection.rtl,
-                                  period: const Duration(seconds: 5),
-                                  child: Image.asset(
-                                    acValue > 20
+                                        : ImgPath.rightArrow4;
+                                  } else if (index == 2) {
+                                    imagePath = acValue > 20
                                         ? ImgPath.rightArrow5
-                                        : ImgPath.rightArrow3,
-                                    height: 15.dynamic,
-                                  ),
-                                ),
-                                Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: acValue > 10
-                                      ? ConstantColors.borderButtonColor
-                                      : ConstantColors.strokeColor,
-                                  direction: ShimmerDirection.rtl,
-                                  period: const Duration(seconds: 5),
-                                  child: Image.asset(
-                                    acValue > 10
+                                        : ImgPath.rightArrow4;
+                                  } else if (index == 3) {
+                                    imagePath = acValue > 10
                                         ? ImgPath.rightArrow5
-                                        : ImgPath.rightArrow4,
-                                    height: 15.dynamic,
-                                  ),
-                                ),
-                                Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: acValue > 0
-                                      ? ConstantColors.borderButtonColor
-                                      : ConstantColors.strokeColor,
-                                  direction: ShimmerDirection.rtl,
-                                  period: const Duration(seconds: 5),
-                                  child: Image.asset(
-                                    acValue > 0
+                                        : ImgPath.rightArrow4;
+                                  } else {
+                                    imagePath = acValue > 0
                                         ? ImgPath.rightArrow5
-                                        : ImgPath.rightArrow4,
-                                    height: 15.dynamic,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                                        : ImgPath.rightArrow4;
+                                  }
+
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 1),
+                                    child: AnimatedOpacity(
+                                      opacity: (acValue == 0 ||
+                                              acValue > 50 ||
+                                              !shouldAnimate)
+                                          ? 1.0
+                                          : (isLit ? 1.0 : 0.2),
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      child: Image.asset(
+                                        imagePath,
+                                        height: 15,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }),
+                          ),
                         ),
-                        const SizedBox(
-                          width: 20,
-                        ),
+                        const SizedBox(width: 20),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -1026,10 +958,7 @@ Future<void> exportCSV(String csvContent, String fileName, BuildContext context)
                         ),
                       ],
                     ),
-                  ),
-
-                  // Center(
-                  //   child: Row(
+                  ), //   child: Row(
                   //     mainAxisAlignment: MainAxisAlignment.center,
                   //     children: [
                   //       Column(
@@ -1040,7 +969,6 @@ Future<void> exportCSV(String csvContent, String fileName, BuildContext context)
                   //             width: 50.dynamic,
                   //             height: 50.dynamic,
                   //           ),
-
                   //         ],
                   //       ),
                   //       SizedBox(
@@ -1051,35 +979,76 @@ Future<void> exportCSV(String csvContent, String fileName, BuildContext context)
                   //         builder: (context, dcValue, child) {
                   //           return Row(
                   //             children: [
-                  //               Image.asset(
-                  //                 dcValue == 0
-                  //                     ? ImgPath.leftArrow2
-                  //                     : ImgPath.leftArrow1,
-                  //                 height: 15.dynamic,
+                  //               Shimmer.fromColors(
+                  //                 baseColor: Colors.transparent,
+                  //                 highlightColor: dcValue > 0
+                  //                     ? ConstantColors.borderButtonColor
+                  //                     : ConstantColors.strokeColor,
+                  //                 enabled: true,
+                  //                 direction: ShimmerDirection.ltr,
+                  //                 period: const Duration(seconds: 5),
+                  //                 child: Image.asset(
+                  //                   dcValue > 0
+                  //                       ? ImgPath.leftArrow1
+                  //                       : ImgPath.leftArrow2,
+                  //                   height: 15.dynamic,
+                  //                 ),
                   //               ),
-                  //               Image.asset(
-                  //                 dcValue > 10
-                  //                     ? ImgPath.leftArrow1
-                  //                     : ImgPath.leftArrow2,
-                  //                 height: 15.dynamic,
+                  //               Shimmer.fromColors(
+                  //                 baseColor: Colors.transparent,
+                  //                 highlightColor: dcValue > 10
+                  //                     ? ConstantColors.borderButtonColor
+                  //                     : ConstantColors.strokeColor,
+                  //                 direction: ShimmerDirection.ltr,
+                  //                 period: const Duration(seconds: 5),
+                  //                 child: Image.asset(
+                  //                   dcValue > 10
+                  //                       ? ImgPath.leftArrow1
+                  //                       : ImgPath.leftArrow2,
+                  //                   height: 15.dynamic,
+                  //                 ),
                   //               ),
-                  //               Image.asset(
-                  //                 dcValue > 20
-                  //                     ? ImgPath.leftArrow1
-                  //                     : ImgPath.leftArrow2,
-                  //                 height: 15.dynamic,
+                  //               Shimmer.fromColors(
+                  //                 baseColor: Colors.transparent,
+                  //                 highlightColor: dcValue > 20
+                  //                     ? ConstantColors.borderButtonColor
+                  //                     : ConstantColors.strokeColor,
+                  //                 direction: ShimmerDirection.ltr,
+                  //                 period: const Duration(seconds: 5),
+                  //                 child: Image.asset(
+                  //                   dcValue > 20
+                  //                       ? ImgPath.leftArrow1
+                  //                       : ImgPath.leftArrow2,
+                  //                   height: 15.dynamic,
+                  //                 ),
                   //               ),
-                  //               Image.asset(
-                  //                 dcValue > 30
-                  //                     ? ImgPath.leftArrow1
-                  //                     : ImgPath.leftArrow2,
-                  //                 height: 15.dynamic,
+                  //               Shimmer.fromColors(
+                  //                 baseColor: Colors.transparent,
+                  //                 highlightColor: dcValue > 30
+                  //                     ? ConstantColors.borderButtonColor
+                  //                     : ConstantColors.strokeColor,
+                  //                 direction: ShimmerDirection.ltr,
+                  //                 period: const Duration(seconds: 5),
+                  //                 child: Image.asset(
+                  //                   dcValue > 30
+                  //                       ? ImgPath.leftArrow1
+                  //                       : ImgPath.leftArrow2,
+                  //                   height: 15.dynamic,
+                  //                 ),
                   //               ),
-                  //               Image.asset(
-                  //                 dcValue > 40
-                  //                     ? ImgPath.leftArrow1
-                  //                     : ImgPath.leftArrow2,
-                  //                 height: 15.dynamic,
+                  //               Shimmer.fromColors(
+                  //                 baseColor: Colors.transparent,
+                  //                 highlightColor: dcValue > 40
+                  //                     ? ConstantColors.borderButtonColor
+                  //                     : ConstantColors.strokeColor,
+                  //                 direction: ShimmerDirection.ltr,
+                  //                 period: const Duration(seconds: 5),
+                  //                 child: Image.asset(
+                  //                   dcValue > 40
+                  //                       ? ImgPath.leftArrow1
+                  //                       : ImgPath.leftArrow2,
+                  //                   height: 15.dynamic,
+                  //                 ),
                   //               ),
                   //             ],
                   //           );
@@ -1101,35 +1070,75 @@ Future<void> exportCSV(String csvContent, String fileName, BuildContext context)
                   //         builder: (context, acValue, child) {
                   //           return Row(
                   //             children: [
-                  //               Image.asset(
-                  //                 acValue > 40
-                  //                     ? ImgPath.rightArrow5
-                  //                     : ImgPath.rightArrow1,
-                  //                 height: 15.dynamic,
+                  //               Shimmer.fromColors(
+                  //                 baseColor: Colors.transparent,
+                  //                 highlightColor: acValue > 40
+                  //                     ? ConstantColors.borderButtonColor
+                  //                     : ConstantColors.strokeColor,
+                  //                 direction: ShimmerDirection.rtl,
+                  //                 period: const Duration(seconds: 5),
+                  //                 child: Image.asset(
+                  //                   acValue > 40
+                  //                       ? ImgPath.rightArrow5
+                  //                       : ImgPath.rightArrow1,
+                  //                   height: 15.dynamic,
+                  //                 ),
                   //               ),
-                  //               Image.asset(
-                  //                 acValue > 30
-                  //                     ? ImgPath.rightArrow5
-                  //                     : ImgPath.rightArrow2,
-                  //                 height: 15.dynamic,
+                  //               Shimmer.fromColors(
+                  //                 baseColor: Colors.transparent,
+                  //                 highlightColor: acValue > 30
+                  //                     ? ConstantColors.borderButtonColor
+                  //                     : ConstantColors.strokeColor,
+                  //                 direction: ShimmerDirection.rtl,
+                  //                 period: const Duration(seconds: 5),
+                  //                 child: Image.asset(
+                  //                   acValue > 30
+                  //                       ? ImgPath.rightArrow5
+                  //                       : ImgPath.rightArrow2,
+                  //                   height: 15.dynamic,
+                  //                 ),
                   //               ),
-                  //               Image.asset(
-                  //                 acValue > 20
-                  //                     ? ImgPath.rightArrow5
-                  //                     : ImgPath.rightArrow3,
-                  //                 height: 15.dynamic,
+                  //               Shimmer.fromColors(
+                  //                 baseColor: Colors.transparent,
+                  //                 highlightColor: acValue > 20
+                  //                     ? ConstantColors.borderButtonColor
+                  //                     : ConstantColors.strokeColor,
+                  //                 direction: ShimmerDirection.rtl,
+                  //                 period: const Duration(seconds: 5),
+                  //                 child: Image.asset(
+                  //                   acValue > 20
+                  //                       ? ImgPath.rightArrow5
+                  //                       : ImgPath.rightArrow3,
+                  //                   height: 15.dynamic,
+                  //                 ),
                   //               ),
-                  //               Image.asset(
-                  //                 acValue > 10
-                  //                     ? ImgPath.rightArrow5
-                  //                     : ImgPath.rightArrow4,
-                  //                 height: 15.dynamic,
+                  //               Shimmer.fromColors(
+                  //                 baseColor: Colors.transparent,
+                  //                 highlightColor: acValue > 10
+                  //                     ? ConstantColors.borderButtonColor
+                  //                     : ConstantColors.strokeColor,
+                  //                 direction: ShimmerDirection.rtl,
+                  //                 period: const Duration(seconds: 5),
+                  //                 child: Image.asset(
+                  //                   acValue > 10
+                  //                       ? ImgPath.rightArrow5
+                  //                       : ImgPath.rightArrow4,
+                  //                   height: 15.dynamic,
+                  //                 ),
                   //               ),
-                  //               Image.asset(
-                  //                 acValue > 0
-                  //                     ? ImgPath.rightArrow5
-                  //                     : ImgPath.rightArrow4,
-                  //                 height: 15.dynamic,
+                  //               Shimmer.fromColors(
+                  //                 baseColor: Colors.transparent,
+                  //                 highlightColor: acValue > 0
+                  //                     ? ConstantColors.borderButtonColor
+                  //                     : ConstantColors.strokeColor,
+                  //                 direction: ShimmerDirection.rtl,
+                  //                 period: const Duration(seconds: 5),
+                  //                 child: Image.asset(
+                  //                   acValue > 0
+                  //                       ? ImgPath.rightArrow5
+                  //                       : ImgPath.rightArrow4,
+                  //                   height: 15.dynamic,
+                  //                 ),
                   //               ),
                   //             ],
                   //           );
@@ -1146,12 +1155,12 @@ Future<void> exportCSV(String csvContent, String fileName, BuildContext context)
                   //             width: 50,
                   //             height: 50,
                   //           ),
-
                   //         ],
                   //       ),
                   //     ],
                   //   ),
                   // ),
+
                   const SizedBox(height: 5),
                   Center(
                     child: Row(
@@ -1847,7 +1856,7 @@ Future<void> exportCSV(String csvContent, String fileName, BuildContext context)
                                 primaryYAxis: const NumericAxis(
                                   labelFormat: '{value}',
                                   title: AxisTitle(
-                                    text: 'Energy Consumed (KW)',
+                                    text: 'Energy Consumed (kWh)',
                                     textStyle: TextStyle(
                                       color: Colors.black,
                                       fontSize: 14,
@@ -1924,6 +1933,16 @@ Future<void> exportCSV(String csvContent, String fileName, BuildContext context)
                                 : 400.dynamic,
                         child: SfCartesianChart(
                           primaryXAxis: const CategoryAxis(),
+                          primaryYAxis: const NumericAxis(
+                            labelFormat: '{value}',
+                            title: AxisTitle(
+                              text: 'Saving in doller',
+                              textStyle: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
                           tooltipBehavior: _tooltipBehavior,
                           series: <CartesianSeries>[
                             LineSeries<EnergyData, String>(

@@ -488,7 +488,7 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                     // Navigator.pushNamed(context, calculateRoute);
+                      Navigator.pushNamed(context, calculateRoute);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,

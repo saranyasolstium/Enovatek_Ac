@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/screen/all_device/devicelocation.dart';
-import 'package:enavatek_mobile/screen/device_details/device_details_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
-import 'package:enavatek_mobile/screen/device_details/power_statistics/filter_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics_live_data.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
@@ -13,8 +11,6 @@ import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:getwidget/components/toggle/gf_toggle.dart';
-import 'package:getwidget/types/gf_toggle_type.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
@@ -159,7 +155,7 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                   },
                   child: const Icon(
                     Icons.home,
-                    color: ConstantColors.mainlyTextColor,
+                    color: ConstantColors.iconColr,
                     size: 30,
                   ),
                 ),

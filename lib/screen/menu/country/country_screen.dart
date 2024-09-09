@@ -569,7 +569,7 @@ class CountryScreenState extends State<CountryScreen> {
             },
             child: const Icon(
               Icons.home,
-              color: ConstantColors.mainlyTextColor,
+              color: ConstantColors.iconColr,
               size: 30,
             ),
           ),

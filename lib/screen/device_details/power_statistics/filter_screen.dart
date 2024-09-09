@@ -212,7 +212,7 @@ class FilterScreenState extends State<FilterScreen> {
             },
             child: const Icon(
               Icons.home,
-              color: ConstantColors.mainlyTextColor,
+              color: ConstantColors.iconColr,
               size: 30,
             ),
           ),

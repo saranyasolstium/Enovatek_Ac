@@ -1,3 +1,4 @@
+import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
@@ -119,6 +120,73 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: ConstantColors.backgroundColor,
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+        title: Stack(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          ImgPath.pngArrowBack,
+                          height: 22,
+                          width: 22,
+                          color: ConstantColors.appColor,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Calculate Saving',
+                        style: GoogleFonts.roboto(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: ConstantColors.appColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+        
+          GestureDetector(
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PowerStatisticsScreen(
+                    deviceId: "",
+                    deviceList: [],
+                    tabIndex: 1,
+                  ),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+            child: const Icon(
+              Icons.home,
+              color: ConstantColors.iconColr,
+              size: 30,
+            ),
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+        ],
+      ),
       bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
@@ -129,31 +197,6 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
         ),
         child: Column(
           children: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Image.asset(
-                    ImgPath.pngArrowBack,
-                    height: screenWidth * 0.05,
-                    width: screenWidth * 0.05,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  'Calculate saving',
-                  style: GoogleFonts.roboto(
-                      fontSize: screenWidth * 0.05,
-                      fontWeight: FontWeight.bold,
-                      color: ConstantColors.black),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: screenHeight * 0.05,
-            ),
             Center(
               child: Image.asset(
                 ImgPath.pngIntro4,
