@@ -83,10 +83,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   late Animation<int> _animation;
   final int _numberOfArrows = 5; // Number of arrows or indicators
 
-  late AnimationController _animationControllerSwipeRight;
-  late AnimationController _animationControllerSwipeLeft;
-  late Animation<double> _animationSwipeRight;
-  late Animation<double> _animationSwipeLeft;
+  late AnimationController _blinkController;
 
   @override
   void initState() {
@@ -120,36 +117,23 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 5),
-    )..repeat(reverse: false); // Set to repeat indefinitely or change as needed
+    )..repeat(reverse: false);
 
     _animation = IntTween(begin: 0, end: _numberOfArrows - 1).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.linear),
     );
 
-    _animationControllerSwipeRight = AnimationController(
+    _blinkController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true); // Swipe right animation
-
-    _animationControllerSwipeLeft = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true); // Swipe left animation
-
-    _animationSwipeRight = Tween<double>(begin: 0, end: 20).animate(
-      CurvedAnimation(
-          parent: _animationControllerSwipeRight, curve: Curves.easeInOut),
-    );
-
-    _animationSwipeLeft = Tween<double>(begin: 0, end: -20).animate(
-      CurvedAnimation(
-          parent: _animationControllerSwipeLeft, curve: Curves.easeInOut),
-    );
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _blinkController.dispose();
+
     super.dispose();
   }
 
@@ -379,7 +363,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         String dcPowerValueStr = dcPower!.replaceAll(RegExp(r'[^0-9.]'), '');
         acNotifier.value = double.parse(acPowerValueStr);
         dcNotifier.value = double.parse(dcPowerValueStr);
-      
+       
       });
     } else {
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -910,15 +894,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     children: List.generate(
                                       _numberOfArrows,
                                       (index) => AnimatedBuilder(
-                                        animation: _animationSwipeRight,
+                                        animation: _blinkController,
                                         builder: (context, child) {
-                                          return Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 1),
-                                            child: Transform.translate(
-                                              offset: Offset(
-                                                  _animationSwipeRight.value,
-                                                  0),
+                                          return AnimatedOpacity(
+                                            opacity: _blinkController.value,
+                                            duration: const Duration(
+                                                milliseconds: 500),
+                                            child: Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 1),
                                               child: Image.asset(
                                                 ImgPath.leftArrow1,
                                                 height: 15,
@@ -943,17 +928,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           builder: (context, acValue, child) {
                             return Row(
                               children: List.generate(_numberOfArrows, (index) {
-                                // Determine which animation to use based on acValue
-                                Animation<double> currentAnimation =
-                                    acValue > 50
-                                        ? _animationSwipeLeft
-                                        : _animationController;
-
                                 return acValue > 50
                                     ? AnimatedBuilder(
-                                        animation: currentAnimation,
+                                        animation: _blinkController,
                                         builder: (context, child) {
-                                          // Determine image path based on index and acValue
                                           String imagePath;
                                           if (index == 0) {
                                             imagePath = acValue > 40
@@ -977,12 +955,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                                 : ImgPath.rightArrow4;
                                           }
 
-                                          return Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 1),
-                                            child: Transform.translate(
-                                              offset: Offset(
-                                                  currentAnimation.value, 0),
+                                          return AnimatedOpacity(
+                                            opacity: _blinkController.value,
+                                            duration: const Duration(
+                                                milliseconds: 500),
+                                            child: Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 1),
                                               child: Image.asset(
                                                 imagePath,
                                                 height: 15,
