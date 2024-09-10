@@ -99,15 +99,11 @@ class LiveDataScreenState extends State<LiveDataScreen> {
 
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(
-          isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-          isTablet ? 0.05 * screenHeight : 0.05 * screenHeight,
-          isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-          isTablet ? 0.02 * screenHeight : 0.05 * screenHeight,
-        ),
-        child: Column(
+      appBar: AppBar(
+        backgroundColor: ConstantColors.backgroundColor,
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+        title: Stack(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -122,46 +118,63 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: 25,
-                          width: 25,
+                          height: 22,
+                          width: 22,
+                          color: ConstantColors.appColor,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         'Devices',
                         style: GoogleFonts.roboto(
-                            fontSize: screenWidth * 0.045,
-                            fontWeight: FontWeight.bold,
-                            color: ConstantColors.black),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: ConstantColors.appColor,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 20),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PowerStatisticsScreen(
-                          deviceId: "",
-                          deviceList: [],
-                          tabIndex: 1,
-                        ),
-                      ),
-                      (Route<dynamic> route) => false,
-                    );
-                    // Navigator.pop(context);
-                  },
-                  child: const Icon(
-                    Icons.home,
-                    color: ConstantColors.iconColr,
-                    size: 30,
-                  ),
-                ),
-                const SizedBox(width: 10),
               ],
             ),
+          ],
+        ),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PowerStatisticsScreen(
+                    deviceId: "",
+                    deviceList: [],
+                    tabIndex: 1,
+                  ),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+            child: const Icon(
+              Icons.home,
+              color: ConstantColors.iconColr,
+              size: 30,
+            ),
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+        ],
+      ),
+      bottomNavigationBar: Footer(),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(
+          isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+          isTablet ? 0.02 * screenHeight : 0.02 * screenHeight,
+          isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+          isTablet ? 0.02 * screenHeight : 0.05 * screenHeight,
+        ),
+        child: Column(
+          children: [
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

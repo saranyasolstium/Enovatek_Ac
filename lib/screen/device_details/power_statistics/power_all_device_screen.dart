@@ -186,15 +186,11 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
         onWillPop: _onWillPop,
         child: Scaffold(
           backgroundColor: ConstantColors.backgroundColor,
-          bottomNavigationBar: Footer(),
-          body: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-              isTablet ? 0.05 * screenHeight : 0.05 * screenHeight,
-              isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
-              isTablet ? 0.02 * screenHeight : 0.05 * screenHeight,
-            ),
-            child: Column(
+          appBar: AppBar(
+            backgroundColor: ConstantColors.backgroundColor,
+            automaticallyImplyLeading: false,
+            elevation: 0.0,
+            title: Stack(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -216,26 +212,32 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                                 ),
                                 (Route<dynamic> route) => false,
                               );
-                              // Navigator.pop(context);
                             },
                             child: Image.asset(
                               ImgPath.pngArrowBack,
-                              height: 25,
-                              width: 25,
+                              height: 22,
+                              width: 22,
+                              color: ConstantColors.appColor,
                             ),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             'Devices',
                             style: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.045,
-                                fontWeight: FontWeight.bold,
-                                color: ConstantColors.black),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: ConstantColors.appColor,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    GestureDetector(
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              GestureDetector(
                       onTap: () {
                         Navigator.pushReplacement(
                           context,
@@ -250,31 +252,121 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                       ),
                     ),
                     const SizedBox(width: 20),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PowerStatisticsScreen(
-                              deviceId: "",
-                              deviceList: [],
-                              tabIndex: 1,
-                            ),
-                          ),
-                          (Route<dynamic> route) => false,
-                        );
-                      },
-                      child: const Icon(
-                        Icons.home,
-                        color: ConstantColors.iconColr,
-                        size: 30,
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PowerStatisticsScreen(
+                        deviceId: "",
+                        deviceList: [],
+                        tabIndex: 1,
                       ),
                     ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                  ],
+                    (Route<dynamic> route) => false,
+                  );
+                },
+                child: const Icon(
+                  Icons.home,
+                  color: ConstantColors.iconColr,
+                  size: 30,
                 ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+            ],
+          ),
+          bottomNavigationBar: Footer(),
+          body: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+              isTablet ? 0.05 * screenHeight : 0.05 * screenHeight,
+              isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
+              isTablet ? 0.02 * screenHeight : 0.05 * screenHeight,
+            ),
+            child: Column(
+              children: [
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.start,
+                //   children: [
+                //     Expanded(
+                //       child: Row(
+                //         mainAxisAlignment: MainAxisAlignment.start,
+                //         children: [
+                //           GestureDetector(
+                //             onTap: () {
+                //               Navigator.pushAndRemoveUntil(
+                //                 context,
+                //                 MaterialPageRoute(
+                //                   builder: (context) => PowerStatisticsScreen(
+                //                     deviceId: "",
+                //                     deviceList: deviceList,
+                //                     tabIndex: 1,
+                //                   ),
+                //                 ),
+                //                 (Route<dynamic> route) => false,
+                //               );
+                //               // Navigator.pop(context);
+                //             },
+                //             child: Image.asset(
+                //               ImgPath.pngArrowBack,
+                //               height: 25,
+                //               width: 25,
+                //             ),
+                //           ),
+                //           const SizedBox(width: 10),
+                //           Text(
+                //             'Devices',
+                //             style: GoogleFonts.roboto(
+                //                 fontSize: screenWidth * 0.045,
+                //                 fontWeight: FontWeight.bold,
+                //                 color: ConstantColors.black),
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //     GestureDetector(
+                //       onTap: () {
+                //         Navigator.pushReplacement(
+                //           context,
+                //           MaterialPageRoute(
+                //               builder: (context) => const FilterScreen()),
+                //         );
+                //       },
+                //       child: const Icon(
+                //         Icons.filter_alt_rounded,
+                //         color: ConstantColors.iconColr,
+                //         size: 30,
+                //       ),
+                //     ),
+                //     const SizedBox(width: 20),
+                //     GestureDetector(
+                //       onTap: () {
+                //         Navigator.pushAndRemoveUntil(
+                //           context,
+                //           MaterialPageRoute(
+                //             builder: (context) => const PowerStatisticsScreen(
+                //               deviceId: "",
+                //               deviceList: [],
+                //               tabIndex: 1,
+                //             ),
+                //           ),
+                //           (Route<dynamic> route) => false,
+                //         );
+                //       },
+                //       child: const Icon(
+                //         Icons.home,
+                //         color: ConstantColors.iconColr,
+                //         size: 30,
+                //       ),
+                //     ),
+                //     const SizedBox(
+                //       width: 20,
+                //     ),
+                //   ],
+                // ),
+               
                 devices.isEmpty
                     ? Container(
                         height: 500,

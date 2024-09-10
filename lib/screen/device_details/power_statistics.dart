@@ -48,7 +48,7 @@ class PowerStatisticsScreen extends StatefulWidget {
 }
 
 class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   String? totalPower = "", acPower = "", dcPower = "";
 
   Timer? timer;
@@ -82,6 +82,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   late AnimationController _animationController;
   late Animation<int> _animation;
   final int _numberOfArrows = 5; // Number of arrows or indicators
+
+  late AnimationController _animationControllerSwipeRight;
+  late AnimationController _animationControllerSwipeLeft;
+  late Animation<double> _animationSwipeRight;
+  late Animation<double> _animationSwipeLeft;
 
   @override
   void initState() {
@@ -119,6 +124,26 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
 
     _animation = IntTween(begin: 0, end: _numberOfArrows - 1).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.linear),
+    );
+
+    _animationControllerSwipeRight = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true); // Swipe right animation
+
+    _animationControllerSwipeLeft = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true); // Swipe left animation
+
+    _animationSwipeRight = Tween<double>(begin: 0, end: 20).animate(
+      CurvedAnimation(
+          parent: _animationControllerSwipeRight, curve: Curves.easeInOut),
+    );
+
+    _animationSwipeLeft = Tween<double>(begin: 0, end: -20).animate(
+      CurvedAnimation(
+          parent: _animationControllerSwipeLeft, curve: Curves.easeInOut),
     );
   }
 
@@ -354,6 +379,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         String dcPowerValueStr = dcPower!.replaceAll(RegExp(r'[^0-9.]'), '');
         acNotifier.value = double.parse(acPowerValueStr);
         dcNotifier.value = double.parse(dcPowerValueStr);
+      
       });
     } else {
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -847,38 +873,63 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         const SizedBox(width: 20),
                         ValueListenableBuilder<double>(
                           valueListenable: dcNotifier,
-                          builder: (context, dcValue, child) => Row(
-                            children: List.generate(
-                              _numberOfArrows,
-                              (index) => AnimatedBuilder(
-                                animation: _animation,
-                                builder: (context, child) {
-                                  bool isLit = index == _animation.value;
-                                  bool shouldAnimate =
-                                      dcValue > 0 && dcValue <= 50;
-                                  return Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 1),
-                                    child: AnimatedOpacity(
-                                      opacity: (dcValue == 0 ||
-                                              dcValue > 50 ||
-                                              !shouldAnimate)
-                                          ? 1.0
-                                          : (isLit ? 1.0 : 0.2),
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      child: Image.asset(
-                                        dcValue > (index * 10)
-                                            ? ImgPath.leftArrow1
-                                            : ImgPath.leftArrow2,
-                                        height: 15,
+                          builder: (context, dcValue, child) {
+                            return dcValue < 50
+                                ? Row(
+                                    children: List.generate(
+                                    _numberOfArrows,
+                                    (index) => AnimatedBuilder(
+                                      animation: _animation,
+                                      builder: (context, child) {
+                                        bool isLit = index == _animation.value;
+                                        bool shouldAnimate =
+                                            dcValue > 0 && dcValue <= 50;
+                                        return Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 1),
+                                          child: AnimatedOpacity(
+                                            opacity: (dcValue == 0 ||
+                                                    dcValue > 50 ||
+                                                    !shouldAnimate)
+                                                ? 1.0
+                                                : (isLit ? 1.0 : 0.2),
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            child: Image.asset(
+                                              dcValue > (index * 10)
+                                                  ? ImgPath.leftArrow1
+                                                  : ImgPath.leftArrow2,
+                                              height: 15,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ))
+                                : Row(
+                                    children: List.generate(
+                                      _numberOfArrows,
+                                      (index) => AnimatedBuilder(
+                                        animation: _animationSwipeRight,
+                                        builder: (context, child) {
+                                          return Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 1),
+                                            child: Transform.translate(
+                                              offset: Offset(
+                                                  _animationSwipeRight.value,
+                                                  0),
+                                              child: Image.asset(
+                                                ImgPath.leftArrow1,
+                                                height: 15,
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ),
                                   );
-                                },
-                              ),
-                            ),
-                          ),
+                          },
                         ),
                         const SizedBox(width: 30),
                         Image.asset(
@@ -889,61 +940,111 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         const SizedBox(width: 30),
                         ValueListenableBuilder<double>(
                           valueListenable: acNotifier,
-                          builder: (context, acValue, child) => Row(
-                            children: List.generate(_numberOfArrows, (index) {
-                              return AnimatedBuilder(
-                                animation: _animation,
-                                builder: (context, child) {
-                                  bool isLit = (_numberOfArrows - 1) - index ==
-                                      _animation.value;
-                                  bool shouldAnimate =
-                                      acValue > 0 && acValue <= 50;
+                          builder: (context, acValue, child) {
+                            return Row(
+                              children: List.generate(_numberOfArrows, (index) {
+                                // Determine which animation to use based on acValue
+                                Animation<double> currentAnimation =
+                                    acValue > 50
+                                        ? _animationSwipeLeft
+                                        : _animationController;
 
-                                  // Determine the image path based on the index and acValue
-                                  String imagePath;
-                                  if (index == 0) {
-                                    imagePath = acValue > 40
-                                        ? ImgPath.rightArrow5
-                                        : ImgPath.rightArrow4;
-                                  } else if (index == 1) {
-                                    imagePath = acValue > 30
-                                        ? ImgPath.rightArrow5
-                                        : ImgPath.rightArrow4;
-                                  } else if (index == 2) {
-                                    imagePath = acValue > 20
-                                        ? ImgPath.rightArrow5
-                                        : ImgPath.rightArrow4;
-                                  } else if (index == 3) {
-                                    imagePath = acValue > 10
-                                        ? ImgPath.rightArrow5
-                                        : ImgPath.rightArrow4;
-                                  } else {
-                                    imagePath = acValue > 0
-                                        ? ImgPath.rightArrow5
-                                        : ImgPath.rightArrow4;
-                                  }
+                                return acValue > 50
+                                    ? AnimatedBuilder(
+                                        animation: currentAnimation,
+                                        builder: (context, child) {
+                                          // Determine image path based on index and acValue
+                                          String imagePath;
+                                          if (index == 0) {
+                                            imagePath = acValue > 40
+                                                ? ImgPath.rightArrow5
+                                                : ImgPath.rightArrow4;
+                                          } else if (index == 1) {
+                                            imagePath = acValue > 30
+                                                ? ImgPath.rightArrow5
+                                                : ImgPath.rightArrow4;
+                                          } else if (index == 2) {
+                                            imagePath = acValue > 20
+                                                ? ImgPath.rightArrow5
+                                                : ImgPath.rightArrow4;
+                                          } else if (index == 3) {
+                                            imagePath = acValue > 10
+                                                ? ImgPath.rightArrow5
+                                                : ImgPath.rightArrow4;
+                                          } else {
+                                            imagePath = acValue > 0
+                                                ? ImgPath.rightArrow5
+                                                : ImgPath.rightArrow4;
+                                          }
 
-                                  return Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 1),
-                                    child: AnimatedOpacity(
-                                      opacity: (acValue == 0 ||
-                                              acValue > 50 ||
-                                              !shouldAnimate)
-                                          ? 1.0
-                                          : (isLit ? 1.0 : 0.2),
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      child: Image.asset(
-                                        imagePath,
-                                        height: 15,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
-                            }),
-                          ),
+                                          return Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 1),
+                                            child: Transform.translate(
+                                              offset: Offset(
+                                                  currentAnimation.value, 0),
+                                              child: Image.asset(
+                                                imagePath,
+                                                height: 15,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : AnimatedBuilder(
+                                        animation: _animation,
+                                        builder: (context, child) {
+                                          bool isLit =
+                                              (_numberOfArrows - 1) - index ==
+                                                  _animation.value;
+
+                                          bool shouldAnimate =
+                                              acValue > 0 && acValue <= 50;
+                                          String imagePath;
+                                          if (index == 0) {
+                                            imagePath = acValue > 40
+                                                ? ImgPath.rightArrow5
+                                                : ImgPath.rightArrow4;
+                                          } else if (index == 1) {
+                                            imagePath = acValue > 30
+                                                ? ImgPath.rightArrow5
+                                                : ImgPath.rightArrow4;
+                                          } else if (index == 2) {
+                                            imagePath = acValue > 20
+                                                ? ImgPath.rightArrow5
+                                                : ImgPath.rightArrow4;
+                                          } else if (index == 3) {
+                                            imagePath = acValue > 10
+                                                ? ImgPath.rightArrow5
+                                                : ImgPath.rightArrow4;
+                                          } else {
+                                            imagePath = acValue > 0
+                                                ? ImgPath.rightArrow5
+                                                : ImgPath.rightArrow4;
+                                          }
+
+                                          return Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 1),
+                                            child: AnimatedOpacity(
+                                              opacity: (acValue == 0 ||
+                                                      acValue > 50 ||
+                                                      !shouldAnimate)
+                                                  ? 1.0
+                                                  : (isLit ? 1.0 : 0.2),
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              child: Image.asset(
+                                                imagePath,
+                                                height: 15,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                              }),
+                            );
+                          },
                         ),
                         const SizedBox(width: 20),
                         Column(
