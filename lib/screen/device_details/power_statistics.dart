@@ -81,7 +81,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   final List<String> deviceList = [];
   late AnimationController _animationController;
   late Animation<int> _animation;
-  final int _numberOfArrows = 5; // Number of arrows or indicators
+  final int _numberOfArrows = 5;
 
   late AnimationController _blinkController;
 
@@ -201,7 +201,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         return country.id;
       }
     }
-    throw Exception('Country with currency type $currencyType not found');
+    // Return default value if no country matches
+    print('Currency type $currencyType not found, returning default value 6');
+    return 6;
   }
 
   Future<void> fetchData(String periodType) async {
@@ -473,11 +475,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       ),
                       // Country Selection Radio Buttons
                       ...countryList.map((country) {
+                        print('sranya321 ${country.currencyType}');
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             CountryFlag.fromCountryCode(
-                              country.currencyType,
+                              country.currencyType.isNotEmpty
+                                  ? country.currencyType
+                                  : "sg",
                               shape: const Circle(),
                               height: 25,
                               width: 25,
@@ -859,6 +864,67 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           valueListenable: dcNotifier,
                           builder: (context, dcValue, child) {
                             return dcValue < 50
+                                // ? Row(
+                                //     children: List.generate(
+                                //       _numberOfArrows,
+                                //       (index) => AnimatedBuilder(
+                                //         animation: _animation,
+                                //         builder: (context, child) {
+                                //           bool shouldAnimate =
+                                //               dcValue > 0 && dcValue <= 50;
+                                //           bool isLit =
+                                //               index == _animation.value;
+
+                                //           // Define thresholds and corresponding no-animation limits
+                                //           int noAnimationThreshold1 = 0;
+                                //           int noAnimationThreshold2 = 10;
+                                //           int noAnimationThreshold3 = 20;
+                                //           int noAnimationThreshold4 = 30;
+
+                                //           // Determine the no-animation limit based on dcValue
+                                //           int noAnimationLimit;
+                                //           if (dcValue > noAnimationThreshold4) {
+                                //             noAnimationLimit = 4;
+                                //           } else if (dcValue >
+                                //               noAnimationThreshold3) {
+                                //             noAnimationLimit = 3;
+                                //           } else if (dcValue >
+                                //               noAnimationThreshold2) {
+                                //             noAnimationLimit = 2;
+                                //           } else if (dcValue >
+                                //               noAnimationThreshold1) {
+                                //             noAnimationLimit = 1;
+                                //           } else {
+                                //             noAnimationLimit = 0;
+                                //           }
+
+                                //           bool isIndexInNoAnimationZone =
+                                //               index < noAnimationLimit;
+
+                                //           double opacity = (dcValue == 0 ||
+                                //                   !shouldAnimate ||
+                                //                   isIndexInNoAnimationZone)
+                                //               ? 1.0
+                                //               : (isLit ? 1.0 : 0.5);
+
+                                //           return Container(
+                                //             margin: const EdgeInsets.symmetric(
+                                //                 horizontal: 1),
+                                //             child: AnimatedOpacity(
+                                //               opacity:
+                                //                   dcValue > 0 ? opacity : 0.4,
+                                //               duration: const Duration(
+                                //                   milliseconds: 300),
+                                //               child: Image.asset(
+                                //                 ImgPath.leftArrow1,
+                                //                 height: 15,
+                                //               ),
+                                //             ),
+                                //           );
+                                //         },
+                                //       ),
+                                //     ),
+                                //   )
                                 ? Row(
                                     children: List.generate(
                                     _numberOfArrows,
@@ -875,14 +941,17 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                             opacity: (dcValue == 0 ||
                                                     dcValue > 50 ||
                                                     !shouldAnimate)
-                                                ? 1.0
-                                                : (isLit ? 1.0 : 0.2),
+                                                ? 0.7
+                                                : (isLit ? 1.0 : 0.6),
                                             duration: const Duration(
                                                 milliseconds: 300),
                                             child: Image.asset(
                                               dcValue > (index * 10)
                                                   ? ImgPath.leftArrow1
                                                   : ImgPath.leftArrow2,
+                                              color: dcValue > (index * 10)
+                                                  ? ConstantColors.iconColr
+                                                  : ConstantColors.arrowColor,
                                               height: 15,
                                             ),
                                           ),
@@ -928,11 +997,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           builder: (context, acValue, child) {
                             return Row(
                               children: List.generate(_numberOfArrows, (index) {
-                                return acValue > 50
+                                return acValue >= 50
                                     ? AnimatedBuilder(
                                         animation: _blinkController,
                                         builder: (context, child) {
                                           String imagePath;
+
                                           if (index == 0) {
                                             imagePath = acValue > 40
                                                 ? ImgPath.rightArrow5
@@ -980,27 +1050,44 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
 
                                           bool shouldAnimate =
                                               acValue > 0 && acValue <= 50;
+                                          Color color;
+
                                           String imagePath;
                                           if (index == 0) {
                                             imagePath = acValue > 40
                                                 ? ImgPath.rightArrow5
                                                 : ImgPath.rightArrow4;
+                                            color = acValue > 40
+                                                ? ConstantColors.iconColr
+                                                : ConstantColors.arrowColor;
                                           } else if (index == 1) {
                                             imagePath = acValue > 30
                                                 ? ImgPath.rightArrow5
                                                 : ImgPath.rightArrow4;
+                                            color = acValue > 30
+                                                ? ConstantColors.iconColr
+                                                : ConstantColors.arrowColor;
                                           } else if (index == 2) {
                                             imagePath = acValue > 20
                                                 ? ImgPath.rightArrow5
                                                 : ImgPath.rightArrow4;
+                                            color = acValue > 20
+                                                ? ConstantColors.iconColr
+                                                : ConstantColors.arrowColor;
                                           } else if (index == 3) {
                                             imagePath = acValue > 10
                                                 ? ImgPath.rightArrow5
                                                 : ImgPath.rightArrow4;
+                                            color = acValue > 10
+                                                ? ConstantColors.iconColr
+                                                : ConstantColors.arrowColor;
                                           } else {
                                             imagePath = acValue > 0
                                                 ? ImgPath.rightArrow5
                                                 : ImgPath.rightArrow4;
+                                            color = acValue > 0
+                                                ? ConstantColors.iconColr
+                                                : ConstantColors.arrowColor;
                                           }
 
                                           return Container(
@@ -1010,18 +1097,77 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                               opacity: (acValue == 0 ||
                                                       acValue > 50 ||
                                                       !shouldAnimate)
-                                                  ? 1.0
-                                                  : (isLit ? 1.0 : 0.2),
+                                                  ? 0.7
+                                                  : (isLit ? 1.0 : 0.6),
                                               duration: const Duration(
                                                   milliseconds: 300),
                                               child: Image.asset(
-                                                imagePath,
+                                                ImgPath.rightArrow5,
                                                 height: 15,
+                                                color: color,
                                               ),
                                             ),
                                           );
                                         },
                                       );
+
+                                //  AnimatedBuilder(
+                                //     animation: _animation,
+                                //     builder: (context, child) {
+                                //       bool shouldAnimate =
+                                //           acValue > 0 && acValue <= 50;
+                                //       bool isLit =
+                                //           (_numberOfArrows - 1) - index ==
+                                //               _animation.value;
+
+                                //       // Define thresholds and corresponding no-animation limits
+                                //       int noAnimationThreshold1 = 0;
+                                //       int noAnimationThreshold2 = 10;
+                                //       int noAnimationThreshold3 = 20;
+                                //       int noAnimationThreshold4 = 30;
+
+                                //       // Determine the no-animation limit based on dcValue
+                                //       int noAnimationLimit;
+                                //       if (acValue > noAnimationThreshold4) {
+                                //         noAnimationLimit = 0;
+                                //       } else if (acValue >
+                                //           noAnimationThreshold3) {
+                                //         noAnimationLimit = 1;
+                                //       } else if (acValue >
+                                //           noAnimationThreshold2) {
+                                //         noAnimationLimit = 2;
+                                //       } else if (acValue >
+                                //           noAnimationThreshold1) {
+                                //         noAnimationLimit = 3;
+                                //       } else {
+                                //         noAnimationLimit = 4;
+                                //       }
+
+                                //       bool isIndexInNoAnimationZone =
+                                //           index > noAnimationLimit;
+
+                                //       double opacity = (acValue == 0 ||
+                                //               !shouldAnimate ||
+                                //               isIndexInNoAnimationZone)
+                                //           ? 1.0
+                                //           : (isLit ? 1.0 : 0.5);
+
+                                //       return Container(
+                                //         margin: const EdgeInsets.symmetric(
+                                //             horizontal: 1),
+                                //         child: AnimatedOpacity(
+                                //           opacity:
+                                //               acValue > 0 ? opacity : 0.4,
+                                //           duration: const Duration(
+                                //               milliseconds: 300),
+                                //           child: Image.asset(
+                                //             ImgPath.rightArrow5,
+                                //             height: 15,
+                                //           ),
+                                //         ),
+                                //       );
+                                //     },
+                                //   );
                               }),
                             );
                           },

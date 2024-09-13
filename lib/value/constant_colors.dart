@@ -34,6 +34,8 @@ class ConstantColors {
   static const Color appColor = Color(0Xff1B2D3C);
   static const Color unSelectColor = Color(0x1B2D3C0F);
   static const Color acColor = Color(0xFF78BFCF);
+    static const Color arrowColor = Color(0xFF9fc5e8);
+
   static const Color dcColor = Color(0xFF41CB28);
   static const Color borderColor = Color(0xFFE2E5E6);
 }

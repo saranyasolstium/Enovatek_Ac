@@ -42,7 +42,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   User? _user;
   String? deviceID;
-  bool obscureText = false;
+  bool obscureText = true;
   @override
   void initState() {
     super.initState();
@@ -336,7 +336,7 @@ class LoginScreenState extends State<LoginScreen> {
                   filled: true,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      obscureText ? Icons.visibility : Icons.visibility_off,
+                      obscureText ? Icons.visibility_off : Icons.visibility, 
                       color: ConstantColors.mainlyTextColor,
                     ),
                     onPressed: toggleVisibility,
@@ -428,56 +428,57 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(20.0),
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // signInWithGoogle();
-                  // Navigator.of(context).pushNamedAndRemoveUntil(
-                  //     enginnerHomeRounte, (route) => false);
-                },
-                icon: const Icon(
-                  FontAwesomeIcons.google,
-                  color: Colors.white,
-                ),
-                label: const Text(
-                  'Google',
-                  style: TextStyle(color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(20),
-                  backgroundColor: googleColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(20.0),
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // signInWithFacebook();
-                },
-                icon: const Icon(
-                  FontAwesomeIcons.facebook,
-                  color: Colors.white,
-                ),
-                label: const Text(
-                  'Facebook',
-                  style: TextStyle(color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(20),
-                  backgroundColor: facebookColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.all(20.0),
+            //   width: double.infinity,
+            //   child: ElevatedButton.icon(
+            //     onPressed: () {
+            //       // signInWithGoogle();
+            //       // Navigator.of(context).pushNamedAndRemoveUntil(
+            //       //     enginnerHomeRounte, (route) => false);
+            //     },
+            //     icon: const Icon(
+            //       FontAwesomeIcons.google,
+            //       color: Colors.white,
+            //     ),
+            //     label: const Text(
+            //       'Google',
+            //       style: TextStyle(color: Colors.white),
+            //     ),
+            //     style: ElevatedButton.styleFrom(
+            //       padding: const EdgeInsets.all(20),
+            //       backgroundColor: googleColor,
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(12),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // Container(
+            //   padding: const EdgeInsets.all(20.0),
+            //   width: double.infinity,
+            //   child: ElevatedButton.icon(
+            //     onPressed: () {
+            //       // signInWithFacebook();
+            //     },
+            //     icon: const Icon(
+            //       FontAwesomeIcons.facebook,
+            //       color: Colors.white,
+            //     ),
+            //     label: const Text(
+            //       'Facebook',
+            //       style: TextStyle(color: Colors.white),
+            //     ),
+            //     style: ElevatedButton.styleFrom(
+            //       padding: const EdgeInsets.all(20),
+            //       backgroundColor: facebookColor,
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(12),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+           
             Padding(
                 padding: const EdgeInsets.only(left: 30, right: 60),
                 child: RichText(

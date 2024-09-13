@@ -692,7 +692,7 @@ class RemoteServices {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-
+      print('list_od_contry $data');
       final List list = data['data'];
       return list.map((json) => CountryData.fromJson(json)).toList();
     } else {

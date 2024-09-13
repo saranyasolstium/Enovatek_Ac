@@ -19,7 +19,7 @@ class CountryData {
     return CountryData(
       id: _parseId(json['id']),
       name: json['name'] ?? '',
-      currencyType: _parseCurrencyType(json['currency_type']),
+      currencyType: json['currency_type'] ?? "sg",
       energyRate: json['energy_rate'],
       temperature: json['temperature'],
       factor: json['factor'],
