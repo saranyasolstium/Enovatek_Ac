@@ -1,13 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:convert';
 
-import 'package:enavatek_mobile/auth/authhelper.dart';
-import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
-import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
-import 'package:enavatek_mobile/screen/enginner_access/add_device_AppCtrl.dart';
-import 'package:enavatek_mobile/screen/enginner_access/enginner_home.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/dynamic_font.dart';
@@ -16,17 +10,10 @@ import 'package:enavatek_mobile/widget/decoration.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_social_button/flutter_social_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:http/http.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({Key? key}) : super(key: key);
@@ -42,6 +29,9 @@ class ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   void initState() {
     super.initState();
   }
+
+  // Declare a ValueNotifier for managing password visibility
+  final ValueNotifier<bool> _obscureTextNotifier = ValueNotifier<bool>(true);
 
   Future<void> forgetpasswordApi(String emailId) async {
     try {
@@ -68,14 +58,6 @@ class ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     TextEditingController tokenController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
     TextEditingController mailController = TextEditingController(text: email);
-
-    bool obscureText = false;
-
-    void toggleVisibility() {
-      setState(() {
-        obscureText = !obscureText;
-      });
-    }
 
     Future<void> resetPassword() async {
       try {
@@ -155,48 +137,55 @@ class ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     SizedBox(height: 20.dynamic),
                     Padding(
                       padding: const EdgeInsets.all(5),
-                      child: TextField(
-                        controller: passwordController,
-                        obscureText: obscureText,
-                        style: GoogleFonts.roboto(
-                          color: ConstantColors.mainlyTextColor,
-                          fontWeight: FontWeight.w500,
-                          fontSize: isTablet
-                              ? screenWidth * 0.05
-                              : screenWidth * 0.04,
-                        ),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(screenHeight * 0.1),
-                            borderSide: const BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.05,
-                            vertical: screenWidth * 0.05,
-                          ),
-                          hintText: "Password",
-                          fillColor: ConstantColors.inputColor,
-                          filled: true,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              obscureText
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
+                      child: ValueListenableBuilder<bool>(
+                        valueListenable: _obscureTextNotifier,
+                        builder: (context, obscureText, child) {
+                          return TextField(
+                            controller: passwordController,
+                            obscureText: obscureText,
+                            style: GoogleFonts.roboto(
                               color: ConstantColors.mainlyTextColor,
+                              fontWeight: FontWeight.w500,
+                              fontSize: isTablet
+                                  ? screenWidth * 0.05
+                                  : screenWidth * 0.04,
                             ),
-                            onPressed: toggleVisibility,
-                          ),
-                          hintStyle: GoogleFonts.roboto(
-                            fontSize: isTablet
-                                ? screenWidth * 0.04
-                                : screenWidth * 0.04,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.circular(screenHeight * 0.1),
+                                borderSide: const BorderSide(
+                                  width: 0,
+                                  style: BorderStyle.none,
+                                ),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.05,
+                                vertical: screenWidth * 0.05,
+                              ),
+                              hintText: "Password",
+                              fillColor: ConstantColors.inputColor,
+                              filled: true,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  obscureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: ConstantColors.mainlyTextColor,
+                                ),
+                                onPressed: () {
+                                  _obscureTextNotifier.value = !obscureText;
+                                },
+                              ),
+                              hintStyle: GoogleFonts.roboto(
+                                fontSize: isTablet
+                                    ? screenWidth * 0.04
+                                    : screenWidth * 0.04,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -229,7 +218,6 @@ class ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     } else {
                       resetPassword();
                     }
-                    // Navigator.pushNamed(context, loginRoute);
                   },
                   text: "Reset",
                   backgroundColor: ConstantColors.borderButtonColor,
@@ -255,22 +243,34 @@ class ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
     final isTablet = screenWidth >= 600;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Image.asset(
+            ImgPath.pngArrowBack,
+            height: screenWidth * 0.05,
+            width: screenWidth * 0.05,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
+          'Reset Password',
+          style: GoogleFonts.roboto(
+            fontSize: screenWidth * 0.05,
+            fontWeight: FontWeight.bold,
+            color: ConstantColors.black,
+          ),
+        ),
+      ),
       bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(
               height: screenHeight * 0.1,
-            ),
-            Center(
-              child: Text(
-                'Reset Password',
-                style: GoogleFonts.roboto(
-                  fontSize: screenWidth * 0.06,
-                  color: ConstantColors.black,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
             ),
             Padding(
               padding: const EdgeInsets.only(

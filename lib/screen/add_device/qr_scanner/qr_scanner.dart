@@ -52,7 +52,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
               onQRViewCreated: _onQRViewCreated,
             ),
           ),
-          Expanded(
+          const Expanded(
             flex: 1,
             child: Center(
               child: Text('Scan a QR code to extract UID'),

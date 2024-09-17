@@ -1,9 +1,13 @@
 import 'package:enavatek_mobile/screen/add_device/basic_detail_screen.dart';
+import 'package:enavatek_mobile/value/constant_colors.dart';
+import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:developer';
 import 'dart:io';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_scanner_with_effect/qr_scanner_with_effect.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class QRScannerScreen extends StatefulWidget {
   final int buildingID;
@@ -19,8 +23,27 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-
   bool isComplete = false;
+  bool hasPermissionDeniedMessageShown = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    final status = await Permission.camera.request();
+    if (status.isDenied) {
+      // Handle the denied permission case.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Camera permission is required')),
+      );
+    } else if (status.isPermanentlyDenied) {
+      // Open app settings to allow the user to enable permission.
+      await openAppSettings();
+    }
+  }
 
   void onQrScannerViewCreated(QRViewController controller) {
     this.controller = controller;
@@ -91,7 +114,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
   void onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
-    if (!p) {
+    if (!p && !hasPermissionDeniedMessageShown) {
+      hasPermissionDeniedMessageShown = true;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No Permission')),
       );
@@ -106,6 +130,49 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
+          appBar: AppBar(
+        backgroundColor: ConstantColors.backgroundColor,
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+        title: Stack(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          ImgPath.pngArrowBack,
+                          height: 22,
+                          width: 22,
+                          color: ConstantColors.appColor,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'QR Scanner',
+                        style: GoogleFonts.roboto(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: ConstantColors.appColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+       
+      ),
+    
         body: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             return QrScannerWithEffect(

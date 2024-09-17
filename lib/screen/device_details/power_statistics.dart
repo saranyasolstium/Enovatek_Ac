@@ -27,8 +27,6 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:money2/money2.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:share_extend/share_extend.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
@@ -92,6 +90,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     getAllDevice();
     _tooltipBehavior = TooltipBehavior(
       enable: true,
+      tooltipPosition: TooltipPosition.auto,
     );
 
     if (widget.tabIndex == 1) {
@@ -223,6 +222,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           countryId: countryId);
       setState(() {
         energyDataList = data;
+        updateTooltip();
 
         totalTree =
             calculateTotalTreesPlanted(energyDataList).toStringAsFixed(2);
@@ -242,11 +242,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       height: 350,
       width: 1800,
       child: SfCartesianChart(
+        key: ValueKey<int>(selectedTabIndex.value),
         primaryXAxis: DateTimeAxis(
           dateFormat: DateFormat.Hm(),
           intervalType: DateTimeIntervalType.hours,
           interval: 1,
         ),
+        tooltipBehavior: _tooltipBehavior,
         primaryYAxis: const NumericAxis(
           labelFormat: '{value}',
           title: AxisTitle(
@@ -257,11 +259,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             ),
           ),
         ),
-        tooltipBehavior: TooltipBehavior(
-          enable: true,
-          shared: true,
-          tooltipPosition: TooltipPosition.auto,
-        ),
         series: <CartesianSeries>[
           ColumnSeries<EnergyData, DateTime>(
             dataSource: data,
@@ -271,6 +268,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             yValueMapper: (EnergyData data, _) => data.acEnergyConsumed,
             name: 'AC Power',
             color: ConstantColors.borderButtonColor,
+            //dataLabelSettings: DataLabelSettings(isVisible: true)
           ),
           ColumnSeries<EnergyData, DateTime>(
             dataSource: data,
@@ -280,6 +278,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             yValueMapper: (EnergyData data, _) => data.dcEnergyConsumed,
             name: 'DC Power',
             color: Colors.green,
+            //dataLabelSettings: DataLabelSettings(isVisible: true)
           ),
         ],
       ),
@@ -365,7 +364,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         String dcPowerValueStr = dcPower!.replaceAll(RegExp(r'[^0-9.]'), '');
         acNotifier.value = double.parse(acPowerValueStr);
         dcNotifier.value = double.parse(dcPowerValueStr);
-       
       });
     } else {
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -406,9 +404,24 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     if (energyDataList.isEmpty) {
       return 0.0;
     }
-    double totalenergy =
-        energyDataList.fold(0.0, (sum, data) => sum + data.totalEnergy);
-    return totalenergy / energyDataList.length;
+    double acMax = energyDataList.fold<double>(
+        0.0,
+        (max, data) =>
+            data.acEnergyConsumed > max ? data.acEnergyConsumed : max);
+    double dcMax = energyDataList.fold<double>(
+        0.0,
+        (max, data) =>
+            data.dcEnergyConsumed > max ? data.dcEnergyConsumed : max);
+    print(acMax);
+    print(dcMax);
+    double totalEnergy = acMax + dcMax;
+    print(totalEnergy);
+    double savingPercentage = (dcMax / totalEnergy) * 100;
+    print(savingPercentage);
+    // double totalenergy =
+    //     energyDataList.fold(0.0, (sum, data) => sum + data.totalEnergy);
+    //return totalenergy / energyDataList.length;
+    return savingPercentage;
   }
 
   Future<void> countrySelection() async {
@@ -2090,11 +2103,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     ),
                                   ),
                                 ),
-                                tooltipBehavior: TooltipBehavior(
-                                  enable: true,
-                                  shared: true,
-                                  tooltipPosition: TooltipPosition.auto,
-                                ),
+                                tooltipBehavior: _tooltipBehavior,
                                 series: <CartesianSeries>[
                                   ColumnSeries<EnergyData, String>(
                                     dataSource: energyDataList,
@@ -2187,6 +2196,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   return "";
                                 }
                               },
+                              markerSettings: const MarkerSettings(
+                                isVisible: true,
+                                shape: DataMarkerType.pentagon,
+                                borderWidth: 2,
+                              ),
                               yValueMapper: (EnergyData data, _) =>
                                   data.energySaving,
                               name: 'Saving',
@@ -2215,11 +2229,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 : 400.dynamic,
                         child: SfCartesianChart(
                           primaryXAxis: const CategoryAxis(),
-                          tooltipBehavior: TooltipBehavior(
-                            enable: true,
-                            shared: true,
-                            tooltipPosition: TooltipPosition.auto,
-                          ),
+                          tooltipBehavior: _tooltipBehavior,
                           series: <CartesianSeries>[
                             ColumnSeries<EnergyData, String>(
                               dataSource: energyDataList,
