@@ -1,7 +1,5 @@
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/add_device/bluetooth_scan.dart';
-import 'package:enavatek_mobile/screen/add_device/qr_scanner/qr_scanner.dart';
-import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/device_details/add_schedule.dart';
 import 'package:enavatek_mobile/screen/device_details/schedule.dart';
 import 'package:enavatek_mobile/screen/enginner_access/enginner_home.dart';
