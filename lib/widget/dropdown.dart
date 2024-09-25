@@ -1,17 +1,19 @@
+import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
+import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:flutter/material.dart';
 
 class CustomDropdownButton extends StatefulWidget {
   final String? value;
   final List<DropdownMenuItem<String>> items;
   final ValueChanged<String?> onChanged;
-  final bool readOnly; // Add readonly property
+  final bool readOnly;
 
   CustomDropdownButton({
     required this.value,
     required this.items,
     required this.onChanged,
-    this.readOnly = false, 
+    this.readOnly = false,
   });
 
   @override
@@ -40,8 +42,7 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(4.0),
-          border: Border.all(
-              color: ConstantColors.borderColor, width: 1.0),
+          border: Border.all(color: ConstantColors.borderColor, width: 1.0),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -50,21 +51,21 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
               value: dropdownValue,
               items: widget.items,
               onChanged: widget.readOnly
-                  ? null // Disable dropdown if readonly mode is true
+                  ? null
                   : (newValue) {
                       setState(() {
-                        dropdownValue =
-                            newValue; // Update dropdownValue when changed
+                        dropdownValue = newValue;
                       });
-                      widget.onChanged(
-                          newValue); // Call parent widget's onChanged callback
+                      widget.onChanged(newValue);
                     },
-              icon: const Icon(Icons.keyboard_arrow_down_sharp),
+              icon: const Icon(
+                Icons.keyboard_arrow_down_sharp,
+                color: ConstantColors.appColor,
+              ),
               iconSize: 24,
               elevation: 2,
               isExpanded: true,
-              disabledHint: Text(
-                  dropdownValue ?? ''), // Show selected value even if disabled
+              disabledHint: Text(dropdownValue ?? ''),
             ),
           ),
         ),

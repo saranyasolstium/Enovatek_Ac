@@ -2,6 +2,7 @@ import 'package:country_pickers/country.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/add_device/add_device_screen.dart';
 import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
+import 'package:enavatek_mobile/screen/billing/billing.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all_device_screen.dart';
 import 'package:enavatek_mobile/screen/menu/country/country_screen.dart';
@@ -440,6 +441,45 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Text(
                           'Manage Country',
+                          style: GoogleFonts.roboto(
+                              color: ConstantColors.black,
+                              fontSize: screenWidth * 0.045),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  SizedBox(
+                    height: 0.03 * screenHeight,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BillingScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                          Container(
+                            height: 25.dynamic,
+                            width: 25.dynamic,
+                            decoration: const BoxDecoration(
+                              color: ConstantColors.iconColr,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        SizedBox(
+                          width: 0.02 * screenHeight,
+                        ),
+                        Text(
+                          'Billing',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: screenWidth * 0.045),

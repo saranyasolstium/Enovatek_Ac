@@ -239,21 +239,21 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
 
   Widget buildGraph({required List<EnergyData> data}) {
     return Container(
-      height: 350,
-      width: 1800,
+      height: 350.dynamic,
+      width: 1800.dynamic,
       child: SfCartesianChart(
         primaryXAxis: DateTimeAxis(
           dateFormat: DateFormat.Hm(),
           intervalType: DateTimeIntervalType.hours,
           interval: 1,
         ),
-        primaryYAxis: const NumericAxis(
+        primaryYAxis: NumericAxis(
           labelFormat: '{value}',
           title: AxisTitle(
             text: 'Energy Consumed (kWh)',
             textStyle: TextStyle(
               color: Colors.black,
-              fontSize: 14,
+              fontSize: 14.dynamic,
             ),
           ),
         ),
@@ -466,7 +466,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           Text(
                             'Select Country',
                             style: GoogleFonts.roboto(
-                              fontSize: 16,
+                              fontSize: 16.dynamic,
                               fontWeight: FontWeight.bold,
                               color: ConstantColors.appColor,
                             ),
@@ -475,17 +475,18 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             onTap: () {
                               Navigator.of(context).pop();
                             },
-                            child: const Padding(
-                              padding: EdgeInsets.only(right: 10),
-                              child: Icon(Icons.close),
+                            child: Padding(
+                              padding: EdgeInsets.only(right: 10.dynamic),
+                              child: const Icon(Icons.close),
                             ),
                           ),
                         ],
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: 10.dynamic, bottom: 10.dynamic),
                         child: Divider(
-                          thickness: 1,
+                          thickness: 1.dynamic,
                           color: Colors.black12,
                         ),
                       ),
@@ -500,14 +501,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   ? country.currencyType
                                   : "sg",
                               shape: const Circle(),
-                              height: 25,
-                              width: 25,
+                              height: 25.dynamic,
+                              width: 25.dynamic,
                             ),
-                            const SizedBox(width: 20),
+                            SizedBox(width: 20.dynamic),
                             Text(
                               country.name,
                               style: GoogleFonts.roboto(
-                                fontSize: 14,
+                                fontSize: 14.dynamic,
                                 color: ConstantColors.appColor,
                               ),
                             ),
@@ -531,7 +532,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           ],
                         );
                       }).toList(),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.dynamic),
                       if (radioValue == "Custom") ...[
                         Container(
                           padding: EdgeInsets.only(
@@ -576,7 +577,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             ),
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10.dynamic),
                         Container(
                           padding: EdgeInsets.only(
                             left: 20,
@@ -614,7 +615,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.dynamic),
                       ],
                       RoundedButton(
                         text: radioValue == "Custom" ? "Create" : "Apply",
@@ -712,31 +713,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
-  // Future<void> exportCSV(String csvContent, String fileName) async {
-  //   // final path = '/storage/emulated/0/Download/$fileName';
-  //   // final file = File(path);
-
-  //   Directory directory;
-  //   if (Platform.isIOS) {
-  //     directory = await getApplicationDocumentsDirectory();
-  //   } else if (Platform.isAndroid) {
-  //     directory = Directory('/storage/emulated/0/Download');
-  //   } else {
-  //     throw UnsupportedError('Unsupported platform');
-  //   }
-  //   final path = '${directory.path}/$fileName';
-  //   final file = File(path);
-
-  //   await file.writeAsString(csvContent);
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Text('CSV downloaded successfully to $path'),
-  //     ),
-  //   );
-
-  //   print('File saved at $path');
-  // }
-
   Future<void> exportPowerConsumptionData() async {
     try {
       int? userId = await SharedPreferencesHelper.instance.getUserID();
@@ -764,6 +740,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: ConstantColors.liveBgColor,
       bottomNavigationBar: Footer(),
@@ -784,7 +762,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       Text(
                         'Power Statistics',
                         style: GoogleFonts.roboto(
-                          fontSize: 18.dynamic,
+                          fontSize: 20.dynamic,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),
@@ -870,8 +848,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           children: [
                             Image.asset(
                               ImgPath.pngSolarPlane,
-                              width: 50,
-                              height: 50,
+                              width: 50.dynamic,
+                              height: 50.dynamic,
                             ),
                           ],
                         ),
@@ -880,67 +858,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           valueListenable: dcNotifier,
                           builder: (context, dcValue, child) {
                             return dcValue < 50
-                                // ? Row(
-                                //     children: List.generate(
-                                //       _numberOfArrows,
-                                //       (index) => AnimatedBuilder(
-                                //         animation: _animation,
-                                //         builder: (context, child) {
-                                //           bool shouldAnimate =
-                                //               dcValue > 0 && dcValue <= 50;
-                                //           bool isLit =
-                                //               index == _animation.value;
-
-                                //           // Define thresholds and corresponding no-animation limits
-                                //           int noAnimationThreshold1 = 0;
-                                //           int noAnimationThreshold2 = 10;
-                                //           int noAnimationThreshold3 = 20;
-                                //           int noAnimationThreshold4 = 30;
-
-                                //           // Determine the no-animation limit based on dcValue
-                                //           int noAnimationLimit;
-                                //           if (dcValue > noAnimationThreshold4) {
-                                //             noAnimationLimit = 4;
-                                //           } else if (dcValue >
-                                //               noAnimationThreshold3) {
-                                //             noAnimationLimit = 3;
-                                //           } else if (dcValue >
-                                //               noAnimationThreshold2) {
-                                //             noAnimationLimit = 2;
-                                //           } else if (dcValue >
-                                //               noAnimationThreshold1) {
-                                //             noAnimationLimit = 1;
-                                //           } else {
-                                //             noAnimationLimit = 0;
-                                //           }
-
-                                //           bool isIndexInNoAnimationZone =
-                                //               index < noAnimationLimit;
-
-                                //           double opacity = (dcValue == 0 ||
-                                //                   !shouldAnimate ||
-                                //                   isIndexInNoAnimationZone)
-                                //               ? 1.0
-                                //               : (isLit ? 1.0 : 0.5);
-
-                                //           return Container(
-                                //             margin: const EdgeInsets.symmetric(
-                                //                 horizontal: 1),
-                                //             child: AnimatedOpacity(
-                                //               opacity:
-                                //                   dcValue > 0 ? opacity : 0.4,
-                                //               duration: const Duration(
-                                //                   milliseconds: 300),
-                                //               child: Image.asset(
-                                //                 ImgPath.leftArrow1,
-                                //                 height: 15,
-                                //               ),
-                                //             ),
-                                //           );
-                                //         },
-                                //       ),
-                                //     ),
-                                //   )
                                 ? Row(
                                     children: List.generate(
                                     _numberOfArrows,
@@ -1001,13 +918,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   );
                           },
                         ),
-                        const SizedBox(width: 30),
+                        SizedBox(width: 30.dynamic),
                         Image.asset(
                           ImgPath.totalPower,
-                          width: 50,
-                          height: 50,
+                          width: 50.dynamic,
+                          height: 50.dynamic,
                         ),
-                        const SizedBox(width: 30),
+                        SizedBox(width: 30.dynamic),
                         ValueListenableBuilder<double>(
                           valueListenable: acNotifier,
                           builder: (context, acValue, child) {
@@ -1126,64 +1043,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                           );
                                         },
                                       );
-
-                                //  AnimatedBuilder(
-                                //     animation: _animation,
-                                //     builder: (context, child) {
-                                //       bool shouldAnimate =
-                                //           acValue > 0 && acValue <= 50;
-                                //       bool isLit =
-                                //           (_numberOfArrows - 1) - index ==
-                                //               _animation.value;
-
-                                //       // Define thresholds and corresponding no-animation limits
-                                //       int noAnimationThreshold1 = 0;
-                                //       int noAnimationThreshold2 = 10;
-                                //       int noAnimationThreshold3 = 20;
-                                //       int noAnimationThreshold4 = 30;
-
-                                //       // Determine the no-animation limit based on dcValue
-                                //       int noAnimationLimit;
-                                //       if (acValue > noAnimationThreshold4) {
-                                //         noAnimationLimit = 0;
-                                //       } else if (acValue >
-                                //           noAnimationThreshold3) {
-                                //         noAnimationLimit = 1;
-                                //       } else if (acValue >
-                                //           noAnimationThreshold2) {
-                                //         noAnimationLimit = 2;
-                                //       } else if (acValue >
-                                //           noAnimationThreshold1) {
-                                //         noAnimationLimit = 3;
-                                //       } else {
-                                //         noAnimationLimit = 4;
-                                //       }
-
-                                //       bool isIndexInNoAnimationZone =
-                                //           index > noAnimationLimit;
-
-                                //       double opacity = (acValue == 0 ||
-                                //               !shouldAnimate ||
-                                //               isIndexInNoAnimationZone)
-                                //           ? 1.0
-                                //           : (isLit ? 1.0 : 0.5);
-
-                                //       return Container(
-                                //         margin: const EdgeInsets.symmetric(
-                                //             horizontal: 1),
-                                //         child: AnimatedOpacity(
-                                //           opacity:
-                                //               acValue > 0 ? opacity : 0.4,
-                                //           duration: const Duration(
-                                //               milliseconds: 300),
-                                //           child: Image.asset(
-                                //             ImgPath.rightArrow5,
-                                //             height: 15,
-                                //           ),
-                                //         ),
-                                //       );
-                                //     },
-                                //   );
                               }),
                             );
                           },
@@ -1194,217 +1053,15 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           children: [
                             Image.asset(
                               ImgPath.pngTower,
-                              width: 50,
-                              height: 50,
+                              width: 50.dynamic,
+                              height: 50.dynamic,
                             ),
                           ],
                         ),
                       ],
                     ),
-                  ), //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: [
-                  //       Column(
-                  //         crossAxisAlignment: CrossAxisAlignment.center,
-                  //         children: [
-                  //           Image.asset(
-                  //             ImgPath.pngSolarPlane,
-                  //             width: 50.dynamic,
-                  //             height: 50.dynamic,
-                  //           ),
-                  //         ],
-                  //       ),
-                  //       SizedBox(
-                  //         width: 20.dynamic,
-                  //       ),
-                  //       ValueListenableBuilder<double>(
-                  //         valueListenable: dcNotifier,
-                  //         builder: (context, dcValue, child) {
-                  //           return Row(
-                  //             children: [
-                  //               Shimmer.fromColors(
-                  //                 baseColor: Colors.transparent,
-                  //                 highlightColor: dcValue > 0
-                  //                     ? ConstantColors.borderButtonColor
-                  //                     : ConstantColors.strokeColor,
-                  //                 enabled: true,
-                  //                 direction: ShimmerDirection.ltr,
-                  //                 period: const Duration(seconds: 5),
-                  //                 child: Image.asset(
-                  //                   dcValue > 0
-                  //                       ? ImgPath.leftArrow1
-                  //                       : ImgPath.leftArrow2,
-                  //                   height: 15.dynamic,
-                  //                 ),
-                  //               ),
-                  //               Shimmer.fromColors(
-                  //                 baseColor: Colors.transparent,
-                  //                 highlightColor: dcValue > 10
-                  //                     ? ConstantColors.borderButtonColor
-                  //                     : ConstantColors.strokeColor,
-                  //                 direction: ShimmerDirection.ltr,
-                  //                 period: const Duration(seconds: 5),
-                  //                 child: Image.asset(
-                  //                   dcValue > 10
-                  //                       ? ImgPath.leftArrow1
-                  //                       : ImgPath.leftArrow2,
-                  //                   height: 15.dynamic,
-                  //                 ),
-                  //               ),
-                  //               Shimmer.fromColors(
-                  //                 baseColor: Colors.transparent,
-                  //                 highlightColor: dcValue > 20
-                  //                     ? ConstantColors.borderButtonColor
-                  //                     : ConstantColors.strokeColor,
-                  //                 direction: ShimmerDirection.ltr,
-                  //                 period: const Duration(seconds: 5),
-                  //                 child: Image.asset(
-                  //                   dcValue > 20
-                  //                       ? ImgPath.leftArrow1
-                  //                       : ImgPath.leftArrow2,
-                  //                   height: 15.dynamic,
-                  //                 ),
-                  //               ),
-                  //               Shimmer.fromColors(
-                  //                 baseColor: Colors.transparent,
-                  //                 highlightColor: dcValue > 30
-                  //                     ? ConstantColors.borderButtonColor
-                  //                     : ConstantColors.strokeColor,
-                  //                 direction: ShimmerDirection.ltr,
-                  //                 period: const Duration(seconds: 5),
-                  //                 child: Image.asset(
-                  //                   dcValue > 30
-                  //                       ? ImgPath.leftArrow1
-                  //                       : ImgPath.leftArrow2,
-                  //                   height: 15.dynamic,
-                  //                 ),
-                  //               ),
-                  //               Shimmer.fromColors(
-                  //                 baseColor: Colors.transparent,
-                  //                 highlightColor: dcValue > 40
-                  //                     ? ConstantColors.borderButtonColor
-                  //                     : ConstantColors.strokeColor,
-                  //                 direction: ShimmerDirection.ltr,
-                  //                 period: const Duration(seconds: 5),
-                  //                 child: Image.asset(
-                  //                   dcValue > 40
-                  //                       ? ImgPath.leftArrow1
-                  //                       : ImgPath.leftArrow2,
-                  //                   height: 15.dynamic,
-                  //                 ),
-                  //               ),
-                  //             ],
-                  //           );
-                  //         },
-                  //       ),
-                  //       SizedBox(
-                  //         width: 30.dynamic,
-                  //       ),
-                  //       Image.asset(
-                  //         ImgPath.totalPower,
-                  //         width: 50.dynamic,
-                  //         height: 50.dynamic,
-                  //       ),
-                  //       SizedBox(
-                  //         width: 30.dynamic,
-                  //       ),
-                  //       ValueListenableBuilder<double>(
-                  //         valueListenable: acNotifier,
-                  //         builder: (context, acValue, child) {
-                  //           return Row(
-                  //             children: [
-                  //               Shimmer.fromColors(
-                  //                 baseColor: Colors.transparent,
-                  //                 highlightColor: acValue > 40
-                  //                     ? ConstantColors.borderButtonColor
-                  //                     : ConstantColors.strokeColor,
-                  //                 direction: ShimmerDirection.rtl,
-                  //                 period: const Duration(seconds: 5),
-                  //                 child: Image.asset(
-                  //                   acValue > 40
-                  //                       ? ImgPath.rightArrow5
-                  //                       : ImgPath.rightArrow1,
-                  //                   height: 15.dynamic,
-                  //                 ),
-                  //               ),
-                  //               Shimmer.fromColors(
-                  //                 baseColor: Colors.transparent,
-                  //                 highlightColor: acValue > 30
-                  //                     ? ConstantColors.borderButtonColor
-                  //                     : ConstantColors.strokeColor,
-                  //                 direction: ShimmerDirection.rtl,
-                  //                 period: const Duration(seconds: 5),
-                  //                 child: Image.asset(
-                  //                   acValue > 30
-                  //                       ? ImgPath.rightArrow5
-                  //                       : ImgPath.rightArrow2,
-                  //                   height: 15.dynamic,
-                  //                 ),
-                  //               ),
-                  //               Shimmer.fromColors(
-                  //                 baseColor: Colors.transparent,
-                  //                 highlightColor: acValue > 20
-                  //                     ? ConstantColors.borderButtonColor
-                  //                     : ConstantColors.strokeColor,
-                  //                 direction: ShimmerDirection.rtl,
-                  //                 period: const Duration(seconds: 5),
-                  //                 child: Image.asset(
-                  //                   acValue > 20
-                  //                       ? ImgPath.rightArrow5
-                  //                       : ImgPath.rightArrow3,
-                  //                   height: 15.dynamic,
-                  //                 ),
-                  //               ),
-                  //               Shimmer.fromColors(
-                  //                 baseColor: Colors.transparent,
-                  //                 highlightColor: acValue > 10
-                  //                     ? ConstantColors.borderButtonColor
-                  //                     : ConstantColors.strokeColor,
-                  //                 direction: ShimmerDirection.rtl,
-                  //                 period: const Duration(seconds: 5),
-                  //                 child: Image.asset(
-                  //                   acValue > 10
-                  //                       ? ImgPath.rightArrow5
-                  //                       : ImgPath.rightArrow4,
-                  //                   height: 15.dynamic,
-                  //                 ),
-                  //               ),
-                  //               Shimmer.fromColors(
-                  //                 baseColor: Colors.transparent,
-                  //                 highlightColor: acValue > 0
-                  //                     ? ConstantColors.borderButtonColor
-                  //                     : ConstantColors.strokeColor,
-                  //                 direction: ShimmerDirection.rtl,
-                  //                 period: const Duration(seconds: 5),
-                  //                 child: Image.asset(
-                  //                   acValue > 0
-                  //                       ? ImgPath.rightArrow5
-                  //                       : ImgPath.rightArrow4,
-                  //                   height: 15.dynamic,
-                  //                 ),
-                  //               ),
-                  //             ],
-                  //           );
-                  //         },
-                  //       ),
-                  //       const SizedBox(
-                  //         width: 20,
-                  //       ),
-                  //       Column(
-                  //         crossAxisAlignment: CrossAxisAlignment.center,
-                  //         children: [
-                  //           Image.asset(
-                  //             ImgPath.pngTower,
-                  //             width: 50,
-                  //             height: 50,
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-
-                  const SizedBox(height: 5),
+                  ),
+                  SizedBox(height: 5.dynamic),
                   Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -1415,16 +1072,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               'DC Power',
                               style: GoogleFonts.roboto(
-                                fontSize: 16,
+                                fontSize: 16.dynamic,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.black,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10.dynamic),
                             Text(
                               dcPower!,
                               style: GoogleFonts.roboto(
-                                fontSize: 18,
+                                fontSize: 18.dynamic,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
                               ),
@@ -1437,16 +1094,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               'Total Power',
                               style: GoogleFonts.roboto(
-                                fontSize: 16,
+                                fontSize: 16.dynamic,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.iconColr,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10.dynamic),
                             Text(
                               totalPower!,
                               style: GoogleFonts.roboto(
-                                fontSize: 18,
+                                fontSize: 18.dynamic,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.iconColr,
                               ),
@@ -1459,16 +1116,16 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               'AC Power',
                               style: GoogleFonts.roboto(
-                                fontSize: 16,
+                                fontSize: 16.dynamic,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10.dynamic),
                             Text(
                               acPower!,
                               style: GoogleFonts.roboto(
-                                fontSize: 18,
+                                fontSize: 18.dynamic,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
                               ),
@@ -1478,7 +1135,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.dynamic),
                 ],
               ),
             ),
@@ -1487,10 +1144,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               builder: (context, value, child) {
                 return Container(
                   color: ConstantColors.liveBgColor,
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.symmetric(horizontal: 40.dynamic,vertical: 10.dynamic),
                   child: Center(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GestureDetector(
                           onTap: () {
@@ -1505,30 +1162,30 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const SizedBox(height: 10),
+                              SizedBox(height: 10.dynamic),
                               Image.asset(
                                 ImgPath.energyIcon,
-                                width: 30,
-                                height: 30,
+                                width: 30.dynamic,
+                                height: 30.dynamic,
                                 color: value == 0
                                     ? ConstantColors.borderButtonColor
                                     : ConstantColors.appColor,
                               ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: 10.dynamic),
                               Text(
                                 'Energy Saving',
                                 style: GoogleFonts.roboto(
-                                  fontSize: 12,
+                                  fontSize: 12.dynamic,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: 10.dynamic),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 60),
                         GestureDetector(
                           onTap: () {
                             selectedTabIndex.value = 1;
@@ -1543,7 +1200,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const SizedBox(height: 10),
+                              SizedBox(height: 10.dynamic),
                               Text(
                                 currencySymbolNotifier.value == "\$"
                                     ? 'S${currencySymbolNotifier.value}'
@@ -1559,16 +1216,15 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               Text(
                                 'Saving',
                                 style: GoogleFonts.roboto(
-                                  fontSize: 12,
+                                  fontSize: 12.dynamic,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: 10.dynamic),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 60),
                         GestureDetector(
                           onTap: () {
                             selectedTabIndex.value = 2;
@@ -1583,25 +1239,25 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const SizedBox(height: 10),
+                              SizedBox(height: 10.dynamic),
                               Image.asset(
                                 ImgPath.treeIcon,
-                                width: 30,
-                                height: 30,
+                                width: 30.dynamic,
+                                height: 30.dynamic,
                                 color: value == 2
                                     ? ConstantColors.borderButtonColor
                                     : ConstantColors.appColor,
                               ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: 10.dynamic),
                               Text(
                                 'Tree Planted',
                                 style: GoogleFonts.roboto(
-                                  fontSize: 12,
+                                  fontSize: 12.dynamic,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: 10.dynamic),
                             ],
                           ),
                         ),
@@ -1620,42 +1276,39 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       children: [
                         Container(
                           color: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20.dynamic, vertical: 10.dynamic),
                           child: Center(
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    const SizedBox(
-                                      height: 10,
+                                    SizedBox(
+                                      height: 10.dynamic,
                                     ),
                                     Text(
                                       'Total Energy Saving',
                                       style: GoogleFonts.roboto(
-                                        fontSize: 12,
+                                        fontSize: 12.dynamic,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
+                                    SizedBox(
+                                      height: 10.dynamic,
                                     ),
                                     Text(
                                       '$totalEnergy %',
                                       style: GoogleFonts.roboto(
-                                        fontSize: 20,
+                                        fontSize: 20.dynamic,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
                                     ),
                                   ],
-                                ),
-                                const SizedBox(
-                                  width: 30,
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -1665,39 +1318,39 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Container(
                                           color:
                                               ConstantColors.borderButtonColor,
-                                          width: 10,
-                                          height: 2,
+                                          width: 10.dynamic,
+                                          height: 2.dynamic,
                                         ),
-                                        const SizedBox(
-                                          width: 10,
+                                        SizedBox(
+                                          width: 10.dynamic,
                                         ),
                                         Text(
                                           'AC',
                                           style: GoogleFonts.roboto(
-                                            fontSize: 12,
+                                            fontSize: 12.dynamic,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(
-                                      height: 10,
+                                    SizedBox(
+                                      width: screenWidth * 0.15,
                                     ),
                                     Row(
                                       children: [
                                         Container(
                                           color: ConstantColors.greenColor,
-                                          width: 10,
-                                          height: 2,
+                                          width: 10.dynamic,
+                                          height: 2.dynamic,
                                         ),
-                                        const SizedBox(
-                                          width: 10,
+                                        SizedBox(
+                                          width: 10.dynamic,
                                         ),
                                         Text(
                                           'DC',
                                           style: GoogleFonts.roboto(
-                                            fontSize: 12,
+                                            fontSize: 12.dynamic,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1706,11 +1359,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     ),
                                   ],
                                 ),
-                                const SizedBox(
-                                  width: 40,
-                                ),
                                 SizedBox(
-                                  width: 120,
+                                  width: 120.dynamic,
                                   child: CustomDropdownButton(
                                     value: "Intraday",
                                     items: const [
@@ -1783,8 +1433,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       children: [
                         Container(
                           color: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20.dynamic, vertical: 10.dynamic),
                           child: Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -1793,35 +1443,35 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    const SizedBox(
-                                      height: 10,
+                                    SizedBox(
+                                      height: 10.dynamic,
                                     ),
                                     Text(
                                       'Total saving in ${currencyCodeNotifier.value}',
                                       style: GoogleFonts.roboto(
-                                        fontSize: 12,
+                                        fontSize: 12.dynamic,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
+                                    SizedBox(
+                                      height: 10.dynamic,
                                     ),
                                     Text(
                                       totalSavings,
                                       style: GoogleFonts.roboto(
-                                        fontSize: 20,
+                                        fontSize: 20.dynamic,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(
-                                  width: 30,
+                                SizedBox(
+                                  width: 30.dynamic,
                                 ),
                                 SizedBox(
-                                  width: 120,
+                                  width: 120.dynamic,
                                   child: CustomDropdownButton(
                                     value: "Day",
                                     items: const [
@@ -1885,42 +1535,42 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       children: [
                         Container(
                           color: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20.dynamic, vertical: 10.dynamic),
                           child: Center(
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    const SizedBox(
-                                      height: 10,
+                                    SizedBox(
+                                      height: 10.dynamic,
                                     ),
                                     Text(
                                       'Total Tree Planted',
                                       style: GoogleFonts.roboto(
-                                        fontSize: 12,
+                                        fontSize: 12.dynamic,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
+                                    SizedBox(
+                                      height: 10.dynamic,
                                     ),
                                     Text(
                                       totalTree,
                                       style: GoogleFonts.roboto(
-                                        fontSize: 20,
+                                        fontSize: 20.dynamic,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(
-                                  width: 10,
+                                SizedBox(
+                                  width: 10.dynamic,
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1929,63 +1579,63 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       children: [
                                         Container(
                                           color: ConstantColors.greenColor,
-                                          width: 10,
-                                          height: 2,
+                                          width: 10.dynamic,
+                                          height: 2.dynamic,
                                         ),
-                                        const SizedBox(
-                                          width: 5,
+                                        SizedBox(
+                                          width: 5.dynamic,
                                         ),
                                         Text(
                                           'Tree Planted',
                                           style: GoogleFonts.roboto(
-                                            fontSize: 12,
+                                            fontSize: 12.dynamic,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(
-                                      height: 5,
+                                    SizedBox(
+                                      height: 5.dynamic,
                                     ),
                                     Row(
                                       children: [
                                         Container(
                                           color:
                                               ConstantColors.borderButtonColor,
-                                          width: 10,
-                                          height: 2,
+                                          width: 10.dynamic,
+                                          height: 2.dynamic,
                                         ),
-                                        const SizedBox(
-                                          width: 10,
+                                        SizedBox(
+                                          width: 10.dynamic,
                                         ),
                                         Text(
                                           'S\$ Savings',
                                           style: GoogleFonts.roboto(
-                                            fontSize: 12,
+                                            fontSize: 12.dynamic,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(
-                                      height: 5,
+                                    SizedBox(
+                                      height: 5.dynamic,
                                     ),
                                     Row(
                                       children: [
                                         Container(
                                           color: ConstantColors.appColor,
-                                          width: 10,
-                                          height: 2,
+                                          width: 10.dynamic,
+                                          height: 2.dynamic,
                                         ),
-                                        const SizedBox(
-                                          width: 10,
+                                        SizedBox(
+                                          width: 10.dynamic,
                                         ),
                                         Text(
                                           'CO2',
                                           style: GoogleFonts.roboto(
-                                            fontSize: 12,
+                                            fontSize: 12.dynamic,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1994,11 +1644,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     ),
                                   ],
                                 ),
-                                const SizedBox(
-                                  width: 15,
+                                SizedBox(
+                                  width: 15.dynamic,
                                 ),
                                 SizedBox(
-                                  width: 120,
+                                  width: 120.dynamic,
                                   child: CustomDropdownButton(
                                     value: "Day",
                                     items: const [
@@ -2072,6 +1722,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                 const SizedBox(width: 20),
               ],
             ),
+            SizedBox(
+              height: 20.dynamic,
+            ),
             ValueListenableBuilder(
               valueListenable: energyNotiifer,
               builder: (context, value, child) {
@@ -2086,7 +1739,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               ),
                             ])
                           : Container(
-                              height: 350,
+                              height: 350.dynamic,
                               width: energyType == "day"
                                   ? 1800.dynamic
                                   : energyType == "month"
@@ -2168,7 +1821,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Container(
-                        height: 350,
+                        height: 350.dynamic,
                         width: energyType == "day"
                             ? 1800.dynamic
                             : energyType == "month"
@@ -2228,7 +1881,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Container(
-                        height: 350,
+                        height: 350.dynamic,
                         width: energyType == "day"
                             ? 2000.dynamic
                             : energyType == "month"
@@ -2313,8 +1966,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     );
               },
             ),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 20.dynamic,
             ),
           ],
         ),

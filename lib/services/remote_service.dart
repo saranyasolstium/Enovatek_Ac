@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:country_picker/country_picker.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
 import 'package:enavatek_mobile/model/energy.dart';
 import 'package:http/http.dart' as http;
