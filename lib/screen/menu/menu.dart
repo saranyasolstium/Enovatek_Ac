@@ -428,14 +428,14 @@ class MenuScreenState extends State<MenuScreen> {
                         const SizedBox(
                           width: 10,
                         ),
-                          Container(
-                            height: 25.dynamic,
-                            width: 25.dynamic,
-                            decoration: const BoxDecoration(
-                              color: ConstantColors.iconColr,
-                              shape: BoxShape.circle,
-                            ),
+                        Container(
+                          height: 25.dynamic,
+                          width: 25.dynamic,
+                          decoration: const BoxDecoration(
+                            color: ConstantColors.iconColr,
+                            shape: BoxShape.circle,
                           ),
+                        ),
                         SizedBox(
                           width: 0.02 * screenHeight,
                         ),
@@ -448,7 +448,6 @@ class MenuScreenState extends State<MenuScreen> {
                       ],
                     ),
                   ),
-                  
                   SizedBox(
                     height: 0.03 * screenHeight,
                   ),
@@ -467,14 +466,12 @@ class MenuScreenState extends State<MenuScreen> {
                         const SizedBox(
                           width: 10,
                         ),
-                          Container(
-                            height: 25.dynamic,
-                            width: 25.dynamic,
-                            decoration: const BoxDecoration(
-                              color: ConstantColors.iconColr,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
+                        Image.asset(
+                          ImgPath.invoice,
+                          height: screenWidth * 0.05,
+                          width: screenWidth * 0.05,
+                          color: ConstantColors.iconColr,
+                        ),
                         SizedBox(
                           width: 0.02 * screenHeight,
                         ),
@@ -583,7 +580,7 @@ class MenuScreenState extends State<MenuScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                     // Navigator.pushNamed(context, supportRoute);
+                      // Navigator.pushNamed(context, supportRoute);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,

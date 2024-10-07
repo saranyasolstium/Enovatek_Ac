@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:enavatek_mobile/model/billing.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
 import 'package:enavatek_mobile/model/energy.dart';
 import 'package:http/http.dart' as http;
@@ -786,5 +787,65 @@ class RemoteServices {
     print(response.body);
 
     return response;
+  }
+
+  //get billStatus
+
+  static Future<Map<String, dynamic>> consumptionBillStatus(
+      List<String> deviceId,
+      int userId,
+      int countryId,
+      String periodValue) async {
+    try {
+      print('${url}api/user/power_consumption_bill_status_data');
+      String apiUrl = '${url}api/user/power_consumption_bill_status_data';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+
+      Map<String, dynamic> requestBody = {
+        "device_id": deviceId,
+        "user_id": userId,
+        "country_id": countryId,
+        "period_value": periodValue,
+      };
+
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      // Make the API request
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseBody = jsonDecode(response.body);
+        List<BillingData> billingDataList =
+            (responseBody['device_wise_bill'] as List)
+                .map((data) => BillingData.fromJson(data))
+                .toList();
+
+        // Parse summary bill
+        List<SummaryBill> summaryBillList =
+            (responseBody['summary_bill'] as List)
+                .map((data) => SummaryBill.fromJson(data))
+                .toList();
+
+        // Return both lists in a map
+        return {
+          'billingData': billingDataList,
+          'summaryBill': summaryBillList,
+        };
+      } else {
+        throw Exception('Failed to load billing data');
+      }
+    } catch (e) {
+      print('Error: $e');
+      rethrow;
+    }
   }
 }

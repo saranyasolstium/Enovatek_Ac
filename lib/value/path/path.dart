@@ -89,4 +89,5 @@ class ImgPath {
   static String leftArrow2 = "assets/left_arrow_2.png";
 
   static String export = "assets/export.png";
+  static String invoice = "assets/invoice.png";
 }

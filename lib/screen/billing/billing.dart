@@ -2,18 +2,22 @@ import 'dart:async';
 
 import 'package:country_flags/country_flags.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
+import 'package:enavatek_mobile/model/billing.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
-import 'package:enavatek_mobile/router/route_constant.dart';
+import 'package:enavatek_mobile/screen/billing/payment_service.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
-import 'package:enavatek_mobile/widget/dropdown.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:month_year_picker/month_year_picker.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
+
+import 'package:intl/intl.dart';
 
 class BillingScreen extends StatefulWidget {
   const BillingScreen({
@@ -28,71 +32,97 @@ class BillingScreenState extends State<BillingScreen>
     with TickerProviderStateMixin {
   ValueNotifier<String> selectedCountryNotifier = ValueNotifier<String>('sg');
   List<CountryData> countryList = [];
+  TextEditingController dateController = TextEditingController();
 
   late List<String> months;
-  late String selectedMonth;
+  late String selectedMonth = "";
+  String consumption = "0";
+  String totalBillAmount = "-";
 
-  final List<Map<String, dynamic>> deviceData = [
-    {
-      "code": "1548",
-      "consumption": "2 kwh",
-      "savings": "S\$50",
-      "billed": "S\$200"
-    },
-    {
-      "code": "1549",
-      "consumption": "2.1 kwh",
-      "savings": "S\$45",
-      "billed": "S\$220"
-    },
-    {
-      "code": "1550",
-      "consumption": "2.3 kwh",
-      "savings": "S\$42",
-      "billed": "S\$230"
-    },
-    {
-      "code": "1551",
-      "consumption": "3 kwh",
-      "savings": "S\$47",
-      "billed": "S\$310"
-    },
-    {
-      "code": "1552",
-      "consumption": "3.1 kwh",
-      "savings": "S\$52",
-      "billed": "S\$320"
-    },
-  ];
+  List<BillingData> billingDataList = [];
+  List<SummaryBill> summaryBillList = [];
+  late String currentMonthYear;
 
   @override
   void initState() {
     super.initState();
-    int currentMonthIndex = DateTime.now().month;
-    int currentYear = DateTime.now().year;
-
-    months = [for (int i = 0; i < 12; i++) "${_getMonthName(i)} $currentYear"];
-
-    selectedMonth = months[currentMonthIndex - 1];
-    months.add("Previous bill");
+    currentMonthYear = getCurrentMonthYear();
+    fetchData(currentMonthYear);
   }
 
-  String _getMonthName(int index) {
-    const monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return monthNames[index];
+  String getCurrentMonthYear() {
+    DateTime now = DateTime.now();
+    dateController.text = DateFormat('MMM yy').format(now).toString();
+    return DateFormat('MMM-yy').format(now);
+  }
+
+  String formatPeriod(String period) {
+    List<String> dates = period.split(' - ');
+
+    if (dates.length == 2) {
+      DateTime startDate = DateTime.parse(dates[0]);
+      DateTime endDate = DateTime.parse(dates[1]);
+      String formattedStartDate = DateFormat('dd MMM yyyy').format(startDate);
+      String formattedEndDate = DateFormat('dd MMM yyyy').format(endDate);
+
+      return '$formattedStartDate - $formattedEndDate';
+    } else {
+      throw Exception('Invalid period format');
+    }
+  }
+
+  String calculateTotalConsumption(List<BillingData> billingDataList) {
+    double totalConsumption = 0.0;
+
+    for (var data in billingDataList) {
+      totalConsumption += data.totalConsumption;
+    }
+
+    setState(() {
+      consumption = totalConsumption.toStringAsFixed(2);
+      print('Saranya $consumption');
+    });
+
+    return consumption;
+  }
+
+  String calculateTotalBillAmount(List<BillingData> billingDataList) {
+    double totalBill = 0.0;
+
+    for (var data in billingDataList) {
+      totalBill += double.tryParse(data.billAmount) ?? 0.0;
+    }
+
+    setState(() {
+      totalBillAmount = totalBill.toStringAsFixed(2);
+      print(totalBillAmount);
+    });
+
+    return totalBillAmount;
+  }
+
+  Future<void> fetchData(String periodType) async {
+    try {
+      billingDataList = [];
+      summaryBillList = [];
+      int? userId = await SharedPreferencesHelper.instance.getUserID();
+      final result = await RemoteServices.consumptionBillStatus(
+          [], userId!, 6, periodType);
+      setState(() {
+        billingDataList = result['billingData'];
+        summaryBillList = result['summaryBill'];
+        selectedMonth = formatPeriod(billingDataList.first.period);
+        if (billingDataList.isNotEmpty) {
+          consumption = calculateTotalConsumption(billingDataList);
+          totalBillAmount = calculateTotalBillAmount(billingDataList);
+        } else {
+          consumption = "0";
+          totalBillAmount = "0";
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> fetchCountry(bool status) async {
@@ -167,7 +197,6 @@ class BillingScreenState extends State<BillingScreen>
                         ),
                       ),
                       ...countryList.map((country) {
-                        print('sranya321 ${country.currencyType}');
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -228,6 +257,23 @@ class BillingScreenState extends State<BillingScreen>
         );
       },
     );
+  }
+
+  Future<void> selectMonthYear(BuildContext context) async {
+    final selected = await showMonthPicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2019),
+      lastDate: DateTime(2030),
+    );
+
+    if (selected != null) {
+      setState(() {
+        dateController.text = DateFormat('MMM yyyy').format(selected);
+        fetchData(DateFormat('MMM-yy').format(selected).toString());
+      });
+      print('Selected date: ${dateController.text}');
+    }
   }
 
   @override
@@ -353,21 +399,23 @@ class BillingScreenState extends State<BillingScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          width: 120.dynamic,
-                          child: CustomDropdownButton(
-                            value: selectedMonth,
-                            items: months.map((String month) {
-                              return DropdownMenuItem<String>(
-                                value: month,
-                                child: Text(month),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedMonth = value!;
-                              });
-                            },
+                        Container(
+                          width: 120,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Colors.grey[400]!, width: 1.0),
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          child: TextField(
+                            controller: dateController,
+                            readOnly: true,
+                            decoration: const InputDecoration(
+                              hintText: "Select Date",
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 12.0, horizontal: 12.0),
+                            ),
+                            onTap: () => selectMonthYear(context),
                           ),
                         ),
                         Column(
@@ -389,7 +437,9 @@ class BillingScreenState extends State<BillingScreen>
                               height: 5.dynamic,
                             ),
                             Text(
-                              '11kw.h',
+                              billingDataList.isNotEmpty
+                                  ? '$consumption kw.h'
+                                  : '0 kw.h',
                               style: GoogleFonts.roboto(
                                 fontSize: 20.dynamic,
                                 fontWeight: FontWeight.bold,
@@ -417,7 +467,9 @@ class BillingScreenState extends State<BillingScreen>
                               height: 5.dynamic,
                             ),
                             Text(
-                              'S\$ 3000',
+                              billingDataList.isNotEmpty
+                                  ? 'S\$ $totalBillAmount'
+                                  : 'S\$ 0',
                               style: GoogleFonts.roboto(
                                 fontSize: 20.dynamic,
                                 fontWeight: FontWeight.bold,
@@ -445,41 +497,90 @@ class BillingScreenState extends State<BillingScreen>
             SizedBox(
               height: 20.dynamic,
             ),
-            Text(
-              'Device code (1 Sep 2024 - 19 Sep 2024)',
-              style: GoogleFonts.roboto(
-                fontSize: 18.dynamic,
-                fontWeight: FontWeight.bold,
-                color: ConstantColors.appColor,
+            Visibility(
+              visible: billingDataList.isNotEmpty,
+              child: Text(
+                'Device code ($selectedMonth)',
+                style: GoogleFonts.roboto(
+                  fontSize: 18.dynamic,
+                  fontWeight: FontWeight.bold,
+                  color: ConstantColors.appColor,
+                ),
               ),
             ),
             SizedBox(
               height: 20.dynamic,
             ),
-            Card(
-              color: Colors.white,
-              child: DataTable(
-                columnSpacing: 10,
-                headingRowColor: MaterialStateProperty.all(
-                    ConstantColors.darkBackgroundColor),
-                columns: [
-                  DataColumn(label: _buildTableHeader("Device")),
-                  DataColumn(label: _buildTableHeader("Consumption")),
-                  DataColumn(label: _buildTableHeader("Savings")),
-                  DataColumn(label: _buildTableHeader("Billed Amount")),
-                ],
-                rows: deviceData.map((data) {
-                  return DataRow(
-                    cells: [
-                      DataCell(_buildTableCell(data["code"])),
-                      DataCell(_buildTableCell(data["consumption"].toString())),
-                      DataCell(_buildTableCell(data["savings"].toString())),
-                      DataCell(_buildTableCell(data["billed"].toString())),
-                    ],
-                  );
-                }).toList(),
-              ),
-            )
+            billingDataList.isNotEmpty
+                ? Card(
+                    color: Colors.white,
+                    child: DataTable(
+                      columnSpacing: 10,
+                      headingRowColor: MaterialStateProperty.all(
+                          ConstantColors.darkBackgroundColor),
+                      columns: [
+                        DataColumn(label: _buildTableHeader("Device")),
+                        DataColumn(label: _buildTableHeader("Consumption")),
+                        DataColumn(label: _buildTableHeader("Savings")),
+                        DataColumn(label: _buildTableHeader("Billed Amount")),
+                      ],
+                      rows: billingDataList.map((billing) {
+                        return DataRow(
+                          cells: [
+                            DataCell(_buildTableCell(billing.deviceId)),
+                            DataCell(_buildTableCell(
+                                '${billing.totalConsumption.toString()} kwh')),
+                            DataCell(_buildTableCell(
+                                'S\$ ${billing.energySaving.toString()}')),
+                            DataCell(_buildTableCell(
+                                'S\$ ${billing.billAmount.toString()}')),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  )
+                : Center(
+                    child: Text(
+                      'No Data Available',
+                      style: GoogleFonts.roboto(
+                        fontSize: 16.dynamic,
+                        fontWeight: FontWeight.bold,
+                        color: ConstantColors.appColor,
+                      ),
+                    ),
+                  ),
+            SizedBox(
+              height: 20.dynamic,
+            ),
+            summaryBillList.isNotEmpty
+                ? Card(
+                    color: Colors.white,
+                    child: DataTable(
+                      columnSpacing: 10,
+                      headingRowColor: MaterialStateProperty.all(
+                          ConstantColors.darkBackgroundColor),
+                      columns: [
+                        DataColumn(label: _buildTableHeader("")),
+                        DataColumn(label: _buildTableHeader("Energy Saving")),
+                        DataColumn(label: _buildTableHeader("Saving")),
+                        DataColumn(label: _buildTableHeader("Tree Planted")),
+                      ],
+                      rows: summaryBillList.map((summary) {
+                        return DataRow(
+                          cells: [
+                            DataCell(
+                                _buildTableCell(summary.getFormattedPeriod())),
+                            DataCell(
+                                _buildTableCell('${summary.energySaving} kwh')),
+                            DataCell(_buildTableCell('S\$ ${summary.saving}')),
+                            DataCell(_buildTableCell(
+                                summary.treesPlanted.toString()))
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  )
+                : Container(),
           ],
         ),
       ),
@@ -495,15 +596,17 @@ class BillingScreenState extends State<BillingScreen>
             children: [
               RoundedButton(
                 onPressed: () {
-                 // Navigator.pushNamed(context, loginRoute);
+                  // Navigator.pushNamed(context, loginRoute);
                 },
                 text: "Download Invoice",
                 backgroundColor: ConstantColors.whiteColor,
                 textColor: ConstantColors.borderButtonColor,
               ),
               RoundedButton(
-                onPressed: () {
-                  //Navigator.pushNamed(context, loginRoute);
+                onPressed: () async {
+                  double amountToPay = double.parse(totalBillAmount);
+                  await PaymentService()
+                      .createPaymentRequest(context, amountToPay);
                 },
                 text: "Pay now",
                 backgroundColor: ConstantColors.borderButtonColor,

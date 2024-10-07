@@ -407,6 +407,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     if (energyDataList.isEmpty) {
       return 0.0;
     }
+
     double acMax = energyDataList.fold<double>(
         0.0,
         (max, data) =>
@@ -415,15 +416,20 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         0.0,
         (max, data) =>
             data.dcEnergyConsumed > max ? data.dcEnergyConsumed : max);
+
     print(acMax);
     print(dcMax);
+
     double totalEnergy = acMax + dcMax;
     print(totalEnergy);
+
+    if (totalEnergy == 0) {
+      return 0.0;
+    }
+
     double savingPercentage = (dcMax / totalEnergy) * 100;
     print(savingPercentage);
-    // double totalenergy =
-    //     energyDataList.fold(0.0, (sum, data) => sum + data.totalEnergy);
-    //return totalenergy / energyDataList.length;
+
     return savingPercentage;
   }
 
@@ -431,9 +437,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isTablet = screenWidth >= 600;
 
-    // Set the default selected value to the current selected country
-    String radioValue = selectedCountryNotifier.value
-        .toUpperCase(); // Ensure it's uppercase to match the country code format
+    String radioValue = selectedCountryNotifier.value.toUpperCase();
     String currency = "";
     TextEditingController countryController = TextEditingController();
     TextEditingController energyController = TextEditingController();
@@ -1144,7 +1148,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               builder: (context, value, child) {
                 return Container(
                   color: ConstantColors.liveBgColor,
-                  padding: EdgeInsets.symmetric(horizontal: 40.dynamic,vertical: 10.dynamic),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 40.dynamic, vertical: 10.dynamic),
                   child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
