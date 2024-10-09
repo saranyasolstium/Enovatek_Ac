@@ -1,19 +1,24 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:country_flags/country_flags.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/model/billing.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
 import 'package:enavatek_mobile/screen/billing/payment_service.dart';
+import 'package:enavatek_mobile/screen/billing/pdf_viewer.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
+import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
+import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
@@ -36,6 +41,7 @@ class BillingScreenState extends State<BillingScreen>
 
   late List<String> months;
   late String selectedMonth = "";
+  late String selectedMonthYear = "";
   String consumption = "0";
   String totalBillAmount = "-";
 
@@ -43,13 +49,80 @@ class BillingScreenState extends State<BillingScreen>
   List<SummaryBill> summaryBillList = [];
   late String currentMonthYear;
 
+  List<Building> buildings = [];
+  List<Device> devices = [];
+  final List<String> deviceList = [];
+  SummaryDetail? summaryDetail;
+
   @override
   void initState() {
     super.initState();
+    selectedMonthYear = getCurrentMonthYear();
     currentMonthYear = getCurrentMonthYear();
-    fetchData(currentMonthYear);
+    getAllDevice();
   }
 
+  List<Device> getAllDevices(List<Building> buildings) {
+    List<Device> allDevices = [];
+    for (var building in buildings) {
+      for (var floor in building.floors) {
+        for (var room in floor.rooms) {
+          allDevices.addAll(room.devices);
+        }
+      }
+    }
+
+    return allDevices;
+  }
+
+  Future<void> getAllDevice() async {
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? userId = await SharedPreferencesHelper.instance.getUserID();
+
+    Response response =
+        await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
+
+    if (response.statusCode == 200) {
+      String responseBody = response.body;
+      Map<String, dynamic> jsonData = json.decode(responseBody);
+
+      if (jsonData.containsKey("buildings")) {
+        List<dynamic> buildingList = jsonData["buildings"];
+        buildings =
+            buildingList.map((data) => Building.fromJson(data)).toList();
+        setState(() {
+          devices = getAllDevices(buildings);
+          deviceList.clear();
+          deviceList.addAll(
+            devices
+                .where((device) => device.power.toLowerCase() == 'on')
+                .map((device) => device.deviceId),
+          );
+        });
+        deviceList.forEach((deviceId) {
+          print('Device ID: $deviceId');
+        });
+        fetchData(currentMonthYear);
+        // paymentStatus();
+      } else {
+        print('Response body does not contain buildings');
+      }
+    } else {
+      print('Response body: ${response.body}');
+    }
+  }
+
+// Future<void> paymentStatus() async {
+//         int? userId = await SharedPreferencesHelper.instance.getUserID();
+//     Response response = await RemoteServices.paymentStatus(
+//         deviceList,userId!,6, currentMonthYear );
+//     print(response.statusCode);
+//     if (response.statusCode == 200) {
+//       Timer(const Duration(seconds: 2), () {
+//         Navigator.pop(context);
+//       });
+//     }
+//   }
   String getCurrentMonthYear() {
     DateTime now = DateTime.now();
     dateController.text = DateFormat('MMM yy').format(now).toString();
@@ -107,10 +180,12 @@ class BillingScreenState extends State<BillingScreen>
       summaryBillList = [];
       int? userId = await SharedPreferencesHelper.instance.getUserID();
       final result = await RemoteServices.consumptionBillStatus(
-          [], userId!, 6, periodType);
+          deviceList, userId!, 6, periodType);
       setState(() {
         billingDataList = result['billingData'];
         summaryBillList = result['summaryBill'];
+        summaryDetail = result['summaryDetail'];
+
         selectedMonth = formatPeriod(billingDataList.first.period);
         if (billingDataList.isNotEmpty) {
           consumption = calculateTotalConsumption(billingDataList);
@@ -271,6 +346,7 @@ class BillingScreenState extends State<BillingScreen>
       setState(() {
         dateController.text = DateFormat('MMM yyyy').format(selected);
         fetchData(DateFormat('MMM-yy').format(selected).toString());
+        selectedMonthYear = DateFormat('MMM-yy').format(selected).toString();
       });
       print('Selected date: ${dateController.text}');
     }
@@ -373,10 +449,10 @@ class BillingScreenState extends State<BillingScreen>
                 (Route<dynamic> route) => false,
               );
             },
-            child: const Icon(
+            child: Icon(
               Icons.home,
               color: ConstantColors.iconColr,
-              size: 30,
+              size: 30.dynamic,
             ),
           ),
           const SizedBox(
@@ -400,7 +476,7 @@ class BillingScreenState extends State<BillingScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          width: 120,
+                          width: 120.dynamic,
                           decoration: BoxDecoration(
                             border: Border.all(
                                 color: Colors.grey[400]!, width: 1.0),
@@ -596,7 +672,13 @@ class BillingScreenState extends State<BillingScreen>
             children: [
               RoundedButton(
                 onPressed: () {
-                  // Navigator.pushNamed(context, loginRoute);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PDFViewerScreen(
+                              paymentId: summaryDetail?.paymentId,
+                            )),
+                  );
                 },
                 text: "Download Invoice",
                 backgroundColor: ConstantColors.whiteColor,
@@ -604,11 +686,18 @@ class BillingScreenState extends State<BillingScreen>
               ),
               RoundedButton(
                 onPressed: () async {
-                  double amountToPay = double.parse(totalBillAmount);
-                  await PaymentService()
-                      .createPaymentRequest(context, amountToPay);
+                  if (summaryDetail?.billStatus == "pending") {
+                    double amountToPay = double.parse(totalBillAmount);
+                    print(selectedMonthYear);
+                    await PaymentService().createPaymentRequest(
+                        context, amountToPay, deviceList, selectedMonthYear);
+                  } else {
+                    SnackbarHelper.showSnackBar(
+                        context, "You have already made the payment.");
+                  }
                 },
-                text: "Pay now",
+                text:
+                    summaryDetail?.billStatus == "pending" ? "Pay now" : "Paid",
                 backgroundColor: ConstantColors.borderButtonColor,
                 textColor: ConstantColors.whiteColor,
               ),

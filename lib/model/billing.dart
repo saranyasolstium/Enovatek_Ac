@@ -62,4 +62,28 @@ class SummaryBill {
     return formattedDate;
   }
 
+
+}
+
+class SummaryDetail {
+  final String totalBillAmount;
+  final String totalConsumption;
+  final String billStatus;
+  final String paymentId;
+
+  SummaryDetail({
+    required this.totalBillAmount,
+    required this.totalConsumption,
+    required this.billStatus,
+    required this.paymentId,
+  });
+
+  factory SummaryDetail.fromJson(Map<String, dynamic> json) {
+    return SummaryDetail(
+      totalBillAmount: json['total_bill_amount'],
+      totalConsumption: json['total_consumption'],
+      billStatus: json['bill_status'],
+      paymentId: json['payment_id'],
+    );
+  }
 }

@@ -835,10 +835,15 @@ class RemoteServices {
                 .map((data) => SummaryBill.fromJson(data))
                 .toList();
 
+        // Parse summary detail
+        SummaryDetail summaryDetail =
+            SummaryDetail.fromJson(responseBody['summary_detail']);
+
         // Return both lists in a map
         return {
           'billingData': billingDataList,
           'summaryBill': summaryBillList,
+          'summaryDetail': summaryDetail,
         };
       } else {
         throw Exception('Failed to load billing data');
@@ -848,4 +853,86 @@ class RemoteServices {
       rethrow;
     }
   }
+
+  static Future<Response> paymentUpdate(
+      List<String> deviceId, String month, String paymentId) async {
+    try {
+      print('${url}api/user/device_bill_payment_update');
+      String apiUrl = '${url}api/user/device_bill_payment_update';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+      Map<String, dynamic> requestBody = {
+        "device_id": deviceId,
+        "payment_id": paymentId,
+        "status": "paid",
+        "period_value": month.toLowerCase()
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> downloadInvoice(String? paymentId) async {
+    try {
+      print('${url}api/user/invoice_generation');
+      String apiUrl = '${url}api/user/invoice_generation';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+      Map<String, dynamic> requestBody = {
+        "payment_id": paymentId,
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+  // static Future<Response> paymentStatus(List<String> deviceId, int userId,
+  //     int countryId, String periodValue) async {
+  //   try {
+  //     print('${url}api/user/auto_bill_generation');
+  //     String apiUrl = '${url}api/user/auto_bill_generation';
+  //     Map<String, String> headers = {
+  //       'Content-Type': 'application/json',
+  //     };
+  //     Map<String, dynamic> requestBody = {
+  //       "device_id": deviceId,
+  //       "user_id": userId,
+  //       "country_id": countryId,
+  //       "period_value": periodValue
+  //     };
+  //     print(requestBody);
+  //     String jsonBody = jsonEncode(requestBody);
+
+  //     http.Response response = await http.post(
+  //       Uri.parse(apiUrl),
+  //       headers: headers,
+  //       body: jsonBody,
+  //     );
+  //     print(response.body);
+  //     return response;
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 }

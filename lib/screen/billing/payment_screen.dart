@@ -1,15 +1,27 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:enavatek_mobile/screen/billing/billing.dart';
+import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentPage extends StatefulWidget {
   final String paymentUrl;
+  final String paymentId;
+  final List<String> deviceId;
+  final String month;
 
-  PaymentPage({required this.paymentUrl});
+  const PaymentPage(
+      {super.key,
+      required this.paymentUrl,
+      required this.paymentId,
+      required this.deviceId,
+      required this.month});
 
   @override
   _PaymentPageState createState() => _PaymentPageState();
@@ -17,38 +29,48 @@ class PaymentPage extends StatefulWidget {
 
 class _PaymentPageState extends State<PaymentPage> {
   late final WebViewController _controller;
-  bool _isLoading = true; // Track loading state
+  bool _isLoading = true;
+
+  Future<void> payment() async {
+    Response response = await RemoteServices.paymentUpdate(
+        widget.deviceId, widget.month, widget.paymentId);
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      Timer(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const BillingScreen()),
+        );
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    // Initialize WebView controller
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0xFFFFFFFF)) // Set background to white
+      ..setBackgroundColor(const Color(0xFFFFFFFF))
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
             setState(() {
-              _isLoading = true; // Show loading indicator
+              _isLoading = true;
             });
           },
           onPageFinished: (String url) {
             print('Page finished loading: $url');
             setState(() {
-              _isLoading = false; // Hide loading indicator
+              _isLoading = false;
             });
-            // Handle completion of payment
             if (url.contains('completed')) {
-              Timer(const Duration(seconds: 5), () {
-                Navigator.pop(context);
-              });
+              payment();
             }
           },
           onWebResourceError: (WebResourceError error) {
             print('Web resource error: ${error.description}');
             setState(() {
-              _isLoading = false; // Hide loading indicator on error
+              _isLoading = false;
             });
           },
         ),
@@ -102,10 +124,10 @@ class _PaymentPageState extends State<PaymentPage> {
       ),
       body: Stack(
         children: [
-          WebViewWidget(controller: _controller), // WebView to load the payment page
+          WebViewWidget(controller: _controller),
           if (_isLoading)
             const Center(
-              child: CircularProgressIndicator(), // Loading indicator
+              child: CircularProgressIndicator(),
             ),
         ],
       ),

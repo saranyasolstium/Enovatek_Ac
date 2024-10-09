@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'package:enavatek_mobile/screen/billing/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentService {
   final String apiKey = '32b8b1494d36ef0d1280d32bbd7009702e43651d3b23d8f26e97865a9ccdf732';
 
-  Future<void> createPaymentRequest(BuildContext context, double amount) async {
+  Future<void> createPaymentRequest(BuildContext context, double amount,List<String> deviceId,String month) async {
     final url = Uri.parse('https://api.sandbox.hit-pay.com/v1/payment-requests');
 
     final headers = {
@@ -26,9 +25,10 @@ class PaymentService {
       if (response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
         final paymentUrl = responseData['url'];
+        final paymentId = responseData['id']; 
 
         if (paymentUrl != null) {
-          _redirectToPaymentUrl(context, paymentUrl);
+          _redirectToPaymentUrl(context, paymentUrl,paymentId,deviceId,month);
         }
       } else {
         print("Failed to create payment request: ${response.statusCode}");
@@ -39,11 +39,11 @@ class PaymentService {
     }
   }
 
-  void _redirectToPaymentUrl(BuildContext context, String url) {
+  void _redirectToPaymentUrl(BuildContext context, String url,String paymentId,List<String> deviceId,String month) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PaymentPage(paymentUrl: url),
+        builder: (context) => PaymentPage(paymentUrl: url,paymentId: paymentId,deviceId: deviceId,month: month,),
       ),
     );
   }
