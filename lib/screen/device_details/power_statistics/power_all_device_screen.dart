@@ -224,7 +224,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                           Text(
                             'Devices',
                             style: GoogleFonts.roboto(
-                              fontSize: 18,
+                              fontSize: screenWidth * 0.045,
                               fontWeight: FontWeight.bold,
                               color: ConstantColors.appColor,
                             ),
@@ -238,20 +238,20 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
             ),
             actions: [
               GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const FilterScreen()),
-                        );
-                      },
-                      child: const Icon(
-                        Icons.filter_alt_rounded,
-                        color: ConstantColors.iconColr,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FilterScreen()),
+                  );
+                },
+                child: const Icon(
+                  Icons.filter_alt_rounded,
+                  color: ConstantColors.iconColr,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(width: 20),
               GestureDetector(
                 onTap: () {
                   Navigator.pushAndRemoveUntil(
@@ -366,7 +366,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                 //     ),
                 //   ],
                 // ),
-               
+
                 devices.isEmpty
                     ? Container(
                         height: 500,
@@ -374,7 +374,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                           child: Text(
                             'No Device Found',
                             style: GoogleFonts.roboto(
-                                fontSize: 18,
+                                fontSize: screenWidth * 0.045,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor),
                           ),

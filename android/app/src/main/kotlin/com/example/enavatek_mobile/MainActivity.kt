@@ -1,4 +1,4 @@
-package com.example.enavatek_mobile
+package com.solstium.enavatekmobile
 
 
 import io.flutter.embedding.android.FlutterActivity

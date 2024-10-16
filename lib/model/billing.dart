@@ -1,7 +1,9 @@
 import 'package:intl/intl.dart';
+
 class BillingData {
   final String deviceId;
   final String period;
+  final String dueDate;
   final double totalConsumption;
   final double acEnergyConsumed;
   final double dcEnergyConsumed;
@@ -18,12 +20,14 @@ class BillingData {
     required this.energySaving,
     required this.treesPlanted,
     required this.billAmount,
+    required this.dueDate,
   });
 
   factory BillingData.fromJson(Map<String, dynamic> json) {
     return BillingData(
       deviceId: json['device_id'],
       period: json['period'],
+      dueDate: json['due_date'],
       totalConsumption: double.parse(json['total_consumption']),
       acEnergyConsumed: double.parse(json['ac_energy_consumed']),
       dcEnergyConsumed: double.parse(json['dc_energy_consumed']),
@@ -32,8 +36,15 @@ class BillingData {
       billAmount: json['bill_amount'],
     );
   }
- 
+
+  String getFormattedDate() {
+    DateTime parsedDate = DateTime.parse(this.dueDate);
+    String formattedDate =
+        DateFormat('dd-MM-yyyy').format(parsedDate); // August
+    return formattedDate;
+  }
 }
+
 class SummaryBill {
   final String period;
   final double saving;
@@ -58,11 +69,9 @@ class SummaryBill {
 
   String getFormattedPeriod() {
     DateTime parsedDate = DateTime.parse(this.period);
-    String formattedDate = DateFormat('MMMM').format(parsedDate);  // August
+    String formattedDate = DateFormat('MMMM').format(parsedDate); // August
     return formattedDate;
   }
-
-
 }
 
 class SummaryDetail {

@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "707298527476",
-    "project_id": "enavatek",
-    "storage_bucket": "enavatek.appspot.com"
+    "project_number": "742704280898",
+    "project_id": "enovatek---ac-app",
+    "storage_bucket": "enovatek---ac-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:707298527476:android:ce93a1dedd3e9f71a876a1",
+        "mobilesdk_app_id": "1:742704280898:android:914fa310964b7b51b844db",
         "android_client_info": {
-          "package_name": "com.example.enavatek_mobile"
+          "package_name": "com.solstium.enavatekmobile"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCITGnAnJpLcl4_0mbtV8zNvKgUWaWt3wQ"
+          "current_key": "AIzaSyARhtJrqVip8MdEpU-_-thLYhR9zcsu9RM"
         }
       ],
       "services": {

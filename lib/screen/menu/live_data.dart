@@ -127,7 +127,7 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                       Text(
                         'Devices',
                         style: GoogleFonts.roboto(
-                          fontSize: 18,
+                          fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),

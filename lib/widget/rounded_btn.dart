@@ -51,7 +51,7 @@ class RoundedButton extends StatelessWidget {
           child: Text(
             text,
             style: GoogleFonts.roboto(
-              fontSize: 16.dynamic,
+              fontSize: screenWidth * 0.04,
             ),
           ),
         ),

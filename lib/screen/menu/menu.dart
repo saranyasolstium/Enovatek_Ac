@@ -77,7 +77,7 @@ class MenuScreenState extends State<MenuScreen> {
                       Text(
                         'Menu',
                         style: GoogleFonts.roboto(
-                          fontSize: 18,
+                          fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),
@@ -410,44 +410,44 @@ class MenuScreenState extends State<MenuScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 0.03 * screenHeight,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CountryScreen(),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Container(
-                          height: 25.dynamic,
-                          width: 25.dynamic,
-                          decoration: const BoxDecoration(
-                            color: ConstantColors.iconColr,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 0.02 * screenHeight,
-                        ),
-                        Text(
-                          'Manage Country',
-                          style: GoogleFonts.roboto(
-                              color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // SizedBox(
+                  //   height: 0.03 * screenHeight,
+                  // ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) => const CountryScreen(),
+                  //       ),
+                  //     );
+                  //   },
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.start,
+                  //     children: [
+                  //       const SizedBox(
+                  //         width: 10,
+                  //       ),
+                  //       Container(
+                  //         height: 25.dynamic,
+                  //         width: 25.dynamic,
+                  //         decoration: const BoxDecoration(
+                  //           color: ConstantColors.iconColr,
+                  //           shape: BoxShape.circle,
+                  //         ),
+                  //       ),
+                  //       SizedBox(
+                  //         width: 0.02 * screenHeight,
+                  //       ),
+                  //       Text(
+                  //         'Manage Country',
+                  //         style: GoogleFonts.roboto(
+                  //             color: ConstantColors.black,
+                  //             fontSize: screenWidth * 0.045),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(
                     height: 0.03 * screenHeight,
                   ),

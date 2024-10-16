@@ -1,6 +1,4 @@
-import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
-import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:flutter/material.dart';
 
 class CustomDropdownButton extends StatefulWidget {
@@ -31,6 +29,8 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     return DecoratedBox(
       decoration: BoxDecoration(
         border: Border.all(
@@ -49,7 +49,17 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: dropdownValue,
-              items: widget.items,
+              items: widget.items.map((item) {
+                return DropdownMenuItem<String>(
+                  value: item.value,
+                  child: Text(
+                    item.child is Text ? (item.child as Text).data ?? '' : '',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.035,
+                    ),
+                  ),
+                );
+              }).toList(),
               onChanged: widget.readOnly
                   ? null
                   : (newValue) {
@@ -65,7 +75,10 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
               iconSize: 24,
               elevation: 2,
               isExpanded: true,
-              disabledHint: Text(dropdownValue ?? ''),
+              disabledHint: Text(dropdownValue ?? '',
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.035,
+                  )),
             ),
           ),
         ),

@@ -117,6 +117,8 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: ConstantColors.darkBackgroundColor,
       bottomNavigationBar: Footer(),
@@ -147,7 +149,7 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
                       Text(
                         'Live Data',
                         style: GoogleFonts.roboto(
-                            fontSize: 18,
+                            fontSize: screenWidth * 0.045,
                             fontWeight: FontWeight.bold,
                             color: ConstantColors.black),
                       ),

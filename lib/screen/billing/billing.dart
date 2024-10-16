@@ -14,12 +14,12 @@ import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/dropdown.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
-import 'package:month_year_picker/month_year_picker.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 import 'package:intl/intl.dart';
@@ -47,18 +47,47 @@ class BillingScreenState extends State<BillingScreen>
 
   List<BillingData> billingDataList = [];
   List<SummaryBill> summaryBillList = [];
-  late String currentMonthYear;
+  late String currentMonthYear = "OCT-24";
 
   List<Building> buildings = [];
   List<Device> devices = [];
   final List<String> deviceList = [];
   SummaryDetail? summaryDetail;
 
+  List<String> last12Months = [];
+  DateTime currentDate = DateTime.now();
+
+  List<String> monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
+
   @override
   void initState() {
     super.initState();
     selectedMonthYear = getCurrentMonthYear();
     currentMonthYear = getCurrentMonthYear();
+    print(currentMonthYear);
+
+    for (int i = 0; i < 12; i++) {
+      DateTime month = DateTime(currentDate.year, currentDate.month - i);
+      String formattedMonth =
+          "${monthNames[month.month - 1]}-${month.year % 100}";
+      last12Months.add(formattedMonth);
+    }
+
+    last12Months = last12Months.reversed.toList();
+    print(last12Months);
     getAllDevice();
   }
 
@@ -217,6 +246,8 @@ class BillingScreenState extends State<BillingScreen>
   }
 
   Future<void> countrySelection() async {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     String radioValue = selectedCountryNotifier.value.toUpperCase();
 
     return showDialog(
@@ -247,7 +278,7 @@ class BillingScreenState extends State<BillingScreen>
                           Text(
                             'Select Country',
                             style: GoogleFonts.roboto(
-                              fontSize: 16.dynamic,
+                              fontSize: screenWidth * 0.045,
                               fontWeight: FontWeight.bold,
                               color: ConstantColors.appColor,
                             ),
@@ -287,7 +318,7 @@ class BillingScreenState extends State<BillingScreen>
                             Text(
                               country.name,
                               style: GoogleFonts.roboto(
-                                fontSize: 14.dynamic,
+                                fontSize: screenWidth * 0.035,
                                 color: ConstantColors.appColor,
                               ),
                             ),
@@ -354,379 +385,436 @@ class BillingScreenState extends State<BillingScreen>
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      backgroundColor: ConstantColors.liveBgColor,
-      appBar: AppBar(
         backgroundColor: ConstantColors.liveBgColor,
-        automaticallyImplyLeading: false,
-        elevation: 0.0,
-        title: Stack(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Image.asset(
-                          ImgPath.pngArrowBack,
-                          height: 22,
-                          width: 22,
-                          color: ConstantColors.appColor,
+        appBar: AppBar(
+          backgroundColor: ConstantColors.liveBgColor,
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          title: Stack(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Image.asset(
+                            ImgPath.pngArrowBack,
+                            height: 22,
+                            width: 22,
+                            color: ConstantColors.appColor,
+                          ),
                         ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Billing',
+                          style: GoogleFonts.roboto(
+                            fontSize: screenWidth * 0.045,
+                            fontWeight: FontWeight.bold,
+                            color: ConstantColors.appColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            GestureDetector(
+              onTap: () {
+                fetchCountry(true);
+              },
+              child: ValueListenableBuilder<String>(
+                valueListenable: selectedCountryNotifier,
+                builder: (context, value, child) {
+                  return CountryFlag.fromCountryCode(
+                    value,
+                    shape: const Circle(),
+                    height: 30.dynamic,
+                    width: 30.dynamic,
+                  );
+                },
+              ),
+            ),
+            const Icon(Icons.arrow_drop_down_sharp),
+            const SizedBox(
+              width: 10,
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LiveDataScreen(),
+                  ),
+                );
+              },
+              child: Image.asset(
+                ImgPath.liveData,
+                height: 30.dynamic,
+                width: 30.dynamic,
+              ),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PowerStatisticsScreen(
+                      deviceId: "",
+                      deviceList: [],
+                      tabIndex: 1,
+                    ),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+              },
+              child: Icon(
+                Icons.home,
+                color: ConstantColors.iconColr,
+                size: 30.dynamic,
+              ),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 10.dynamic,
+              ),
+              Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 20.dynamic, vertical: 10.dynamic),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Container(
+                          //   width: 120.dynamic,
+                          //   decoration: BoxDecoration(
+                          //     border: Border.all(
+                          //         color: Colors.grey[400]!, width: 1.0),
+                          //     borderRadius: BorderRadius.circular(4.0),
+                          //   ),
+                          //   child: TextField(
+                          //     controller: dateController,
+                          //     readOnly: true,
+                          //     decoration: const InputDecoration(
+                          //       hintText: "Select Date",
+                          //       border: InputBorder.none,
+                          //       contentPadding: EdgeInsets.symmetric(
+                          //           vertical: 12.0, horizontal: 12.0),
+                          //     ),
+                          //     onTap: () => selectMonthYear(context),
+                          //   ),
+                          // ),
+                          SizedBox(
+                            width: 120.dynamic,
+                            child: CustomDropdownButton(
+                              value: currentMonthYear,
+                              items: last12Months.map((month) {
+                                return DropdownMenuItem(
+                                  value: month,
+                                  child: Text(month),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  print(value);
+                                  fetchData(value!);
+                                });
+                              },
+                            ),
+                          ),
+
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 10.dynamic,
+                              ),
+                              Text(
+                                'Consumption',
+                                style: GoogleFonts.roboto(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.bold,
+                                  color: ConstantColors.appColor,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5.dynamic,
+                              ),
+                              Text(
+                                billingDataList.isNotEmpty
+                                    ? '$consumption kw.h'
+                                    : '0 kw.h',
+                                style: GoogleFonts.roboto(
+                                  fontSize: screenWidth * 0.045,
+                                  fontWeight: FontWeight.bold,
+                                  color: ConstantColors.appColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 10.dynamic,
+                              ),
+                              Text(
+                                'Billed Amount',
+                                style: GoogleFonts.roboto(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.bold,
+                                  color: ConstantColors.appColor,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5.dynamic,
+                              ),
+                              Text(
+                                billingDataList.isNotEmpty
+                                    ? 'S\$ $totalBillAmount'
+                                    : 'S\$ 0',
+                                style: GoogleFonts.roboto(
+                                  fontSize: screenWidth * 0.045,
+                                  fontWeight: FontWeight.bold,
+                                  color: ConstantColors.appColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Billing',
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10.dynamic,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.dynamic),
+                child: Divider(
+                  height: 2.dynamic,
+                  color: ConstantColors.dividerColor,
+                ),
+              ),
+              SizedBox(
+                height: 20.dynamic,
+              ),
+              Visibility(
+                visible: billingDataList.isNotEmpty,
+                child: Text(
+                  'Device code ($selectedMonth)',
+                  style: GoogleFonts.roboto(
+                    fontSize: screenWidth * 0.045,
+                    fontWeight: FontWeight.bold,
+                    color: ConstantColors.appColor,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20.dynamic,
+              ),
+              billingDataList.isNotEmpty
+                  ? Card(
+                      color: Colors.white,
+                      child: DataTable(
+                        columnSpacing: 10,
+                        headingRowColor: MaterialStateProperty.all(
+                            ConstantColors.darkBackgroundColor),
+                        columns: [
+                          DataColumn(
+                              label: _buildTableHeader("Device", context)),
+                          DataColumn(
+                              label: _buildTableHeader("Consumption", context)),
+                          DataColumn(
+                              label: _buildTableHeader("Savings", context)),
+                          DataColumn(
+                              label: _buildTableHeader("Amount", context)),
+                          DataColumn(
+                              label: _buildTableHeader("Due Date", context)),
+                        ],
+                        rows: billingDataList.map((billing) {
+                          return DataRow(
+                            cells: [
+                              DataCell(
+                                  _buildTableCell(billing.deviceId, context)),
+                              DataCell(_buildTableCell(
+                                  '${billing.totalConsumption.toString()} kwh',
+                                  context)),
+                              DataCell(_buildTableCell(
+                                  'S\$ ${billing.energySaving.toString()}',
+                                  context)),
+                              DataCell(_buildTableCell(
+                                  'S\$ ${billing.billAmount.toString()}',
+                                  context)),
+                              DataCell(_buildTableCell(billing.getFormattedDate(), context)),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    )
+                  : Center(
+                      child: Text(
+                        'No Data Available',
                         style: GoogleFonts.roboto(
-                          fontSize: 18.dynamic,
+                          fontSize: screenWidth * 0.035,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              fetchCountry(true);
-            },
-            child: ValueListenableBuilder<String>(
-              valueListenable: selectedCountryNotifier,
-              builder: (context, value, child) {
-                return CountryFlag.fromCountryCode(
-                  value,
-                  shape: const Circle(),
-                  height: 30.dynamic,
-                  width: 30.dynamic,
-                );
-              },
-            ),
-          ),
-          const Icon(Icons.arrow_drop_down_sharp),
-          const SizedBox(
-            width: 10,
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LiveDataScreen(),
-                ),
-              );
-            },
-            child: Image.asset(
-              ImgPath.liveData,
-              height: 30.dynamic,
-              width: 30.dynamic,
-            ),
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PowerStatisticsScreen(
-                    deviceId: "",
-                    deviceList: [],
-                    tabIndex: 1,
-                  ),
-                ),
-                (Route<dynamic> route) => false,
-              );
-            },
-            child: Icon(
-              Icons.home,
-              color: ConstantColors.iconColr,
-              size: 30.dynamic,
-            ),
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 10.dynamic,
-            ),
-            Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 20.dynamic, vertical: 10.dynamic),
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: 120.dynamic,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.grey[400]!, width: 1.0),
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: TextField(
-                            controller: dateController,
-                            readOnly: true,
-                            decoration: const InputDecoration(
-                              hintText: "Select Date",
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 12.0, horizontal: 12.0),
-                            ),
-                            onTap: () => selectMonthYear(context),
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 10.dynamic,
-                            ),
-                            Text(
-                              'Consumption',
-                              style: GoogleFonts.roboto(
-                                fontSize: 14.dynamic,
-                                fontWeight: FontWeight.bold,
-                                color: ConstantColors.appColor,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 5.dynamic,
-                            ),
-                            Text(
-                              billingDataList.isNotEmpty
-                                  ? '$consumption kw.h'
-                                  : '0 kw.h',
-                              style: GoogleFonts.roboto(
-                                fontSize: 20.dynamic,
-                                fontWeight: FontWeight.bold,
-                                color: ConstantColors.appColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 10.dynamic,
-                            ),
-                            Text(
-                              'Billed Amount',
-                              style: GoogleFonts.roboto(
-                                fontSize: 14.dynamic,
-                                fontWeight: FontWeight.bold,
-                                color: ConstantColors.appColor,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 5.dynamic,
-                            ),
-                            Text(
-                              billingDataList.isNotEmpty
-                                  ? 'S\$ $totalBillAmount'
-                                  : 'S\$ 0',
-                              style: GoogleFonts.roboto(
-                                fontSize: 20.dynamic,
-                                fontWeight: FontWeight.bold,
-                                color: ConstantColors.appColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 10.dynamic,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.dynamic),
-              child: Divider(
-                height: 2.dynamic,
-                color: ConstantColors.dividerColor,
+              SizedBox(
+                height: 20.dynamic,
               ),
-            ),
-            SizedBox(
-              height: 20.dynamic,
-            ),
-            Visibility(
-              visible: billingDataList.isNotEmpty,
-              child: Text(
-                'Device code ($selectedMonth)',
-                style: GoogleFonts.roboto(
-                  fontSize: 18.dynamic,
-                  fontWeight: FontWeight.bold,
-                  color: ConstantColors.appColor,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 20.dynamic,
-            ),
-            billingDataList.isNotEmpty
-                ? Card(
-                    color: Colors.white,
-                    child: DataTable(
-                      columnSpacing: 10,
-                      headingRowColor: MaterialStateProperty.all(
-                          ConstantColors.darkBackgroundColor),
-                      columns: [
-                        DataColumn(label: _buildTableHeader("Device")),
-                        DataColumn(label: _buildTableHeader("Consumption")),
-                        DataColumn(label: _buildTableHeader("Savings")),
-                        DataColumn(label: _buildTableHeader("Billed Amount")),
-                      ],
-                      rows: billingDataList.map((billing) {
-                        return DataRow(
-                          cells: [
-                            DataCell(_buildTableCell(billing.deviceId)),
-                            DataCell(_buildTableCell(
-                                '${billing.totalConsumption.toString()} kwh')),
-                            DataCell(_buildTableCell(
-                                'S\$ ${billing.energySaving.toString()}')),
-                            DataCell(_buildTableCell(
-                                'S\$ ${billing.billAmount.toString()}')),
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                  )
-                : Center(
-                    child: Text(
-                      'No Data Available',
-                      style: GoogleFonts.roboto(
-                        fontSize: 16.dynamic,
-                        fontWeight: FontWeight.bold,
-                        color: ConstantColors.appColor,
+              summaryBillList.isNotEmpty
+                  ? Card(
+                      color: Colors.white,
+                      child: DataTable(
+                        columnSpacing: 15,
+                        headingRowColor: MaterialStateProperty.all(
+                            ConstantColors.darkBackgroundColor),
+                        columns: [
+                          DataColumn(
+                            label: _buildTableHeader("", context),
+                          ),
+                          DataColumn(
+                              label:
+                                  _buildTableHeader("Energy Saving", context)),
+                          DataColumn(
+                              label: _buildTableHeader("Saving", context)),
+                          DataColumn(
+                              label:
+                                  _buildTableHeader("Tree Planted", context)),
+                        ],
+                        rows: summaryBillList.map((summary) {
+                          return DataRow(
+                            cells: [
+                              DataCell(_buildTableCell(
+                                  summary.getFormattedPeriod(), context)),
+                              DataCell(_buildTableCell(
+                                  '${summary.energySaving} kwh', context)),
+                              DataCell(_buildTableCell(
+                                  'S\$ ${summary.saving}', context)),
+                              DataCell(_buildTableCell(
+                                  summary.treesPlanted.toString(), context))
+                            ],
+                          );
+                        }).toList(),
                       ),
-                    ),
-                  ),
-            SizedBox(
-              height: 20.dynamic,
-            ),
-            summaryBillList.isNotEmpty
-                ? Card(
-                    color: Colors.white,
-                    child: DataTable(
-                      columnSpacing: 10,
-                      headingRowColor: MaterialStateProperty.all(
-                          ConstantColors.darkBackgroundColor),
-                      columns: [
-                        DataColumn(label: _buildTableHeader("")),
-                        DataColumn(label: _buildTableHeader("Energy Saving")),
-                        DataColumn(label: _buildTableHeader("Saving")),
-                        DataColumn(label: _buildTableHeader("Tree Planted")),
-                      ],
-                      rows: summaryBillList.map((summary) {
-                        return DataRow(
-                          cells: [
-                            DataCell(
-                                _buildTableCell(summary.getFormattedPeriod())),
-                            DataCell(
-                                _buildTableCell('${summary.energySaving} kwh')),
-                            DataCell(_buildTableCell('S\$ ${summary.saving}')),
-                            DataCell(_buildTableCell(
-                                summary.treesPlanted.toString()))
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                  )
-                : Container(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30.dynamic),
-          topRight: Radius.circular(30.dynamic),
-        ),
-        child: BottomAppBar(
-          color: Colors.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              RoundedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PDFViewerScreen(
-                              paymentId: summaryDetail?.paymentId,
-                            )),
-                  );
-                },
-                text: "Download Invoice",
-                backgroundColor: ConstantColors.whiteColor,
-                textColor: ConstantColors.borderButtonColor,
-              ),
-              RoundedButton(
-                onPressed: () async {
-                  if (summaryDetail?.billStatus == "pending") {
-                    double amountToPay = double.parse(totalBillAmount);
-                    print(selectedMonthYear);
-                    await PaymentService().createPaymentRequest(
-                        context, amountToPay, deviceList, selectedMonthYear);
-                  } else {
-                    SnackbarHelper.showSnackBar(
-                        context, "You have already made the payment.");
-                  }
-                },
-                text:
-                    summaryDetail?.billStatus == "pending" ? "Pay now" : "Paid",
-                backgroundColor: ConstantColors.borderButtonColor,
-                textColor: ConstantColors.whiteColor,
-              ),
+                    )
+                  : Container(),
             ],
           ),
         ),
-      ),
-    );
+        bottomNavigationBar: Visibility(
+          visible: billingDataList.isNotEmpty && summaryBillList.isNotEmpty,
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.dynamic),
+              topRight: Radius.circular(30.dynamic),
+            ),
+            child: BottomAppBar(
+              color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  RoundedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PDFViewerScreen(
+                            paymentId: summaryDetail?.paymentId,
+                          ),
+                        ),
+                      );
+                    },
+                    text: "Download Invoice",
+                    backgroundColor: ConstantColors.whiteColor,
+                    textColor: ConstantColors.borderButtonColor,
+                  ),
+                  RoundedButton(
+                    onPressed: () async {
+                      if (summaryDetail?.billStatus == "pending") {
+                        double amountToPay = double.parse(totalBillAmount);
+                        print(selectedMonthYear);
+                        await PaymentService().createPaymentRequest(
+                          context,
+                          amountToPay,
+                          deviceList,
+                          selectedMonthYear,
+                        );
+                      } else {
+                        SnackbarHelper.showSnackBar(
+                          context,
+                          "You have already made the payment.",
+                        );
+                      }
+                    },
+                    text: summaryDetail?.billStatus == "pending"
+                        ? "Pay now"
+                        : "Paid",
+                    backgroundColor: ConstantColors.borderButtonColor,
+                    textColor: ConstantColors.whiteColor,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 }
 
-Widget _buildTableHeader(String text) {
+Widget _buildTableHeader(String text, BuildContext context) {
+  final double screenWidth = MediaQuery.of(context).size.width;
+
   return Text(
     text,
     style: GoogleFonts.roboto(
       fontWeight: FontWeight.bold,
-      fontSize: 15.dynamic,
+      fontSize: screenWidth * 0.035,
       color: ConstantColors.appColor,
     ),
   );
 }
 
-Widget _buildTableCell(String text) {
-  return Center(
-      child: Text(
-    text,
-    style: GoogleFonts.roboto(
-      fontSize: 14.dynamic,
-      color: ConstantColors.appColor,
+Widget _buildTableCell(String text, BuildContext context) {
+  final double screenWidth = MediaQuery.of(context).size.width;
+
+  return Container(
+    alignment: Alignment.center,
+    child: Text(
+      text,
+      textAlign: TextAlign.left,
+      style: GoogleFonts.roboto(
+        fontSize: screenWidth * 0.032,
+        color: ConstantColors.appColor,
+      ),
     ),
-  ));
+  );
 }

@@ -237,7 +237,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
-  Widget buildGraph({required List<EnergyData> data}) {
+  Widget buildGraph(
+      {required List<EnergyData> data, required BuildContext context}) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
       height: 350.dynamic,
       width: 1800.dynamic,
@@ -253,7 +256,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             text: 'Energy Consumed (kWh)',
             textStyle: TextStyle(
               color: Colors.black,
-              fontSize: 14.dynamic,
+              fontSize: screenWidth * 0.032,
             ),
           ),
         ),
@@ -766,7 +769,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       Text(
                         'Power Statistics',
                         style: GoogleFonts.roboto(
-                          fontSize: 20.dynamic,
+                          fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),
@@ -1076,7 +1079,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               'DC Power',
                               style: GoogleFonts.roboto(
-                                fontSize: 16.dynamic,
+                                fontSize: screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.black,
                               ),
@@ -1085,7 +1088,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               dcPower!,
                               style: GoogleFonts.roboto(
-                                fontSize: 18.dynamic,
+                                fontSize: screenWidth * 0.045,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
                               ),
@@ -1098,7 +1101,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               'Total Power',
                               style: GoogleFonts.roboto(
-                                fontSize: 16.dynamic,
+                                fontSize: screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.iconColr,
                               ),
@@ -1107,7 +1110,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               totalPower!,
                               style: GoogleFonts.roboto(
-                                fontSize: 18.dynamic,
+                                fontSize: screenWidth * 0.045,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.iconColr,
                               ),
@@ -1120,7 +1123,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               'AC Power',
                               style: GoogleFonts.roboto(
-                                fontSize: 16.dynamic,
+                                fontSize: screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
                               ),
@@ -1129,7 +1132,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               acPower!,
                               style: GoogleFonts.roboto(
-                                fontSize: 18.dynamic,
+                                fontSize: screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
                               ),
@@ -1182,7 +1185,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               Text(
                                 'Energy Saving',
                                 style: GoogleFonts.roboto(
-                                  fontSize: 12.dynamic,
+                                  fontSize: screenWidth * 0.032,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
                                 ),
@@ -1221,7 +1224,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               Text(
                                 'Saving',
                                 style: GoogleFonts.roboto(
-                                  fontSize: 12.dynamic,
+                                  fontSize: screenWidth * 0.032,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
                                 ),
@@ -1257,7 +1260,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               Text(
                                 'Tree Planted',
                                 style: GoogleFonts.roboto(
-                                  fontSize: 12.dynamic,
+                                  fontSize: screenWidth * 0.032,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
                                 ),
@@ -1297,7 +1300,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       'Total Energy Saving',
                                       style: GoogleFonts.roboto(
-                                        fontSize: 12.dynamic,
+                                        fontSize: screenWidth * 0.032,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1308,7 +1311,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       '$totalEnergy %',
                                       style: GoogleFonts.roboto(
-                                        fontSize: 20.dynamic,
+                                        fontSize: screenWidth * 0.05,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1332,7 +1335,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Text(
                                           'AC',
                                           style: GoogleFonts.roboto(
-                                            fontSize: 12.dynamic,
+                                            fontSize: screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1355,7 +1358,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Text(
                                           'DC',
                                           style: GoogleFonts.roboto(
-                                            fontSize: 12.dynamic,
+                                            fontSize: screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1454,7 +1457,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       'Total saving in ${currencyCodeNotifier.value}',
                                       style: GoogleFonts.roboto(
-                                        fontSize: 12.dynamic,
+                                        fontSize: screenWidth * 0.032,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1465,7 +1468,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       totalSavings,
                                       style: GoogleFonts.roboto(
-                                        fontSize: 20.dynamic,
+                                        fontSize: screenWidth * 0.05,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1550,13 +1553,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    SizedBox(
-                                      height: 10.dynamic,
-                                    ),
                                     Text(
                                       'Total Tree Planted',
                                       style: GoogleFonts.roboto(
-                                        fontSize: 12.dynamic,
+                                        fontSize: screenWidth * 0.032,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1567,7 +1567,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       totalTree,
                                       style: GoogleFonts.roboto(
-                                        fontSize: 20.dynamic,
+                                        fontSize: screenWidth * 0.05,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1593,7 +1593,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Text(
                                           'Tree Planted',
                                           style: GoogleFonts.roboto(
-                                            fontSize: 12.dynamic,
+                                            fontSize: screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1617,7 +1617,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Text(
                                           'S\$ Savings',
                                           style: GoogleFonts.roboto(
-                                            fontSize: 12.dynamic,
+                                            fontSize: screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1640,7 +1640,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Text(
                                           'CO2',
                                           style: GoogleFonts.roboto(
-                                            fontSize: 12.dynamic,
+                                            fontSize: screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1740,8 +1740,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       child: energyType == "intraday"
                           ? Column(children: [
                               buildGraph(
-                                data: energyDataList,
-                              ),
+                                  data: energyDataList, context: context),
                             ])
                           : Container(
                               height: 350.dynamic,
@@ -1754,13 +1753,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 primaryXAxis: const CategoryAxis(
                                   interval: 1,
                                 ),
-                                primaryYAxis: const NumericAxis(
+                                primaryYAxis: NumericAxis(
                                   labelFormat: '{value}',
                                   title: AxisTitle(
                                     text: 'Energy Consumed (kWh)',
                                     textStyle: TextStyle(
                                       color: Colors.black,
-                                      fontSize: 14,
+                                      fontSize: screenWidth * 0.032,
                                     ),
                                   ),
                                 ),
@@ -1834,13 +1833,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 : 400.dynamic,
                         child: SfCartesianChart(
                           primaryXAxis: const CategoryAxis(),
-                          primaryYAxis: const NumericAxis(
+                          primaryYAxis: NumericAxis(
                             labelFormat: '{value}',
                             title: AxisTitle(
                               text: 'Saving in doller',
                               textStyle: TextStyle(
                                 color: Colors.black,
-                                fontSize: 14,
+                                fontSize: screenWidth * 0.032,
                               ),
                             ),
                           ),
