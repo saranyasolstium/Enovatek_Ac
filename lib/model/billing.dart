@@ -3,7 +3,10 @@ import 'package:intl/intl.dart';
 class BillingData {
   final String deviceId;
   final String period;
+  final String paidDate;
   final String dueDate;
+  final String billDate;
+
   final double totalConsumption;
   final double acEnergyConsumed;
   final double dcEnergyConsumed;
@@ -20,13 +23,17 @@ class BillingData {
     required this.energySaving,
     required this.treesPlanted,
     required this.billAmount,
+    required this.paidDate,
     required this.dueDate,
+    required this.billDate,
   });
 
   factory BillingData.fromJson(Map<String, dynamic> json) {
     return BillingData(
       deviceId: json['device_id'],
       period: json['period'],
+      paidDate: json['paid_date'],
+      billDate: json['bill_date'],
       dueDate: json['due_date'],
       totalConsumption: double.parse(json['total_consumption']),
       acEnergyConsumed: double.parse(json['ac_energy_consumed']),
@@ -38,9 +45,20 @@ class BillingData {
   }
 
   String getFormattedDate() {
-    DateTime parsedDate = DateTime.parse(this.dueDate);
-    String formattedDate =
-        DateFormat('dd-MM-yyyy').format(parsedDate); // August
+    DateTime parsedDate = DateTime.parse(paidDate);
+    String formattedDate = DateFormat('dd-MM-yyyy').format(parsedDate);
+    return formattedDate;
+  }
+
+  String getFormattedDueDate() {
+    DateTime parsedDate = DateTime.parse(dueDate);
+    String formattedDate = DateFormat('dd-MM-yyyy').format(parsedDate);
+    return formattedDate;
+  }
+
+  String getFormattedBillDate() {
+    DateTime parsedDate = DateTime.parse(billDate);
+    String formattedDate = DateFormat('dd-MM-yyyy').format(parsedDate);
     return formattedDate;
   }
 }

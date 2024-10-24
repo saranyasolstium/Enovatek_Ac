@@ -8,6 +8,7 @@ import 'package:enavatek_mobile/model/energy.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
+import 'package:enavatek_mobile/services/push_notification_service.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/dynamic_font.dart';
@@ -16,6 +17,7 @@ import 'package:enavatek_mobile/widget/dropdown.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
@@ -151,6 +153,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   }
 
   Future<void> getAllDevice() async {
+    await FirebaseApi().initNotifications();
+
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
 
@@ -499,7 +503,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                       ),
                       // Country Selection Radio Buttons
                       ...countryList.map((country) {
-                        print('sranya321 ${country.currencyType}');
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [

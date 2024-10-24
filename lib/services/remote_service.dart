@@ -907,32 +907,30 @@ class RemoteServices {
       rethrow;
     }
   }
-  // static Future<Response> paymentStatus(List<String> deviceId, int userId,
-  //     int countryId, String periodValue) async {
-  //   try {
-  //     print('${url}api/user/auto_bill_generation');
-  //     String apiUrl = '${url}api/user/auto_bill_generation';
-  //     Map<String, String> headers = {
-  //       'Content-Type': 'application/json',
-  //     };
-  //     Map<String, dynamic> requestBody = {
-  //       "device_id": deviceId,
-  //       "user_id": userId,
-  //       "country_id": countryId,
-  //       "period_value": periodValue
-  //     };
-  //     print(requestBody);
-  //     String jsonBody = jsonEncode(requestBody);
 
-  //     http.Response response = await http.post(
-  //       Uri.parse(apiUrl),
-  //       headers: headers,
-  //       body: jsonBody,
-  //     );
-  //     print(response.body);
-  //     return response;
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
+  static Future<Response> updateFcmToken(String fcmToken, String token) async {
+    try {
+      print('${url}api/user/fcm_token_update');
+      String apiUrl = '${url}api/user/fcm_token_update';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+      Map<String, dynamic> requestBody = {
+        "fcm_token": fcmToken,
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

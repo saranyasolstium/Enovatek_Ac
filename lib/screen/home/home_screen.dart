@@ -7,6 +7,7 @@ import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/add_device/add_device_screen.dart';
 import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
+import 'package:enavatek_mobile/services/push_notification_service.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
@@ -33,6 +34,7 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
     getUserDataFromSharedPreferences();
     getAllDevice();
     getActionType();
@@ -46,6 +48,7 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getUserDataFromSharedPreferences() async {
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       userName = prefs.getString('userName');

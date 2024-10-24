@@ -84,9 +84,12 @@ class BillingScreenState extends State<BillingScreen>
       String formattedMonth =
           "${monthNames[month.month - 1]}-${month.year % 100}";
       last12Months.add(formattedMonth);
+      print(last12Months);
     }
+    last12Months.add("Previous");
 
     last12Months = last12Months.reversed.toList();
+
     print(last12Months);
     getAllDevice();
   }
@@ -141,17 +144,6 @@ class BillingScreenState extends State<BillingScreen>
     }
   }
 
-// Future<void> paymentStatus() async {
-//         int? userId = await SharedPreferencesHelper.instance.getUserID();
-//     Response response = await RemoteServices.paymentStatus(
-//         deviceList,userId!,6, currentMonthYear );
-//     print(response.statusCode);
-//     if (response.statusCode == 200) {
-//       Timer(const Duration(seconds: 2), () {
-//         Navigator.pop(context);
-//       });
-//     }
-//   }
   String getCurrentMonthYear() {
     DateTime now = DateTime.now();
     dateController.text = DateFormat('MMM yy').format(now).toString();
@@ -508,25 +500,6 @@ class BillingScreenState extends State<BillingScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Container(
-                          //   width: 120.dynamic,
-                          //   decoration: BoxDecoration(
-                          //     border: Border.all(
-                          //         color: Colors.grey[400]!, width: 1.0),
-                          //     borderRadius: BorderRadius.circular(4.0),
-                          //   ),
-                          //   child: TextField(
-                          //     controller: dateController,
-                          //     readOnly: true,
-                          //     decoration: const InputDecoration(
-                          //       hintText: "Select Date",
-                          //       border: InputBorder.none,
-                          //       contentPadding: EdgeInsets.symmetric(
-                          //           vertical: 12.0, horizontal: 12.0),
-                          //     ),
-                          //     onTap: () => selectMonthYear(context),
-                          //   ),
-                          // ),
                           SizedBox(
                             width: 120.dynamic,
                             child: CustomDropdownButton(
@@ -539,13 +512,38 @@ class BillingScreenState extends State<BillingScreen>
                               }).toList(),
                               onChanged: (value) {
                                 setState(() {
-                                  print(value);
-                                  fetchData(value!);
+                                  if (value == "Previous") {
+                                    // Show the popup
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text("Contact Support"),
+                                          content: Text(
+                                            "To view previous records, please email the support team at sales@enovatek.com.",
+                                            style: GoogleFonts.roboto(
+                                              fontSize: screenWidth * 0.035,
+                                              color: ConstantColors.appColor,
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: const Text("OK"),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    fetchData(value!);
+                                  }
                                 });
                               },
                             ),
                           ),
-
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -642,40 +640,53 @@ class BillingScreenState extends State<BillingScreen>
               billingDataList.isNotEmpty
                   ? Card(
                       color: Colors.white,
-                      child: DataTable(
-                        columnSpacing: 10,
-                        headingRowColor: MaterialStateProperty.all(
-                            ConstantColors.darkBackgroundColor),
-                        columns: [
-                          DataColumn(
-                              label: _buildTableHeader("Device", context)),
-                          DataColumn(
-                              label: _buildTableHeader("Consumption", context)),
-                          DataColumn(
-                              label: _buildTableHeader("Savings", context)),
-                          DataColumn(
-                              label: _buildTableHeader("Amount", context)),
-                          DataColumn(
-                              label: _buildTableHeader("Due Date", context)),
-                        ],
-                        rows: billingDataList.map((billing) {
-                          return DataRow(
-                            cells: [
-                              DataCell(
-                                  _buildTableCell(billing.deviceId, context)),
-                              DataCell(_buildTableCell(
-                                  '${billing.totalConsumption.toString()} kwh',
-                                  context)),
-                              DataCell(_buildTableCell(
-                                  'S\$ ${billing.energySaving.toString()}',
-                                  context)),
-                              DataCell(_buildTableCell(
-                                  'S\$ ${billing.billAmount.toString()}',
-                                  context)),
-                              DataCell(_buildTableCell(billing.getFormattedDate(), context)),
-                            ],
-                          );
-                        }).toList(),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columnSpacing: 30,
+                          headingRowColor: MaterialStateProperty.all(
+                              ConstantColors.darkBackgroundColor),
+                          columns: [
+                            DataColumn(
+                                label: _buildTableHeader("Device", context)),
+                            DataColumn(
+                                label:
+                                    _buildTableHeader("Consumption", context)),
+                            DataColumn(
+                                label: _buildTableHeader("Savings", context)),
+                            DataColumn(
+                                label: _buildTableHeader("Amount", context)),
+                            DataColumn(
+                                label: _buildTableHeader("Due Date", context)),
+                            DataColumn(
+                                label: _buildTableHeader("Due By", context)),
+                            DataColumn(
+                                label: _buildTableHeader("Paid Date", context)),
+                          ],
+                          rows: billingDataList.map((billing) {
+                            return DataRow(
+                              cells: [
+                                DataCell(
+                                    _buildTableCell(billing.deviceId, context)),
+                                DataCell(_buildTableCell(
+                                    '${billing.totalConsumption.toString()} kwh',
+                                    context)),
+                                DataCell(_buildTableCell(
+                                    'S\$ ${billing.energySaving.toString()}',
+                                    context)),
+                                DataCell(_buildTableCell(
+                                    'S\$ ${billing.billAmount.toString()}',
+                                    context)),
+                                DataCell(_buildTableCell(
+                                    billing.getFormattedDate(), context)),
+                                DataCell(_buildTableCell(
+                                    billing.getFormattedDueDate(), context)),
+                                DataCell(_buildTableCell(
+                                    billing.getFormattedBillDate(), context)),
+                              ],
+                            );
+                          }).toList(),
+                        ),
                       ),
                     )
                   : Center(
@@ -714,7 +725,7 @@ class BillingScreenState extends State<BillingScreen>
                         rows: summaryBillList.map((summary) {
                           return DataRow(
                             cells: [
-                              DataCell(_buildTableCell(
+                              DataCell(_buildLeftTableCell(
                                   summary.getFormattedPeriod(), context)),
                               DataCell(_buildTableCell(
                                   '${summary.energySaving} kwh', context)),
@@ -803,6 +814,22 @@ Widget _buildTableHeader(String text, BuildContext context) {
   );
 }
 
+Widget _buildLeftTableCell(String text, BuildContext context) {
+  final double screenWidth = MediaQuery.of(context).size.width;
+
+  return Container(
+    alignment: Alignment.centerLeft,
+    child: Text(
+      text,
+      textAlign: TextAlign.left,
+      style: GoogleFonts.roboto(
+        fontSize: screenWidth * 0.035,
+        color: ConstantColors.appColor,
+      ),
+    ),
+  );
+}
+
 Widget _buildTableCell(String text, BuildContext context) {
   final double screenWidth = MediaQuery.of(context).size.width;
 
@@ -812,7 +839,7 @@ Widget _buildTableCell(String text, BuildContext context) {
       text,
       textAlign: TextAlign.left,
       style: GoogleFonts.roboto(
-        fontSize: screenWidth * 0.032,
+        fontSize: screenWidth * 0.035,
         color: ConstantColors.appColor,
       ),
     ),
