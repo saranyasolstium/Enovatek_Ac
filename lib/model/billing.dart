@@ -45,18 +45,28 @@ class BillingData {
   }
 
   String getFormattedDate() {
+    if (paidDate == null || paidDate.isEmpty) {
+      return '-';
+    }
+
     DateTime parsedDate = DateTime.parse(paidDate);
     String formattedDate = DateFormat('dd-MM-yyyy').format(parsedDate);
     return formattedDate;
   }
 
   String getFormattedDueDate() {
+     if (dueDate == null || dueDate.isEmpty) {
+      return '-';
+    }
     DateTime parsedDate = DateTime.parse(dueDate);
     String formattedDate = DateFormat('dd-MM-yyyy').format(parsedDate);
     return formattedDate;
   }
 
   String getFormattedBillDate() {
+     if (billDate == null || billDate.isEmpty) {
+      return '-';
+    }
     DateTime parsedDate = DateTime.parse(billDate);
     String formattedDate = DateFormat('dd-MM-yyyy').format(parsedDate);
     return formattedDate;

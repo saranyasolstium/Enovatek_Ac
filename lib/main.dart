@@ -1,3 +1,4 @@
+import 'package:enavatek_mobile/firebase_config/firebase_options.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/router/routers.dart';
 import 'package:enavatek_mobile/services/push_notification_service.dart';
@@ -13,7 +14,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: firebaseOptions);
   runApp(
     Sizer(
       builder: (context, orientation, deviceType) {
@@ -25,8 +26,6 @@ Future<void> main() async {
     ),
   );
 }
-
-
 
 class Enavatek extends StatelessWidget {
   const Enavatek({super.key});

@@ -678,11 +678,11 @@ class BillingScreenState extends State<BillingScreen>
                                     'S\$ ${billing.billAmount.toString()}',
                                     context)),
                                 DataCell(_buildTableCell(
-                                    billing.getFormattedDate(), context)),
+                                    billing.getFormattedBillDate(), context)),
                                 DataCell(_buildTableCell(
                                     billing.getFormattedDueDate(), context)),
                                 DataCell(_buildTableCell(
-                                    billing.getFormattedBillDate(), context)),
+                                    billing.getFormattedDate(), context)),
                               ],
                             );
                           }).toList(),
