@@ -25,8 +25,10 @@ import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:intl/intl.dart';
 
 class BillingScreen extends StatefulWidget {
+  final String monthYear;
   const BillingScreen({
     Key? key,
+    required this.monthYear,
   }) : super(key: key);
 
   @override
@@ -44,6 +46,7 @@ class BillingScreenState extends State<BillingScreen>
   late String selectedMonthYear = "";
   String consumption = "0";
   String totalBillAmount = "-";
+  bool isLoading = false;
 
   List<BillingData> billingDataList = [];
   List<SummaryBill> summaryBillList = [];
@@ -75,9 +78,11 @@ class BillingScreenState extends State<BillingScreen>
   @override
   void initState() {
     super.initState();
-    selectedMonthYear = getCurrentMonthYear();
-    currentMonthYear = getCurrentMonthYear();
-    print(currentMonthYear);
+    // selectedMonthYear = getCurrentMonthYear();
+    // currentMonthYear = getCurrentMonthYear();
+    selectedMonthYear = widget.monthYear;
+    currentMonthYear = widget.monthYear;
+    dateController.text = widget.monthYear; //extra add
 
     for (int i = 0; i < 12; i++) {
       DateTime month = DateTime(currentDate.year, currentDate.month - i);
@@ -197,15 +202,21 @@ class BillingScreenState extends State<BillingScreen>
 
   Future<void> fetchData(String periodType) async {
     try {
+      setState(() {
+        isLoading = true; // Start loading
+      });
+
       billingDataList = [];
       summaryBillList = [];
       int? userId = await SharedPreferencesHelper.instance.getUserID();
       final result = await RemoteServices.consumptionBillStatus(
           deviceList, userId!, 6, periodType);
+
       setState(() {
         billingDataList = result['billingData'];
         summaryBillList = result['summaryBill'];
         summaryDetail = result['summaryDetail'];
+        selectedMonthYear = periodType;
 
         selectedMonth = formatPeriod(billingDataList.first.period);
         if (billingDataList.isNotEmpty) {
@@ -218,8 +229,42 @@ class BillingScreenState extends State<BillingScreen>
       });
     } catch (e) {
       print(e);
+    } finally {
+      setState(() {
+        isLoading = false; // Stop loading
+      });
     }
   }
+
+  // Future<void> fetchData(String periodType) async {
+  //   try {
+  //     setState(() {
+  //       isLoading = true;
+  //     });
+
+  //     billingDataList = [];
+  //     summaryBillList = [];
+  //     int? userId = await SharedPreferencesHelper.instance.getUserID();
+  //     final result = await RemoteServices.consumptionBillStatus(
+  //         deviceList, userId!, 6, periodType);
+  //     setState(() {
+  //       billingDataList = result['billingData'];
+  //       summaryBillList = result['summaryBill'];
+  //       summaryDetail = result['summaryDetail'];
+
+  //       selectedMonth = formatPeriod(billingDataList.first.period);
+  //       if (billingDataList.isNotEmpty) {
+  //         consumption = calculateTotalConsumption(billingDataList);
+  //         totalBillAmount = calculateTotalBillAmount(billingDataList);
+  //       } else {
+  //         consumption = "0";
+  //         totalBillAmount = "0";
+  //       }
+  //     });
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   Future<void> fetchCountry(bool status) async {
     try {
@@ -623,17 +668,23 @@ class BillingScreenState extends State<BillingScreen>
               SizedBox(
                 height: 20.dynamic,
               ),
-              Visibility(
-                visible: billingDataList.isNotEmpty,
-                child: Text(
-                  'Device code ($selectedMonth)',
-                  style: GoogleFonts.roboto(
-                    fontSize: screenWidth * 0.045,
-                    fontWeight: FontWeight.bold,
-                    color: ConstantColors.appColor,
-                  ),
-                ),
-              ),
+              isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: ConstantColors.appColor,
+                      ),
+                    )
+                  : Visibility(
+                      visible: billingDataList.isNotEmpty,
+                      child: Text(
+                        'Device code ($selectedMonth)',
+                        style: GoogleFonts.roboto(
+                          fontSize: screenWidth * 0.045,
+                          fontWeight: FontWeight.bold,
+                          color: ConstantColors.appColor,
+                        ),
+                      ),
+                    ),
               SizedBox(
                 height: 20.dynamic,
               ),
@@ -691,7 +742,8 @@ class BillingScreenState extends State<BillingScreen>
                     )
                   : Center(
                       child: Text(
-                        'No Data Available',
+                        '',
+                        // 'No Data Available',
                         style: GoogleFonts.roboto(
                           fontSize: screenWidth * 0.035,
                           fontWeight: FontWeight.bold,
@@ -754,32 +806,40 @@ class BillingScreenState extends State<BillingScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  RoundedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PDFViewerScreen(
-                            paymentId: summaryDetail?.paymentId,
+                  if (summaryDetail?.billStatus != "pending")
+                    RoundedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PDFViewerScreen(
+                              paymentId: summaryDetail?.paymentId,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    text: "Download Invoice",
-                    backgroundColor: ConstantColors.whiteColor,
-                    textColor: ConstantColors.borderButtonColor,
-                  ),
+                        );
+                      },
+                      text: "Download Invoice",
+                      backgroundColor: ConstantColors.whiteColor,
+                      textColor: ConstantColors.borderButtonColor,
+                    ),
                   RoundedButton(
                     onPressed: () async {
                       if (summaryDetail?.billStatus == "pending") {
                         double amountToPay = double.parse(totalBillAmount);
                         print(selectedMonthYear);
-                        await PaymentService().createPaymentRequest(
-                          context,
-                          amountToPay,
-                          deviceList,
-                          selectedMonthYear,
-                        );
+                        if (amountToPay <= 0.3) {
+                          SnackbarHelper.showSnackBar(
+                            context,
+                            "The amount must be between 0.3 and 999999999.99.",
+                          );
+                        } else {
+                          await PaymentService().createPaymentRequest(
+                            context,
+                            amountToPay,
+                            deviceList,
+                            selectedMonthYear,
+                          );
+                        }
                       } else {
                         SnackbarHelper.showSnackBar(
                           context,

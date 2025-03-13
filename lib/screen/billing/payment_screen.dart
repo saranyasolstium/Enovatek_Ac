@@ -24,10 +24,10 @@ class PaymentPage extends StatefulWidget {
       required this.month});
 
   @override
-  _PaymentPageState createState() => _PaymentPageState();
+  PaymentPageState createState() => PaymentPageState();
 }
 
-class _PaymentPageState extends State<PaymentPage> {
+class PaymentPageState extends State<PaymentPage> {
   late final WebViewController _controller;
   bool _isLoading = true;
 
@@ -39,7 +39,10 @@ class _PaymentPageState extends State<PaymentPage> {
       Timer(const Duration(seconds: 2), () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const BillingScreen()),
+          MaterialPageRoute(
+              builder: (context) => BillingScreen(
+                    monthYear: widget.month,
+                  )),
         );
       });
     }
@@ -96,7 +99,13 @@ class _PaymentPageState extends State<PaymentPage> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BillingScreen(
+                                      monthYear: widget.month,
+                                    )),
+                          );
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,

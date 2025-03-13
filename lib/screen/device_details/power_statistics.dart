@@ -1969,7 +1969,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         ),
                       ),
                     )
-                    // : const CircularProgressIndicator(),
                     );
               },
             ),

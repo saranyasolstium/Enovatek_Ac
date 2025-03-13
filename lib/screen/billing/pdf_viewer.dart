@@ -10,18 +10,19 @@ import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:external_path/external_path.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 class PDFViewerScreen extends StatefulWidget {
   final String? paymentId;
 
-  PDFViewerScreen({required this.paymentId});
+  const PDFViewerScreen({super.key, required this.paymentId});
 
   @override
-  _PDFViewerScreenState createState() => _PDFViewerScreenState();
+  PDFViewerScreenState createState() => PDFViewerScreenState();
 }
 
-class _PDFViewerScreenState extends State<PDFViewerScreen> {
+class PDFViewerScreenState extends State<PDFViewerScreen> {
   String? _pdfPath;
 
   @override
@@ -50,40 +51,63 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
 
   Future<void> _downloadPdf() async {
     try {
-      Response response =
+      // Request Storage Permission (Only needed for Android < 11)
+      if (Platform.isAndroid) {
+        if (await Permission.storage.request().isDenied) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text('Storage permission is required to download the PDF')),
+          );
+          return;
+        }
+      }
+
+      // Fetch the PDF from API
+      http.Response response =
           await RemoteServices.downloadInvoice(widget.paymentId);
 
       if (response.statusCode == 200) {
-        String customFolderPath =
-            await ExternalPath.getExternalStoragePublicDirectory(
-                ExternalPath.DIRECTORY_DOWNLOADS);
+        Directory? directory;
 
-        Directory customDir = Directory(customFolderPath);
-        if (!customDir.existsSync()) {
-          customDir.createSync(recursive: true);
+        if (Platform.isAndroid) {
+          directory = await getDownloadsDirectory();
+        } else if (Platform.isIOS) {
+          directory = await getApplicationDocumentsDirectory();
+        } else {
+          throw Exception("Unsupported platform");
+        }
+
+        if (!directory!.existsSync()) {
+          directory.createSync(recursive: true);
         }
 
         String fileName = 'download_Invoice.pdf';
-        String filePath = '$customFolderPath/$fileName';
+        String filePath = '${directory.path}/$fileName';
 
-        await File(filePath).writeAsBytes(response.bodyBytes);
+        // Write file
+        File file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
 
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('PDF saved at: $filePath')),
+        );
+
+        print("PDF saved at: $filePath");
+
+        // Open the file
+      } else {
+        print('Download failed with status: ${response.statusCode}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text('PDF downloaded successfully. File saved at: $filePath'),
-          ),
+              content: Text('Download failed. Status: ${response.statusCode}')),
         );
-      } else {
-        print('Request failed with status: ${response.statusCode}');
       }
     } catch (error) {
       print('Error while downloading PDF: $error');
-      // Show a snackbar to indicate download failure
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to download PDF. Error: $error'),
-        ),
+        SnackBar(content: Text('Failed to download PDF. Error: $error')),
       );
     }
   }

@@ -1,19 +1,16 @@
-import 'package:country_pickers/country.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/add_device/add_device_screen.dart';
-import 'package:enavatek_mobile/screen/all_device/all_device_screen.dart';
 import 'package:enavatek_mobile/screen/billing/billing.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all_device_screen.dart';
-import 'package:enavatek_mobile/screen/menu/country/country_screen.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
-import 'package:enavatek_mobile/value/dynamic_font.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/dialog_logout.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -39,6 +36,11 @@ class MenuScreenState extends State<MenuScreen> {
       userName = prefs.getString('userName');
       userEmail = prefs.getString('userEmail');
     });
+  }
+
+  String getCurrentMonthYear() {
+    DateTime now = DateTime.now();
+    return DateFormat('MMM-yy').format(now);
   }
 
   @override
@@ -456,7 +458,9 @@ class MenuScreenState extends State<MenuScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const BillingScreen(),
+                          builder: (context) => BillingScreen(
+                            monthYear: getCurrentMonthYear(),
+                          ),
                         ),
                       );
                     },
