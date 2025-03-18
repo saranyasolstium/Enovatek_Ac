@@ -16,11 +16,11 @@ class PaymentService {
 
   Future<void> createPaymentRequest(BuildContext context, double amount,
       List<String> deviceId, String month) async {
-    final url = Uri.parse(testUrl);
+    final url = Uri.parse(liveUrl);
 
     final headers = {
       'Content-Type': 'application/json',
-      'X-BUSINESS-API-KEY': apiKey,
+      'X-BUSINESS-API-KEY': liveKey,
     };
 
     final body = jsonEncode({

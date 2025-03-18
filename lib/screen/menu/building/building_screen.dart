@@ -47,8 +47,13 @@ class BuildingScreenState extends State<BuildingScreen> {
       if (responseBody.containsKey("buildings")) {
         List<dynamic> buildingsJson = responseBody["buildings"];
         setState(() {
-          buildings =
-              buildingsJson.map((data) => Building.fromJson(data)).toList();
+          buildings = buildingsJson
+              .map((data) => Building.fromJson(data))
+              .where((building) => building.buildingId != 0)
+              .toList();
+
+          print(authToken);
+          print('gvasgvhashs ${buildings.length}');
         });
       } else {
         print("Response doesn't contain 'buildings' key.");

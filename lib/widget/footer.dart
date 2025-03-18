@@ -10,7 +10,7 @@ class Footer extends StatelessWidget {
       child: Align(
           alignment: Alignment.center,
           child: Text(
-            'App Version:7.0',
+            'App Version: 1.0',
             style: GoogleFonts.roboto(
               fontSize: 12.0,
               color: Colors.white,

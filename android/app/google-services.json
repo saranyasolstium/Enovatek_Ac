@@ -2,14 +2,14 @@
   "project_info": {
     "project_number": "742704280898",
     "project_id": "enovatek---ac-app",
-    "storage_bucket": "enovatek---ac-app.appspot.com"
+    "storage_bucket": "enovatek---ac-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:742704280898:android:914fa310964b7b51b844db",
+        "mobilesdk_app_id": "1:742704280898:android:8320354fa93e13f0b844db",
         "android_client_info": {
-          "package_name": "com.solstium.enavatekmobile"
+          "package_name": "com.solstium.enovatekenergy"
         }
       },
       "oauth_client": [],

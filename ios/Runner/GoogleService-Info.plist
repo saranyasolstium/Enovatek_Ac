@@ -9,11 +9,11 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.solstium.enavatekmobile</string>
+	<string>com.solstium.enovatekenergy</string>
 	<key>PROJECT_ID</key>
 	<string>enovatek---ac-app</string>
 	<key>STORAGE_BUCKET</key>
-	<string>enovatek---ac-app.appspot.com</string>
+	<string>enovatek---ac-app.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:742704280898:ios:d6ab9f52c0afcaa2b844db</string>
+	<string>1:742704280898:ios:fb3d04c7b5ba9857b844db</string>
 </dict>
 </plist>

@@ -60,8 +60,10 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
       if (responseBody.containsKey("buildings")) {
         List<dynamic> buildingsJson = responseBody["buildings"];
         setState(() {
-          buildings =
-              buildingsJson.map((data) => Building.fromJson(data)).toList();
+          buildings = buildingsJson
+              .map((data) => Building.fromJson(data))
+              .where((building) => building.buildingId != 0)
+              .toList();
         });
       } else {
         print("Response doesn't contain 'buildings' key.");

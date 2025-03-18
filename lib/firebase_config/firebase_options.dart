@@ -1,10 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 
 const firebaseOptions = FirebaseOptions(
-  apiKey: 'AIzaSyDUcdrT_JhDezoN4zX6p6_h2qQkJmW3a2M',
-  appId: '1:742704280898:ios:d6ab9f52c0afcaa2b844db',
+  apiKey: 'AIzaSyARhtJrqVip8MdEpU-_-thLYhR9zcsu9RM',
+  appId: '1:742704280898:android:8320354fa93e13f0b844db',
   messagingSenderId: '742704280898',
   projectId: 'enovatek---ac-app',
-  storageBucket: 'enovatek---ac-app.appspot.com',
+  storageBucket: 'enovatek---ac-app.firebasestorage.app',
   authDomain: 'com.solstium.enavatekmobile',
 );
