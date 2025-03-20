@@ -61,48 +61,16 @@
 			????
 		</string>
 		<key>
-			CFBundleURLTypes
-		</key>
-		<array>
-			<dict>
-				<key>
-					CFBundleURLSchemes
-				</key>
-				<array>
-					<string>
-						fb710218861129853
-					</string>
-				</array>
-			</dict>
-		</array>
-		<key>
 			CFBundleVersion
 		</key>
 		<string>
 			$(FLUTTER_BUILD_NUMBER)
 		</string>
 		<key>
-			FacebookAppID
-		</key>
-		<string>
-			710218861129853
-		</string>
-		<key>
-			FacebookClientToken
-		</key>
-		<string>
-			cf3b1f68744a661bf7947f6611573692
-		</string>
-		<key>
-			FacebookDisplayName
-		</key>
-		<string>
-			Enavatek
-		</string>
-		<key>
 			LSRequiresIPhoneOS
 		</key>
 		<true />
+		<!-- Privacy Usage Descriptions -->
 		<key>
 			NSCameraUsageDescription
 		</key>
@@ -145,10 +113,20 @@
 		<string>
 			Please allow access to photo library so you can easily upload your photos.
 		</string>
+		<!-- Enable Firebase Cloud Messaging (FCM) for iOS -->
 		<key>
-			UIApplicationSupportsIndirectInputEvents
+			FirebaseAppDelegateProxyEnabled
 		</key>
 		<true />
+		<!-- Enable APNs (Apple Push Notification service) -->
+		<key>
+			aps-environment
+		</key>
+		<string>
+			development
+		</string>
+		<!-- Change to "production" when uploading to App Store -->
+		<!-- Required for background push notifications -->
 		<key>
 			UIBackgroundModes
 		</key>
@@ -160,6 +138,10 @@
 				remote-notification
 			</string>
 		</array>
+		<key>
+			UIApplicationSupportsIndirectInputEvents
+		</key>
+		<true />
 		<key>
 			UILaunchStoryboardName
 		</key>
