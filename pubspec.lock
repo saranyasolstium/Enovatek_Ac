@@ -81,38 +81,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
-  connectivity:
-    dependency: "direct main"
-    description:
-      name: connectivity
-      sha256: a8e91263cf3e25fb5cc95e19dfde4999e32a648ac3b9e8a558a28165731678f8
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.6"
-  connectivity_for_web:
-    dependency: transitive
-    description:
-      name: connectivity_for_web
-      sha256: "01a390c1d5adc2ed1fa1f52d120c07fe9fd01166a93f965a832fd6cfc0ea6482"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.0+1"
-  connectivity_macos:
-    dependency: transitive
-    description:
-      name: connectivity_macos
-      sha256: "51ae08d5162eca9669b9d8951ed83ce19c5355a81149f94e4dee2740beb93628"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.1+2"
-  connectivity_platform_interface:
-    dependency: transitive
-    description:
-      name: connectivity_platform_interface
-      sha256: "2d82e942df9d49f29a24bb07fb5ce085d4a53e47818c62364d2b6deb9e0d7a8e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   convert:
     dependency: transitive
     description:
@@ -217,22 +185,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  device_info:
+  device_info_plus:
     dependency: "direct main"
     description:
-      name: device_info
-      sha256: f4a8156cb7b7480d969cb734907d18b333c8f0bc0b1ad0b342cdcecf30d62c48
+      name: device_info_plus
+      sha256: "72d146c6d7098689ff5c5f66bcf593ac11efc530095385356e131070333e64da"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.3"
-  device_info_platform_interface:
+    version: "11.3.0"
+  device_info_plus_platform_interface:
     dependency: transitive
     description:
-      name: device_info_platform_interface
-      sha256: b148e0bf9640145d09a4f8dea96614076f889e7f7f8b5ecab1c7e5c2dbc73c1b
+      name: device_info_plus_platform_interface
+      sha256: "0b04e02b30791224b31969eb1b50d723498f402971bff3630bca2ba839bd1ed2"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "7.0.2"
   device_preview:
     dependency: "direct main"
     description:
@@ -1065,18 +1033,18 @@ packages:
     dependency: "direct main"
     description:
       name: share_plus
-      sha256: "468c43f285207c84bcabf5737f33b914ceb8eb38398b91e5e3ad1698d1b72a52"
+      sha256: fce43200aa03ea87b91ce4c3ac79f0cecd52e2a7a56c7a4185023c271fbfa6da
       url: "https://pub.dev"
     source: hosted
-    version: "10.0.2"
+    version: "10.1.4"
   share_plus_platform_interface:
     dependency: transitive
     description:
       name: share_plus_platform_interface
-      sha256: "6ababf341050edff57da8b6990f11f4e99eaba837865e2e6defe16d039619db5"
+      sha256: cc012a23fc2d479854e6c80150696c4a5f5bb62cb89af4de1c505cf78d0a5d0b
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0"
+    version: "5.0.2"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -1278,10 +1246,10 @@ packages:
     dependency: "direct main"
     description:
       name: url_launcher
-      sha256: "21b704ce5fa560ea9f3b525b43601c678728ba46725bab9b01187b4831377ed3"
+      sha256: "9d06212b1362abc2f0f0d78e6f09f726608c74e3b9462e8368bb03314aa8d603"
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.0"
+    version: "6.3.1"
   url_launcher_android:
     dependency: transitive
     description:
@@ -1402,22 +1370,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.14.0"
-  wifi_info_flutter:
-    dependency: "direct main"
-    description:
-      name: wifi_info_flutter
-      sha256: "9662240e4edb8a91b572efa0b4e4c72ee644e25611525633580afc3257386a48"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.2"
-  wifi_info_flutter_platform_interface:
-    dependency: transitive
-    description:
-      name: wifi_info_flutter_platform_interface
-      sha256: "844a9a5f23d1a639cf5fd8b4f007ee4d60526ad63beb35e1cbe2512f1a9921e4"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   win32:
     dependency: transitive
     description:
@@ -1426,6 +1378,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.5.4"
+  win32_registry:
+    dependency: transitive
+    description:
+      name: win32_registry
+      sha256: "21ec76dfc731550fd3e2ce7a33a9ea90b828fdf19a5c3bcf556fa992cfa99852"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.5"
   xdg_directories:
     dependency: transitive
     description:

@@ -52,25 +52,24 @@
 			CFBundleShortVersionString
 		</key>
 		<string>
-			$(FLUTTER_BUILD_NAME)
+			1.0.0
 		</string>
-		<key>
-			CFBundleSignature
-		</key>
-		<string>
-			????
-		</string>
+		<!-- Replace with your actual version -->
 		<key>
 			CFBundleVersion
 		</key>
 		<string>
-			$(FLUTTER_BUILD_NUMBER)
+			1
 		</string>
+		<!-- FIXED: Ensure this is a valid number -->
+		<key>
+			FirebaseAppDelegateProxyEnabled
+		</key>
+		<true />
 		<key>
 			LSRequiresIPhoneOS
 		</key>
 		<true />
-		<!-- Privacy Usage Descriptions -->
 		<key>
 			NSCameraUsageDescription
 		</key>
@@ -113,20 +112,10 @@
 		<string>
 			Please allow access to photo library so you can easily upload your photos.
 		</string>
-		<!-- Enable Firebase Cloud Messaging (FCM) for iOS -->
 		<key>
-			FirebaseAppDelegateProxyEnabled
+			UIApplicationSupportsIndirectInputEvents
 		</key>
 		<true />
-		<!-- Enable APNs (Apple Push Notification service) -->
-		<key>
-			aps-environment
-		</key>
-		<string>
-			development
-		</string>
-		<!-- Change to "production" when uploading to App Store -->
-		<!-- Required for background push notifications -->
 		<key>
 			UIBackgroundModes
 		</key>
@@ -138,10 +127,6 @@
 				remote-notification
 			</string>
 		</array>
-		<key>
-			UIApplicationSupportsIndirectInputEvents
-		</key>
-		<true />
 		<key>
 			UILaunchStoryboardName
 		</key>
@@ -189,5 +174,11 @@
 			UIViewControllerBasedStatusBarAppearance
 		</key>
 		<false />
+		<key>
+			aps-environment
+		</key>
+		<string>
+			development
+		</string>
 	</dict>
 </plist>

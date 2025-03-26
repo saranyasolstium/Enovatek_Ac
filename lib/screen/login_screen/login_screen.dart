@@ -284,8 +284,11 @@ class LoginScreenState extends State<LoginScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 40, right: 40, top: 20, bottom: 20),
+              padding: EdgeInsets.only(
+                  left: isTablet ? 100 : 40,
+                  right: isTablet ? 100 : 40,
+                  top: 20,
+                  bottom: 20),
               child: Center(
                 child: Image.asset(ImgPath.pngName),
               ),
@@ -297,7 +300,7 @@ class LoginScreenState extends State<LoginScreen> {
                 style: GoogleFonts.roboto(
                   color: ConstantColors.mainlyTextColor,
                   fontWeight: FontWeight.w500,
-                  fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
+                  fontSize: isTablet ? screenWidth * 0.03 : screenWidth * 0.04,
                 ),
                 decoration: InputDecorationStyle.textFieldDecoration(
                     placeholder: "Email", context: context),
@@ -312,7 +315,7 @@ class LoginScreenState extends State<LoginScreen> {
                 style: GoogleFonts.roboto(
                   color: ConstantColors.mainlyTextColor,
                   fontWeight: FontWeight.w500,
-                  fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
+                  fontSize: isTablet ? screenWidth * 0.03 : screenWidth * 0.04,
                 ),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -323,22 +326,25 @@ class LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   contentPadding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.05,
-                    vertical: screenWidth * 0.05,
+                    horizontal:
+                        isTablet ? screenWidth * 0.05 : screenWidth * 0.05,
+                    vertical:
+                        isTablet ? screenWidth * 0.035 : screenWidth * 0.05,
                   ),
                   hintText: "Password",
                   fillColor: ConstantColors.inputColor,
                   filled: true,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      obscureText ? Icons.visibility_off : Icons.visibility, 
+                      size: isTablet ? 50 : 25,
+                      obscureText ? Icons.visibility_off : Icons.visibility,
                       color: ConstantColors.mainlyTextColor,
                     ),
                     onPressed: toggleVisibility,
                   ),
                   hintStyle: GoogleFonts.roboto(
                     fontSize:
-                        isTablet ? screenWidth * 0.04 : screenWidth * 0.04,
+                        isTablet ? screenWidth * 0.035 : screenWidth * 0.04,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -397,15 +403,18 @@ class LoginScreenState extends State<LoginScreen> {
                           text: "Don't have an account?   ",
                           style: GoogleFonts.lato(
                               color: ConstantColors.mainlyTextColor,
-                              fontSize: screenWidth * 0.037),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.037),
                         ),
                         TextSpan(
-                          text: 'Sign Up',
-                          style: GoogleFonts.lato(
-                              color: ConstantColors.blueColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: screenWidth * 0.035),
-                        ),
+                            text: 'Sign Up',
+                            style: GoogleFonts.lato(
+                                color: ConstantColors.blueColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.03
+                                    : screenWidth * 0.037)),
                       ],
                     ),
                   )),
@@ -417,7 +426,7 @@ class LoginScreenState extends State<LoginScreen> {
               child: Text(
                 'OR',
                 style: GoogleFonts.roboto(
-                  fontSize: screenWidth * 0.04,
+                  fontSize: isTablet ? screenWidth * 0.03 : screenWidth * 0.04,
                   color: ConstantColors.black,
                   fontWeight: FontWeight.w700,
                 ),
@@ -473,7 +482,7 @@ class LoginScreenState extends State<LoginScreen> {
             //     ),
             //   ),
             // ),
-           
+
             Padding(
                 padding: const EdgeInsets.only(left: 30, right: 60),
                 child: RichText(
@@ -502,14 +511,18 @@ class LoginScreenState extends State<LoginScreen> {
                         text: ' and ',
                         style: GoogleFonts.lato(
                             color: ConstantColors.mainlyTextColor,
-                            fontSize: screenWidth * 0.037),
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.037),
                       ),
                       TextSpan(
                         text: 'Terms and Condition',
                         style: GoogleFonts.lato(
                             color: ConstantColors.blueColor,
                             fontWeight: FontWeight.bold,
-                            fontSize: screenWidth * 0.035),
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.037),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             _launchURL(

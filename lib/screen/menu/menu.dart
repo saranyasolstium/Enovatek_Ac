@@ -675,6 +675,37 @@ class MenuScreenState extends State<MenuScreen> {
                       ],
                     ),
                   ),
+                  SizedBox(
+                    height: 0.03 * screenHeight,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showDeleteDialog(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Image.asset(
+                          ImgPath.pngAccountDelete,
+                          height: screenWidth * 0.06,
+                          width: screenWidth * 0.06,
+                          color: ConstantColors.iconDarkColr,
+                        ),
+                        SizedBox(
+                          width: 0.02 * screenHeight,
+                        ),
+                        Text(
+                          'Delete Account',
+                          style: GoogleFonts.roboto(
+                              color: ConstantColors.black,
+                              fontSize: screenWidth * 0.045),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -20,14 +20,14 @@ class InputDecorationStyle {
         ),
       ),
       contentPadding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.05,
-        vertical: screenWidth * 0.05,
+        horizontal: isTablet ? screenWidth * 0.035 : screenWidth * 0.05,
+        vertical: isTablet ? screenWidth * 0.035 : screenWidth * 0.05,
       ),
       hintText: placeholder,
       fillColor: ConstantColors.inputColor,
       filled: true,
       hintStyle: GoogleFonts.roboto(
-        fontSize: isTablet ? screenWidth * 0.04 : screenWidth * 0.04,
+        fontSize: isTablet ? screenWidth * 0.035 : screenWidth * 0.04,
         fontWeight: FontWeight.w500,
       ),
     );

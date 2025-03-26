@@ -6,16 +6,10 @@
 
 #import "GeneratedPluginRegistrant.h"
 
-#if __has_include(<connectivity/FLTConnectivityPlugin.h>)
-#import <connectivity/FLTConnectivityPlugin.h>
+#if __has_include(<device_info_plus/FPPDeviceInfoPlusPlugin.h>)
+#import <device_info_plus/FPPDeviceInfoPlusPlugin.h>
 #else
-@import connectivity;
-#endif
-
-#if __has_include(<device_info/FLTDeviceInfoPlugin.h>)
-#import <device_info/FLTDeviceInfoPlugin.h>
-#else
-@import device_info;
+@import device_info_plus;
 #endif
 
 #if __has_include(<file_picker/FilePickerPlugin.h>)
@@ -42,12 +36,6 @@
 @import firebase_messaging;
 #endif
 
-#if __has_include(<flutter_facebook_auth/FlutterFacebookAuthPlugin.h>)
-#import <flutter_facebook_auth/FlutterFacebookAuthPlugin.h>
-#else
-@import flutter_facebook_auth;
-#endif
-
 #if __has_include(<flutter_iot_wifi/FlutterIotWifiPlugin.h>)
 #import <flutter_iot_wifi/FlutterIotWifiPlugin.h>
 #else
@@ -70,12 +58,6 @@
 #import <flutter_socket_plugin/FlutterSocketPlugin.h>
 #else
 @import flutter_socket_plugin;
-#endif
-
-#if __has_include(<google_sign_in_ios/FLTGoogleSignInPlugin.h>)
-#import <google_sign_in_ios/FLTGoogleSignInPlugin.h>
-#else
-@import google_sign_in_ios;
 #endif
 
 #if __has_include(<image_picker_ios/FLTImagePickerPlugin.h>)
@@ -138,27 +120,18 @@
 @import webview_flutter_wkwebview;
 #endif
 
-#if __has_include(<wifi_info_flutter/WifiInfoFlutterPlugin.h>)
-#import <wifi_info_flutter/WifiInfoFlutterPlugin.h>
-#else
-@import wifi_info_flutter;
-#endif
-
 @implementation GeneratedPluginRegistrant
 
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
-  [FLTConnectivityPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTConnectivityPlugin"]];
-  [FLTDeviceInfoPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTDeviceInfoPlugin"]];
+  [FPPDeviceInfoPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FPPDeviceInfoPlusPlugin"]];
   [FilePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FilePickerPlugin"]];
   [FLTFirebaseAuthPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseAuthPlugin"]];
   [FLTFirebaseCorePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseCorePlugin"]];
   [FLTFirebaseMessagingPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseMessagingPlugin"]];
-  [FlutterFacebookAuthPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterFacebookAuthPlugin"]];
   [FlutterIotWifiPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterIotWifiPlugin"]];
   [FlutterLocalNotificationsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterLocalNotificationsPlugin"]];
   [FLTPDFViewFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTPDFViewFlutterPlugin"]];
   [FlutterSocketPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterSocketPlugin"]];
-  [FLTGoogleSignInPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleSignInPlugin"]];
   [FLTImagePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImagePickerPlugin"]];
   [OpenFilePlugin registerWithRegistrar:[registry registrarForPlugin:@"OpenFilePlugin"]];
   [PathProviderPlugin registerWithRegistrar:[registry registrarForPlugin:@"PathProviderPlugin"]];
@@ -169,7 +142,6 @@
   [SharedPreferencesPlugin registerWithRegistrar:[registry registrarForPlugin:@"SharedPreferencesPlugin"]];
   [URLLauncherPlugin registerWithRegistrar:[registry registrarForPlugin:@"URLLauncherPlugin"]];
   [FLTWebViewFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTWebViewFlutterPlugin"]];
-  [WifiInfoFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"WifiInfoFlutterPlugin"]];
 }
 
 @end

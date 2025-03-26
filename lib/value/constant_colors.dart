@@ -20,6 +20,7 @@ class ConstantColors {
   static const Color orangeColor = Color(0xFFDF6039);
   static const Color yellowColor = Color(0xFFECB048);
   static const Color iconColr = Color(0xFF5484AE);
+  static const Color iconDarkColr = Color(0xFF5884ac);
 
   static const Color blueColor = Color(0xFF1977F3);
   static const Color darkBlueColor = Color(0xFF1D19F3);

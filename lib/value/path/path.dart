@@ -46,6 +46,7 @@ class ImgPath {
   static String pngCelTower = "assets/cell_tower_icon.jpg";
   static String pngUpload = "assets/upload_icon.png";
   static String pngDelete = "assets/delete_icon.png";
+  static String pngAccountDelete = "assets/account_delete.png";
 
   static String pngTower = "assets/tower_icon.png";
   static String pngAdvancedMenu = "assets/advanced_menu_icon.png";

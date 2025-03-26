@@ -120,7 +120,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         leading: IconButton(
           icon: Image.asset(
             ImgPath.pngArrowBack,
-            height: screenWidth * 0.05,
+            height: isTablet ? screenHeight * 0.04 : screenWidth * 0.05,
             width: screenWidth * 0.05,
           ),
           onPressed: () {

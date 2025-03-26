@@ -933,4 +933,27 @@ class RemoteServices {
       rethrow;
     }
   }
+
+  static Future<Response> deleteAccount(
+    String token,
+    int userId,
+  ) async {
+    try {
+      print('${url}api/user/delete_account/?id=$userId');
+      String apiUrl = '${url}api/user/delete_account/?id=$userId';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      http.Response response = await http.delete(
+        Uri.parse(apiUrl),
+        headers: headers,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

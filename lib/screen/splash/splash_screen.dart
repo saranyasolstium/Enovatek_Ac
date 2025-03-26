@@ -2,8 +2,8 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
-import 'package:device_info/device_info.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:flutter/material.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
@@ -62,17 +62,16 @@ class _SplashScreenState extends State<SplashScreen> {
       if (Platform.isAndroid) {
         final AndroidDeviceInfo androidInfo =
             await deviceInfoPlugin.androidInfo;
-        deviceId = androidInfo.androidId;
+        deviceId = androidInfo.id ?? '';
       } else if (Platform.isIOS) {
         final IosDeviceInfo iosInfo = await deviceInfoPlugin.iosInfo;
-        deviceId =
-            iosInfo.identifierForVendor; // For iOS, use identifierForVendor
+        deviceId = iosInfo.identifierForVendor ?? '';
       }
     } catch (e) {
       print('Error getting device ID: $e');
     }
-    print(deviceId);
 
+    print(deviceId);
     return deviceId;
   }
 
