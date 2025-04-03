@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:country_flags/country_flags.dart';
+import 'package:enavatek_mobile/app_state/app_state.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/model/billing.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
@@ -21,7 +22,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:live_currency_rate/live_currency_rate.dart';
 import 'package:intl/intl.dart';
 
 class BillingScreen extends StatefulWidget {
@@ -37,7 +39,6 @@ class BillingScreen extends StatefulWidget {
 
 class BillingScreenState extends State<BillingScreen>
     with TickerProviderStateMixin {
-  ValueNotifier<String> selectedCountryNotifier = ValueNotifier<String>('sg');
   List<CountryData> countryList = [];
   TextEditingController dateController = TextEditingController();
 
@@ -236,36 +237,6 @@ class BillingScreenState extends State<BillingScreen>
     }
   }
 
-  // Future<void> fetchData(String periodType) async {
-  //   try {
-  //     setState(() {
-  //       isLoading = true;
-  //     });
-
-  //     billingDataList = [];
-  //     summaryBillList = [];
-  //     int? userId = await SharedPreferencesHelper.instance.getUserID();
-  //     final result = await RemoteServices.consumptionBillStatus(
-  //         deviceList, userId!, 6, periodType);
-  //     setState(() {
-  //       billingDataList = result['billingData'];
-  //       summaryBillList = result['summaryBill'];
-  //       summaryDetail = result['summaryDetail'];
-
-  //       selectedMonth = formatPeriod(billingDataList.first.period);
-  //       if (billingDataList.isNotEmpty) {
-  //         consumption = calculateTotalConsumption(billingDataList);
-  //         totalBillAmount = calculateTotalBillAmount(billingDataList);
-  //       } else {
-  //         consumption = "0";
-  //         totalBillAmount = "0";
-  //       }
-  //     });
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
   Future<void> fetchCountry(bool status) async {
     try {
       String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
@@ -285,7 +256,7 @@ class BillingScreenState extends State<BillingScreen>
   Future<void> countrySelection() async {
     final double screenWidth = MediaQuery.of(context).size.width;
 
-    String radioValue = selectedCountryNotifier.value.toUpperCase();
+    String radioValue = AppState().selectedCountryNotifier.value.toUpperCase();
 
     return showDialog(
       context: context,
@@ -387,7 +358,8 @@ class BillingScreenState extends State<BillingScreen>
                           onPressed: () {
                             setState(() {
                               print(radioValue);
-                              selectedCountryNotifier.value = radioValue;
+                              AppState().selectedCountryNotifier.value =
+                                  radioValue;
                               Navigator.pop(context);
                             });
                           }),
@@ -472,7 +444,7 @@ class BillingScreenState extends State<BillingScreen>
                 fetchCountry(true);
               },
               child: ValueListenableBuilder<String>(
-                valueListenable: selectedCountryNotifier,
+                valueListenable: AppState().selectedCountryNotifier,
                 builder: (context, value, child) {
                   return CountryFlag.fromCountryCode(
                     value,
@@ -833,12 +805,29 @@ class BillingScreenState extends State<BillingScreen>
                             "The amount must be between 0.3 and 999999999.99.",
                           );
                         } else {
+                          String selectedCountry =
+                              AppState().selectedCountryNotifier.value;
+
+                          print("saranya123456 $selectedCountry");
+                          double finalAmount = 0.0;
+                          if (selectedCountry == "MY") {
+                            CurrencyRate rate =
+                                await LiveCurrencyRate.convertCurrency(
+                                    'SGD', 'MYR', amountToPay);
+                            print(rate.result);
+                            finalAmount =
+                                double.parse(rate.result.toStringAsFixed(2));
+                          }
+
                           await PaymentService().createPaymentRequest(
-                            context,
-                            amountToPay,
-                            deviceList,
-                            selectedMonthYear,
-                          );
+                              context,
+                              //amountToPay,
+                              selectedCountry == "MY"
+                                  ? finalAmount
+                                  : amountToPay,
+                              deviceList,
+                              selectedMonthYear,
+                              selectedCountry == "MY" ? "MYR" : "SGD");
                         }
                       } else {
                         SnackbarHelper.showSnackBar(

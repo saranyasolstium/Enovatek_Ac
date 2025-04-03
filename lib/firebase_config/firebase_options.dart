@@ -6,5 +6,5 @@ const firebaseOptions = FirebaseOptions(
   messagingSenderId: '742704280898',
   projectId: 'enovatek---ac-app',
   storageBucket: 'enovatek---ac-app.firebasestorage.app',
-  authDomain: 'com.solstium.enavatekmobile',
+  authDomain: 'com.solstium.enovatekenergy',
 );

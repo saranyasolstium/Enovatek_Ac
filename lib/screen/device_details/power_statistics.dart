@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:country_flags/country_flags.dart';
+import 'package:enavatek_mobile/app_state/app_state.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
 import 'package:enavatek_mobile/model/energy.dart';
@@ -67,7 +68,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   ValueNotifier<bool> treeNotiifer = ValueNotifier(false);
   ValueNotifier<bool> savingNotiifer = ValueNotifier(false);
   ValueNotifier<int> selectedTabIndex = ValueNotifier<int>(0);
-  ValueNotifier<String> selectedCountryNotifier = ValueNotifier<String>('sg');
   ValueNotifier<int> countryId = ValueNotifier<int>(6);
   ValueNotifier<String> currencyCodeNotifier = ValueNotifier<String>("SGD");
   ValueNotifier<String> currencySymbolNotifier = ValueNotifier<String>("\$");
@@ -90,7 +90,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   @override
   void initState() {
     super.initState();
-    getCountryCurrency(selectedCountryNotifier.value);
+    getCountryCurrency(AppState().selectedCountryNotifier.value);
     getAllDevice();
     _tooltipBehavior = TooltipBehavior(
       enable: true,
@@ -213,12 +213,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   Future<void> fetchData(String periodType) async {
     try {
       energyDataList = [];
-      print(selectedCountryNotifier.value);
-      getCountryCurrency(selectedCountryNotifier.value);
+      print(AppState().selectedCountryNotifier.value);
+      getCountryCurrency(AppState().selectedCountryNotifier.value);
 
       int? userId = await SharedPreferencesHelper.instance.getUserID();
       int? countryId =
-          getCountryIdByCurrencyType(selectedCountryNotifier.value);
+          getCountryIdByCurrencyType(AppState().selectedCountryNotifier.value);
       print(countryId);
       final data = await RemoteServices.fetchEnergyData(
           deviceId: deviceList,
@@ -444,7 +444,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isTablet = screenWidth >= 600;
 
-    String radioValue = selectedCountryNotifier.value.toUpperCase();
+    String radioValue = AppState().selectedCountryNotifier.value.toUpperCase();
     String currency = "";
     TextEditingController countryController = TextEditingController();
     TextEditingController energyController = TextEditingController();
@@ -649,7 +649,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           } else {
                             setState(() {
                               print(radioValue);
-                              selectedCountryNotifier.value = radioValue;
+                              AppState().selectedCountryNotifier.value =
+                                  radioValue;
                               energyNotiifer.value = true;
                               savingNotiifer.value = false;
                               treeNotiifer.value = false;
@@ -790,7 +791,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               fetchCountry(true);
             },
             child: ValueListenableBuilder<String>(
-              valueListenable: selectedCountryNotifier,
+              valueListenable: AppState().selectedCountryNotifier,
               builder: (context, value, child) {
                 return CountryFlag.fromCountryCode(
                   value,
@@ -1968,8 +1969,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           ],
                         ),
                       ),
-                    )
-                    );
+                    ));
               },
             ),
             SizedBox(

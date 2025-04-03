@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class PaymentService {
-  final String apiKey =
+  final String testKey =
       '32b8b1494d36ef0d1280d32bbd7009702e43651d3b23d8f26e97865a9ccdf732';
 
   final String liveKey =
@@ -14,8 +14,13 @@ class PaymentService {
   String testUrl = "https://api.sandbox.hit-pay.com/v1/payment-requests";
   String liveUrl = "https://api.hit-pay.com/v1/payment-requests";
 
-  Future<void> createPaymentRequest(BuildContext context, double amount,
-      List<String> deviceId, String month) async {
+  Future<void> createPaymentRequest(
+    BuildContext context,
+    double amount,
+    List<String> deviceId,
+    String month,
+    String currencyCode,
+  ) async {
     final url = Uri.parse(liveUrl);
 
     final headers = {
@@ -25,7 +30,7 @@ class PaymentService {
 
     final body = jsonEncode({
       "amount": amount.toString(),
-      "currency": "SGD",
+      "currency": currencyCode,
     });
 
     try {

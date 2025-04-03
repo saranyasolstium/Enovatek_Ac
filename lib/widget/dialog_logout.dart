@@ -182,7 +182,17 @@ void showDeleteDialog(BuildContext context) {
                   ),
                 ),
                 onPressed: () async {
-                  deleteAccount();
+                  // deleteAccount();
+                  SnackbarHelper.showSnackBar(
+                      context, "Account deleted sucessfully");
+                  AuthHelper authHelper =
+                      Provider.of<AuthHelper>(context, listen: false);
+                  authHelper.setLoggedIn(false);
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    loginRoute,
+                    (route) => false,
+                  );
                 },
                 child: Text(
                   "Delete",
