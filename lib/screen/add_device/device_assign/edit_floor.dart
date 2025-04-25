@@ -7,7 +7,9 @@ import 'package:google_fonts/google_fonts.dart';
 class EditFloorName extends StatefulWidget {
   final String floorName;
   final String floorid;
-  const EditFloorName({Key? key, required this.floorName, required this.floorid}) : super(key: key);
+  const EditFloorName(
+      {Key? key, required this.floorName, required this.floorid})
+      : super(key: key);
 
   @override
   EditFloorNameState createState() => EditFloorNameState();
@@ -44,8 +46,7 @@ class EditFloorNameState extends State<EditFloorName> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
-
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
         child: Column(
@@ -70,7 +71,7 @@ class EditFloorNameState extends State<EditFloorName> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: TextFormField(
-                initialValue: widget.floorName, 
+                initialValue: widget.floorName,
                 maxLines: 1,
                 decoration: const InputDecoration(
                   labelText: "Add floor name",
@@ -105,9 +106,11 @@ class EditFloorNameState extends State<EditFloorName> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: isUnAssignedVisible
                           ? ConstantColors.whiteColor
-                          : ConstantColors.lightBlueColor, backgroundColor: isUnAssignedVisible
+                          : ConstantColors.lightBlueColor,
+                      backgroundColor: isUnAssignedVisible
                           ? ConstantColors.lightBlueColor
-                          : ConstantColors.whiteColor, shape: RoundedRectangleBorder(
+                          : ConstantColors.whiteColor,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                       side: const BorderSide(
@@ -136,9 +139,11 @@ class EditFloorNameState extends State<EditFloorName> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: isAssignedVisible
                           ? ConstantColors.whiteColor
-                          : ConstantColors.lightBlueColor, backgroundColor: isAssignedVisible
+                          : ConstantColors.lightBlueColor,
+                      backgroundColor: isAssignedVisible
                           ? ConstantColors.lightBlueColor
-                          : ConstantColors.whiteColor, shape: RoundedRectangleBorder(
+                          : ConstantColors.whiteColor,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                       side: const BorderSide(
@@ -220,7 +225,9 @@ class EditFloorNameState extends State<EditFloorName> {
                     ),
                     trailing: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: ConstantColors.whiteColor, backgroundColor: ConstantColors.lightBlueColor, shape: RoundedRectangleBorder(
+                        foregroundColor: ConstantColors.whiteColor,
+                        backgroundColor: ConstantColors.lightBlueColor,
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                         side: const BorderSide(
@@ -270,7 +277,9 @@ class EditFloorNameState extends State<EditFloorName> {
                     ),
                     trailing: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: ConstantColors.whiteColor, backgroundColor: ConstantColors.lightBlueColor, shape: RoundedRectangleBorder(
+                        foregroundColor: ConstantColors.whiteColor,
+                        backgroundColor: ConstantColors.lightBlueColor,
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                         side: const BorderSide(

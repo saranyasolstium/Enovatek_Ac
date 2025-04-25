@@ -28,12 +28,14 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final isTablet = screenWidth >= 600;
+
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-          screenWidth * 0.05,
+          isTablet ? screenWidth * 0.02 : screenWidth * 0.05,
           screenHeight * 0.05,
           screenWidth * 0.05,
           screenHeight * 0.02,
@@ -48,49 +50,53 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
-                    height: screenWidth * 0.05,
-                    width: screenWidth * 0.05,
+                    height: isTablet ? 40 : 22,
+                    width: isTablet ? 40 : 22,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Add Device',
                   style: GoogleFonts.roboto(
-                      fontSize: screenWidth * 0.05,
+                      fontSize:
+                          isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
               ],
             ),
-            const SizedBox(
-              height: 50,
+            SizedBox(
+              height: isTablet ? 30 : 50,
             ),
             Center(
               child: Text(
                 'Add serial no. manually of your device',
                 style: GoogleFonts.roboto(
-                    fontSize: screenWidth * 0.05,
+                    fontSize:
+                        isTablet ? screenWidth * 0.028 : screenWidth * 0.05,
                     fontWeight: FontWeight.bold,
                     color: ConstantColors.black),
               ),
             ),
-            const SizedBox(
-              height: 50,
+            SizedBox(
+              height: isTablet ? 30 : 50,
             ),
             Image.asset(
               ImgPath.pngSerialNo,
-              height: screenWidth * 0.6,
-              width: screenWidth * 0.6,
+              height: isTablet ? screenWidth * 0.22 : screenWidth * 0.6,
+              width: isTablet ? screenWidth * 0.22 : screenWidth * 0.6,
             ),
             const SizedBox(
               height: 30,
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 0),
+              padding: EdgeInsets.only(
+                  left: isTablet ? 200 : 20, right: isTablet ? 200 : 0),
               child: TextField(
                 controller: deviceSerialNoTextController,
                 style: GoogleFonts.roboto(
                   color: ConstantColors.mainlyTextColor,
+                  fontSize: isTablet ? screenWidth * 0.03 : screenWidth * 0.04,
                   fontWeight: FontWeight.w500,
                 ),
                 decoration: InputDecorationStyle.textFieldDecoration(

@@ -31,9 +31,12 @@ class AddBuildingState extends State<AddBuilding> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
         child: Column(
@@ -42,20 +45,19 @@ class AddBuildingState extends State<AddBuilding> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    //Navigator.pushReplacementNamed(context, buildingRoute);
                     Navigator.pop(context);
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
-                    height: 25,
-                    width: 25,
+                    height: isTablet ? 40 : 22,
+                    width: isTablet ? 40 : 22,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Add Building ',
                   style: GoogleFonts.roboto(
-                      fontSize: 18,
+                      fontSize: isTablet ? 26 : 18,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
@@ -69,6 +71,11 @@ class AddBuildingState extends State<AddBuilding> {
               child: TextFormField(
                 controller: buildingNameController,
                 maxLines: 1,
+                style: GoogleFonts.roboto(
+                  color: ConstantColors.mainlyTextColor,
+                  fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.04,
+                  fontWeight: FontWeight.w500,
+                ),
                 decoration: const InputDecoration(
                   labelText: "Add building name",
                   enabledBorder: UnderlineInputBorder(

@@ -48,9 +48,9 @@ android {
     defaultConfig {
         applicationId "com.solstium.enovatekenergy"
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        targetSdkVersion 34
+        versionCode 2
+        versionName "1.0.1"
         multiDexEnabled true
     }
 

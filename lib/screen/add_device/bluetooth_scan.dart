@@ -16,13 +16,14 @@ class BluetoothScanState extends State<BluetoothScan> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final isTablet = screenWidth >= 600;
+
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
-
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-          screenWidth * 0.05,
+          isTablet ? screenWidth * 0.02 : screenWidth * 0.05,
           screenHeight * 0.05,
           screenWidth * 0.05,
           screenHeight * 0.02,
@@ -37,47 +38,49 @@ class BluetoothScanState extends State<BluetoothScan> {
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
-                    height: screenWidth * 0.05,
-                    width: screenWidth * 0.05,
+                    height: isTablet ? 40 : 22,
+                    width: isTablet ? 40 : 22,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Add Device',
                   style: GoogleFonts.roboto(
-                      fontSize: screenWidth * 0.05,
+                      fontSize:
+                          isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
               ],
             ),
-            const SizedBox(
-              height: 50,
+            SizedBox(
+              height: isTablet ? 30 : 50,
             ),
             Center(
               child: Text(
                 'Bring you phone closer to the device',
                 style: GoogleFonts.roboto(
-                    fontSize: screenWidth * 0.05,
+                    fontSize:
+                        isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
                     fontWeight: FontWeight.bold,
                     color: ConstantColors.black),
               ),
             ),
-            const SizedBox(
-              height: 80,
+            SizedBox(
+              height: isTablet ? 50 : 80,
             ),
             Center(
               child: Image.asset(
                 ImgPath.pngWifi,
-                height: screenWidth * 0.2,
-                width: screenWidth * 0.3,
+                height: isTablet ? screenWidth * 0.1 : screenWidth * 0.2,
+                width: isTablet ? screenWidth * 0.1 : screenWidth * 0.3,
               ),
             ),
             Center(
               child: Image.asset(
                 ImgPath.pngAirConditioner,
-                height: screenWidth * 0.5,
-                width: screenWidth * 0.5,
+                height: isTablet ? screenWidth * 0.25 : screenWidth * 0.5,
+                width: isTablet ? screenWidth * 0.25 : screenWidth * 0.5,
               ),
             ),
           ],

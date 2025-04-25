@@ -35,6 +35,9 @@ class AddRoomState extends State<AddRoom> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
     return WillPopScope(
         onWillPop: () async {
           Navigator.pushReplacement(
@@ -68,15 +71,15 @@ class AddRoomState extends State<AddRoom> {
                       },
                       child: Image.asset(
                         ImgPath.pngArrowBack,
-                        height: 25,
-                        width: 25,
+                        height: isTablet ? 40 : 22,
+                        width: isTablet ? 40 : 22,
                       ),
                     ),
                     const SizedBox(width: 10),
                     Text(
                       'Add Room',
                       style: GoogleFonts.roboto(
-                          fontSize: 18,
+                          fontSize: isTablet ? 26 : 18,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.black),
                     ),
@@ -90,6 +93,12 @@ class AddRoomState extends State<AddRoom> {
                   child: TextFormField(
                     controller: roomNameController,
                     maxLines: 1,
+                    style: GoogleFonts.roboto(
+                      color: ConstantColors.mainlyTextColor,
+                      fontSize:
+                          isTablet ? screenWidth * 0.025 : screenWidth * 0.04,
+                      fontWeight: FontWeight.w500,
+                    ),
                     decoration: const InputDecoration(
                       labelText: "Add room name",
                       enabledBorder: UnderlineInputBorder(

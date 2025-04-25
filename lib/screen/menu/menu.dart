@@ -50,7 +50,7 @@ class MenuScreenState extends State<MenuScreen> {
     final bool isTablet = screenWidth >= 600;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       appBar: AppBar(
         backgroundColor: ConstantColors.backgroundColor,
         automaticallyImplyLeading: false,
@@ -70,8 +70,8 @@ class MenuScreenState extends State<MenuScreen> {
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: 22,
-                          width: 22,
+                          height: isTablet ? 40 : 22,
+                          width: isTablet ? 40 : 22,
                           color: ConstantColors.appColor,
                         ),
                       ),
@@ -79,7 +79,9 @@ class MenuScreenState extends State<MenuScreen> {
                       Text(
                         'Menu',
                         style: GoogleFonts.roboto(
-                          fontSize: screenWidth * 0.045,
+                          fontSize: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),
@@ -101,9 +103,6 @@ class MenuScreenState extends State<MenuScreen> {
         ),
         child: Column(
           children: [
-            // SizedBox(
-            //   height: 0.05 * screenHeight,
-            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -114,17 +113,23 @@ class MenuScreenState extends State<MenuScreen> {
                     Container(
                       decoration: BoxDecoration(
                           color: ConstantColors.inputColor,
-                          borderRadius:
-                              BorderRadius.circular(screenHeight * 0.05)),
-                      width: screenWidth * 0.2,
-                      height: screenHeight * 0.1,
+                          borderRadius: BorderRadius.circular(isTablet
+                              ? screenHeight * 0.4
+                              : screenHeight * 0.05)),
+                      width: isTablet ? screenWidth * 0.1 : screenWidth * 0.2,
+                      height:
+                          isTablet ? screenHeight * 0.17 : screenHeight * 0.1,
                     ),
                     Positioned.fill(
                       child: Center(
                         child: Image.asset(
                           ImgPath.pngPerson,
-                          height: screenWidth * 0.08,
-                          width: screenWidth * 0.08,
+                          height: isTablet
+                              ? screenWidth * 0.04
+                              : screenWidth * 0.08,
+                          width: isTablet
+                              ? screenWidth * 0.04
+                              : screenWidth * 0.08,
                         ),
                       ),
                     ),
@@ -138,29 +143,28 @@ class MenuScreenState extends State<MenuScreen> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: '$userName\n\n',
+                          text: isTablet ? '$userName\n' : '$userName\n\n',
                           style: GoogleFonts.roboto(
                             color: ConstantColors.black,
                             fontWeight: FontWeight.bold,
-                            fontSize: screenWidth * 0.042,
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.042,
                           ),
                         ),
                         TextSpan(
                           text: userEmail,
                           style: GoogleFonts.roboto(
                             color: ConstantColors.mainlyTextColor,
-                            fontSize: screenWidth * 0.042,
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.042,
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                // Icon(
-                //   Icons.arrow_forward_ios,
-                //   color: ConstantColors.mainlyTextColor,
-                //   size: screenWidth * 0.07,
-                // ),
               ],
             ),
             SizedBox(
@@ -200,24 +204,33 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngPlus,
-                          height: screenWidth * 0.05,
-                          width: screenWidth * 0.05,
+                          height: isTablet
+                              ? screenWidth * 0.035
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.035
+                              : screenWidth * 0.05,
                           color: ConstantColors.iconColr,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Add Device',
                           style: GoogleFonts.roboto(
                               color: const Color.fromARGB(255, 7, 3, 3),
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -241,23 +254,30 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Icon(
                           Icons.visibility,
-                          size: screenWidth * 0.06,
+                          size: isTablet
+                              ? screenWidth * 0.035
+                              : screenWidth * 0.06,
                           color: ConstantColors.iconColr,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'View Device',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -276,24 +296,34 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.liveData,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
+                          height: isTablet
+                              ? screenWidth * 0.035
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.035
+                              : screenWidth * 0.05,
                           color: ConstantColors.iconColr,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Live data',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -316,24 +346,34 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.energyIcon,
-                          height: screenWidth * 0.05,
-                          width: screenWidth * 0.05,
+                          height: isTablet
+                              ? screenWidth * 0.035
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.035
+                              : screenWidth * 0.05,
                           color: ConstantColors.iconColr,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Energy Saving',
                           style: GoogleFonts.roboto(
                               color: const Color.fromARGB(255, 7, 3, 3),
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -356,24 +396,34 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.dollerSymbol,
-                          height: screenWidth * 0.05,
-                          width: screenWidth * 0.05,
+                          height: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
                           color: ConstantColors.iconColr,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.045 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'S\$ Saving',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -396,24 +446,33 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.treeIcon,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
+                          height: isTablet
+                              ? screenWidth * 0.035
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.035
+                              : screenWidth * 0.05,
                           color: ConstantColors.iconColr,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Tree Planted',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   // SizedBox(
-                  //   height: 0.03 * screenHeight,
+                  //   height:isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   // ),
                   // GestureDetector(
                   //   onTap: () {
@@ -451,7 +510,8 @@ class MenuScreenState extends State<MenuScreen> {
                   //   ),
                   // ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -472,30 +532,41 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.invoice,
-                          height: screenWidth * 0.05,
-                          width: screenWidth * 0.05,
+                          height: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
                           color: ConstantColors.iconColr,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Billing',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   const Divider(
                     thickness: 1,
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -509,23 +580,33 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngApartment,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
+                          height: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Building',
                           style: GoogleFonts.roboto(
                               color: const Color.fromARGB(255, 7, 3, 3),
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -539,23 +620,33 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngSaving,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
+                          height: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Calculate saving',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -565,22 +656,30 @@ class MenuScreenState extends State<MenuScreen> {
                       ),
                       Image.asset(
                         ImgPath.pngFaq,
-                        height: screenWidth * 0.06,
-                        width: screenWidth * 0.06,
+                        height:
+                            isTablet ? screenWidth * 0.03 : screenWidth * 0.05,
+                        width:
+                            isTablet ? screenWidth * 0.03 : screenWidth * 0.05,
+                        fit: BoxFit.contain,
                       ),
                       SizedBox(
-                        width: 0.02 * screenHeight,
+                        width: isTablet
+                            ? 0.035 * screenHeight
+                            : 0.02 * screenHeight,
                       ),
                       Text(
                         'FAQ',
                         style: GoogleFonts.roboto(
                             color: ConstantColors.black,
-                            fontSize: screenWidth * 0.045),
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.045),
                       ),
                     ],
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -594,23 +693,33 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngSupport,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
+                          height: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Support',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -624,29 +733,40 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngGroup,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
+                          height: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Track Request',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   const Divider(
                     thickness: 1,
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -660,23 +780,33 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngLogout,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
+                          height: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Log out',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 0.03 * screenHeight,
+                    height:
+                        isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -690,18 +820,27 @@ class MenuScreenState extends State<MenuScreen> {
                         ),
                         Image.asset(
                           ImgPath.pngAccountDelete,
-                          height: screenWidth * 0.06,
-                          width: screenWidth * 0.06,
+                          height: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          width: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
+                          fit: BoxFit.contain,
                           color: ConstantColors.iconDarkColr,
                         ),
                         SizedBox(
-                          width: 0.02 * screenHeight,
+                          width: isTablet
+                              ? 0.035 * screenHeight
+                              : 0.02 * screenHeight,
                         ),
                         Text(
                           'Delete Account',
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
-                              fontSize: screenWidth * 0.045),
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045),
                         ),
                       ],
                     ),

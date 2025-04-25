@@ -82,7 +82,7 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
 
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           screenWidth * 0.05,
@@ -105,15 +105,17 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: screenWidth * 0.05,
-                          width: screenWidth * 0.05,
+                          height: isTablet ? 40 : 22,
+                          width: isTablet ? 40 : 22,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         'Buildings',
                         style: GoogleFonts.roboto(
-                            fontSize: screenWidth * 0.05,
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.045,
                             fontWeight: FontWeight.bold,
                             color: ConstantColors.black),
                       ),
@@ -191,7 +193,9 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                               style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
                                 fontWeight: FontWeight.bold,
-                                fontSize: screenWidth * 0.04,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.03
+                                    : screenWidth * 0.04,
                               ),
                             ),
                             Row(
@@ -244,18 +248,18 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                                   child: Image.asset(
                                     ImgPath.pngDelete,
                                     width: isTablet
-                                        ? 0.03 * screenWidth
+                                        ? 0.025 * screenWidth
                                         : 0.025 * screenWidth,
                                     height: isTablet
-                                        ? 0.03 * screenHeight
+                                        ? 0.025 * screenHeight
                                         : 0.025 * screenHeight,
                                   ),
                                 ),
                                 const SizedBox(width: 20),
-                                const Icon(
+                                Icon(
                                   Icons.arrow_forward_ios,
                                   color: ConstantColors.mainlyTextColor,
-                                  size: 20,
+                                  size: isTablet ? 30 : 20,
                                 ),
                               ],
                             ),

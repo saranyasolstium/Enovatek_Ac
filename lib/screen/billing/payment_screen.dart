@@ -83,6 +83,8 @@ class PaymentPageState extends State<PaymentPage> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ConstantColors.liveBgColor,
@@ -109,8 +111,8 @@ class PaymentPageState extends State<PaymentPage> {
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: 22,
-                          width: 22,
+                          height: isTablet ? 28 : 22,
+                          width: isTablet ? 28 : 22,
                           color: ConstantColors.appColor,
                         ),
                       ),
@@ -118,7 +120,7 @@ class PaymentPageState extends State<PaymentPage> {
                       Text(
                         'Payment',
                         style: GoogleFonts.roboto(
-                          fontSize: 18.dynamic,
+                          fontSize: isTablet ? 22.dynamic : 18.dynamic,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),

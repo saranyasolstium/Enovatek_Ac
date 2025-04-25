@@ -20,33 +20,39 @@ class SlideItem extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: screenWidth < 600 ? screenWidth * 0.05 : screenWidth * 0.1,
-        vertical: screenWidth < 600 ? screenHeight * 0.02 : screenHeight * 0.1,
+        horizontal: screenWidth < 600 ? screenWidth * 0.05 : screenWidth * 0.04,
+        vertical: screenWidth < 600 ? screenHeight * 0.02 : screenHeight * 0.06,
       ),
       child: Column(
         children: [
           Image.asset(
             imageUrl,
-            height: screenWidth < 600 ? screenHeight * 0.6 : screenHeight * 0.5,
+            height:
+                screenWidth < 600 ? screenHeight * 0.6 : screenHeight * 0.45,
             width: double.infinity,
             fit: BoxFit.contain,
           ),
-          SizedBox(height: screenWidth < 600 ? screenHeight * 0.02 : screenHeight * 0.03 ), 
+          SizedBox(
+              height: screenWidth < 600
+                  ? screenHeight * 0.02
+                  : screenHeight * 0.03),
           Text(
             title,
             style: GoogleFonts.roboto(
-              fontSize: screenWidth < 600 ? screenWidth * 0.05 : screenWidth * 0.05,
+              fontSize:
+                  screenWidth < 600 ? screenWidth * 0.05 : screenWidth * 0.03,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: screenHeight * 0.01), 
+          SizedBox(height: screenHeight * 0.01),
           Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: screenWidth < 600 ? screenWidth * 0.01 : screenWidth * 0.01),
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
             child: Text(
               description,
               style: GoogleFonts.roboto(
-                fontSize: screenWidth < 600 ? screenWidth * 0.04 : screenWidth * 0.04,
+                fontSize: screenWidth < 600
+                    ? screenWidth * 0.04
+                    : screenWidth * 0.025,
               ),
               textAlign: TextAlign.center,
             ),

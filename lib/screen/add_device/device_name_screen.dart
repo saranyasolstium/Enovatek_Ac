@@ -41,12 +41,14 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final isTablet = screenWidth >= 600;
+
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-          screenWidth * 0.05,
+          isTablet ? screenWidth * 0.02 : screenWidth * 0.05,
           screenHeight * 0.05,
           screenWidth * 0.05,
           screenHeight * 0.02,
@@ -61,29 +63,30 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
-                    height: screenWidth * 0.05,
-                    width: screenWidth * 0.05,
+                    height: isTablet ? 40 : 22,
+                    width: isTablet ? 40 : 22,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Add Device',
                   style: GoogleFonts.roboto(
-                      fontSize: screenWidth * 0.05,
+                      fontSize:
+                          isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
               ],
             ),
-            const SizedBox(
-              height: 50,
+            SizedBox(
+              height: isTablet ? 20 : 50,
             ),
             Center(
               child: Text(
                 textAlign: TextAlign.center,
                 'Customise your device name',
                 style: GoogleFonts.roboto(
-                    fontSize: 16,
+                    fontSize: isTablet ? screenWidth * 0.02 : 16,
                     fontWeight: FontWeight.bold,
                     color: ConstantColors.mainlyTextColor),
               ),
@@ -93,17 +96,19 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
             ),
             Image.asset(
               ImgPath.pngIntro4,
-              height: 350,
+              height: isTablet ? 320 : 350,
             ),
             const SizedBox(
               height: 30,
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 0),
+              padding: EdgeInsets.only(
+                  left: isTablet ? 150 : 20, right: isTablet ? 150 : 0),
               child: TextField(
                 controller: displayNameController,
                 style: GoogleFonts.roboto(
                   color: ConstantColors.mainlyTextColor,
+                  fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.03,
                   fontWeight: FontWeight.w500,
                 ),
                 decoration: InputDecorationStyle.textFieldDecoration(
@@ -113,82 +118,61 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
             const SizedBox(
               height: 30,
             ),
-            // Padding(
-            //   padding: const EdgeInsets.only(left: 20, right: 0),
-            //   child: TextField(
-            //     controller: deviceIDController,
-            //     style: GoogleFonts.roboto(
-            //       color: ConstantColors.mainlyTextColor,
-            //       fontWeight: FontWeight.w500,
-            //     ),
-            //     decoration: InputDecorationStyle.textFieldDecoration(
-            //         placeholder: "Device ID", context: context),
-            //   ),
-            // ),
-            // const SizedBox(
-            //   height: 30,
-            // ),
             Center(
-              child: SizedBox(
-                width: 150,
-                height: 50,
-                child: RoundedButton(
-                  onPressed: () async {
-                    String displayname = displayNameController.text;
-                    // String deviceId = deviceIDController.text;
+              child: RoundedButton(
+                onPressed: () async {
+                  String displayname = displayNameController.text;
+                  // String deviceId = deviceIDController.text;
 
-                    if (displayname.isNotEmpty) {
-                      String? authToken =
-                          await SharedPreferencesHelper.instance.getAuthToken();
-                      int? userId =
-                          await SharedPreferencesHelper.instance.getUserID();
-                      Response response = await RemoteServices.createDevice(
-                          //deviceId,
-                          authToken!,
-                          displayname,
-                          widget.deviceSerialNo,
-                          widget.business,
-                          widget.location,
-                          0,
-                          widget.roomId,
-                          userId!);
-                      var data = jsonDecode(response.body);
+                  if (displayname.isNotEmpty) {
+                    String? authToken =
+                        await SharedPreferencesHelper.instance.getAuthToken();
+                    int? userId =
+                        await SharedPreferencesHelper.instance.getUserID();
+                    Response response = await RemoteServices.createDevice(
+                        //deviceId,
+                        authToken!,
+                        displayname,
+                        widget.deviceSerialNo,
+                        widget.business,
+                        widget.location,
+                        0,
+                        widget.roomId,
+                        userId!);
+                    var data = jsonDecode(response.body);
 
-                      if (response.statusCode == 200) {
-                        if (data.containsKey("message")) {
-                          String message = data["message"];
-                          SnackbarHelper.showSnackBar(context, message);
-                        }
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const PowerStatisticsAllScreen(
-                              isFilter: false,
-                              businessUnits: [],
-                              locationUnits: [],
-                              roomUnits: [],
-                            ),
-                          ),
-                          (Route<dynamic> route) => false,
-                        );
-                        // Navigator.of(context).pushNamedAndRemoveUntil(
-                        //     homedRoute, (route) => false);
-                      } else {
-                        if (data.containsKey("message")) {
-                          String errorMessage = data["message"];
-                          SnackbarHelper.showSnackBar(context, errorMessage);
-                        }
+                    if (response.statusCode == 200) {
+                      if (data.containsKey("message")) {
+                        String message = data["message"];
+                        SnackbarHelper.showSnackBar(context, message);
                       }
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PowerStatisticsAllScreen(
+                            isFilter: false,
+                            businessUnits: [],
+                            locationUnits: [],
+                            roomUnits: [],
+                          ),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                      // Navigator.of(context).pushNamedAndRemoveUntil(
+                      //     homedRoute, (route) => false);
                     } else {
-                      SnackbarHelper.showSnackBar(
-                          context, "please enter  name!");
+                      if (data.containsKey("message")) {
+                        String errorMessage = data["message"];
+                        SnackbarHelper.showSnackBar(context, errorMessage);
+                      }
                     }
-                  },
-                  text: "Proceed",
-                  backgroundColor: ConstantColors.borderButtonColor,
-                  textColor: ConstantColors.whiteColor,
-                ),
+                  } else {
+                    SnackbarHelper.showSnackBar(context, "please enter  name!");
+                  }
+                },
+                text: "Proceed",
+                backgroundColor: ConstantColors.borderButtonColor,
+                textColor: ConstantColors.whiteColor,
               ),
             )
           ],

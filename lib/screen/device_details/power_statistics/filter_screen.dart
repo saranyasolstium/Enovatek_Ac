@@ -11,6 +11,7 @@ import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
 class FilterScreen extends StatefulWidget {
@@ -153,8 +154,9 @@ class FilterScreenState extends State<FilterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
+    final bool isTablet = screenWidth >= 600;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       appBar: AppBar(
@@ -178,20 +180,28 @@ class FilterScreenState extends State<FilterScreen> {
             alignment: Alignment.center,
             child: Image.asset(
               ImgPath.pngArrowBack,
-              width: 24,
-              height: 24,
+              height: isTablet ? 30 : 22,
+              width: isTablet ? 30 : 22,
               fit: BoxFit.contain,
             ),
           ),
         ),
-        title: const Text('Filter'),
+        title: Text(
+          'Filter',
+          style: GoogleFonts.roboto(
+            fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.045,
+            fontWeight: FontWeight.bold,
+            color: ConstantColors.appColor,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: _clearAll,
-            child: const Text(
+            child: Text(
               'Clear all',
-              style: TextStyle(
+              style: GoogleFonts.roboto(
                 color: Colors.black,
+                fontSize: isTablet ? screenWidth * 0.02 : screenWidth * 0.045,
                 decoration: TextDecoration.underline,
               ),
             ),
@@ -210,10 +220,10 @@ class FilterScreenState extends State<FilterScreen> {
                 (Route<dynamic> route) => false,
               );
             },
-            child: const Icon(
+            child: Icon(
               Icons.home,
               color: ConstantColors.iconColr,
-              size: 30,
+              size: isTablet ? 40 : 30,
             ),
           ),
           const SizedBox(
@@ -248,7 +258,7 @@ class FilterScreenState extends State<FilterScreen> {
                       child: Text(
                         'Business Unit',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: isTablet ? 22 : 18,
                           fontWeight: FontWeight.bold,
                           color: selectedCategory == 'Business Unit'
                               ? ConstantColors.iconColr
@@ -266,7 +276,7 @@ class FilterScreenState extends State<FilterScreen> {
                       child: Text(
                         'Location',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: isTablet ? 22 : 18,
                           fontWeight: FontWeight.bold,
                           color: selectedCategory == 'Location'
                               ? ConstantColors.iconColr
@@ -284,7 +294,7 @@ class FilterScreenState extends State<FilterScreen> {
                       child: Text(
                         'Room',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: isTablet ? 22 : 18,
                           fontWeight: FontWeight.bold,
                           color: selectedCategory == 'Floor'
                               ? ConstantColors.iconColr
@@ -308,6 +318,7 @@ class FilterScreenState extends State<FilterScreen> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: ConstantColors.backgroundColor,
+        height: 100,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -370,13 +381,18 @@ class FilterScreenState extends State<FilterScreen> {
   }
 
   List<Widget> _getCheckboxList() {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
     List<Widget> checkboxList = [];
 
     if (selectedCategory == 'Business Unit') {
       checkboxList.addAll(
         businessUnits.keys.map((String key) {
           return CheckboxListTile(
-            title: Text(key),
+            title: Text(
+              key,
+              style: TextStyle(fontSize: isTablet ? 22 : 18),
+            ),
             value: businessUnits[key],
             onChanged: (bool? value) {
               setState(() {
@@ -391,7 +407,12 @@ class FilterScreenState extends State<FilterScreen> {
       checkboxList.addAll(
         locationUnits.keys.map((String key) {
           return CheckboxListTile(
-            title: Text(key),
+            title: Text(
+              key,
+              style: TextStyle(
+                fontSize: isTablet ? 22 : 18,
+              ),
+            ),
             value: locationUnits[key],
             onChanged: (bool? value) {
               setState(() {
@@ -406,7 +427,10 @@ class FilterScreenState extends State<FilterScreen> {
       checkboxList.addAll(
         roomUnits.keys.map((String key) {
           return CheckboxListTile(
-            title: Text(key),
+            title: Text(
+              key,
+              style: TextStyle(fontSize: isTablet ? 22 : 18),
+            ),
             value: roomUnits[key],
             onChanged: (bool? value) {
               setState(() {

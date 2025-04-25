@@ -33,11 +33,11 @@ class BasicDetailScreenState extends State<BasicDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.deviceSerialNo);
-
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= 600;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
@@ -51,131 +51,145 @@ class BasicDetailScreenState extends State<BasicDetailScreen> {
                     },
                     child: Image.asset(
                       ImgPath.pngArrowBack,
-                      height: 25,
-                      width: 25,
+                      height: isTablet ? 40 : 22,
+                      width: isTablet ? 40 : 22,
                     ),
                   ),
                   const SizedBox(width: 10),
                   Text(
                     'Add Device',
                     style: GoogleFonts.roboto(
-                        fontSize: 18,
+                        fontSize:
+                            isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
                         fontWeight: FontWeight.bold,
                         color: ConstantColors.black),
                   ),
                 ],
               ),
               const SizedBox(
-                height: 50,
-              ),
-              const SizedBox(
-                height: 80,
+                height: 120,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 20, right: 0),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    'Business Unit',
-                    style: GoogleFonts.roboto(
-                        fontSize: 16,
-                        color: ConstantColors.mainlyTextColor,
-                        fontWeight: FontWeight.bold),
-                  ),
+                padding: EdgeInsets.symmetric(
+                    horizontal: isTablet ? screenWidth * 0.2 : 0),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 0),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          'Business Unit',
+                          style: GoogleFonts.roboto(
+                              fontSize: isTablet
+                                  ? screenWidth * 0.025
+                                  : screenWidth * 0.03,
+                              color: ConstantColors.mainlyTextColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0, right: 0),
+                      child: TextField(
+                        controller: bussinessUnitController,
+                        style: GoogleFonts.roboto(
+                          color: ConstantColors.mainlyTextColor,
+                          fontSize: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.04,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        decoration: InputDecorationStyle.textFieldDecoration(
+                            placeholder: "Enter business unit",
+                            context: context),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 0),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          'Location',
+                          style: GoogleFonts.roboto(
+                              fontSize: isTablet
+                                  ? screenWidth * 0.025
+                                  : screenWidth * 0.03,
+                              color: ConstantColors.mainlyTextColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0, right: 0),
+                      child: TextField(
+                        controller: locationController,
+                        style: GoogleFonts.roboto(
+                          color: ConstantColors.mainlyTextColor,
+                          fontSize: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.04,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        decoration: InputDecorationStyle.textFieldDecoration(
+                            placeholder: "Enter location", context: context),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 80,
+                    ),
+                    Center(
+                      child: RoundedButton(
+                        onPressed: () async {
+                          String bussinessUnit = bussinessUnitController.text;
+                          String location = locationController.text;
+                          if (bussinessUnit.isNotEmpty && location.isNotEmpty) {
+                            if (widget.buildingID == 0) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        DeviceAddBuildingScreen(
+                                          deviceSerialNo: widget.deviceSerialNo,
+                                          bussiness: bussinessUnit,
+                                          location: location,
+                                        )),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DeviceAssigningScreen(
+                                          buildingID: widget.buildingID,
+                                          buildingName: widget.buildingName,
+                                          deviceSerialNo: widget.deviceSerialNo,
+                                          business: bussinessUnit,
+                                          location: location,
+                                        )),
+                              );
+                            }
+                          } else {
+                            SnackbarHelper.showSnackBar(
+                                context, "Filed cannot be empty");
+                          }
+                        },
+                        text: "Connect",
+                        backgroundColor: ConstantColors.borderButtonColor,
+                        textColor: ConstantColors.whiteColor,
+                      ),
+                    )
+                  ],
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 0, right: 0),
-                child: TextField(
-                  controller: bussinessUnitController,
-                  style: GoogleFonts.roboto(
-                    color: ConstantColors.mainlyTextColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  decoration: InputDecorationStyle.textFieldDecoration(
-                      placeholder: "Enter business unit", context: context),
-                ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 0),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    'Location',
-                    style: GoogleFonts.roboto(
-                        fontSize: 16,
-                        color: ConstantColors.mainlyTextColor,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 0, right: 0),
-                child: TextField(
-                  controller: locationController,
-                  style: GoogleFonts.roboto(
-                    color: ConstantColors.mainlyTextColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  decoration: InputDecorationStyle.textFieldDecoration(
-                      placeholder: "Enter location", context: context),
-                ),
-              ),
-              const SizedBox(
-                height: 80,
-              ),
-              Center(
-                child: SizedBox(
-                  width: 150,
-                  height: 50,
-                  child: RoundedButton(
-                    onPressed: () async {
-                      String bussinessUnit = bussinessUnitController.text;
-                      String location = locationController.text;
-                      if (bussinessUnit.isNotEmpty && location.isNotEmpty) {
-                        if (widget.buildingID == 0) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DeviceAddBuildingScreen(
-                                      deviceSerialNo: widget.deviceSerialNo,
-                                      bussiness: bussinessUnit,
-                                      location: location,
-                                    )),
-                          );
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DeviceAssigningScreen(
-                                      buildingID: widget.buildingID,
-                                      buildingName: widget.buildingName,
-                                      deviceSerialNo: widget.deviceSerialNo,
-                                      business: bussinessUnit,
-                                      location: location,
-                                    )),
-                          );
-                        }
-                      } else {
-                        SnackbarHelper.showSnackBar(
-                            context, "Filed cannot be empty");
-                      }
-                    },
-                    text: "Connect",
-                    backgroundColor: ConstantColors.borderButtonColor,
-                    textColor: ConstantColors.whiteColor,
-                  ),
-                ),
-              )
             ],
           ),
         ),

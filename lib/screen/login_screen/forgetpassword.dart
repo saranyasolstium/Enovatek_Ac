@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
@@ -243,14 +242,15 @@ class ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
     final isTablet = screenWidth >= 600;
     return Scaffold(
+      backgroundColor: ConstantColors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: ConstantColors.backgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: Image.asset(
             ImgPath.pngArrowBack,
-            height: screenWidth * 0.05,
-            width: screenWidth * 0.05,
+            height: isTablet ? 40 : screenWidth * 0.05,
+            width: isTablet ? 40 : screenWidth * 0.05,
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -259,13 +259,13 @@ class ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         title: Text(
           'Reset Password',
           style: GoogleFonts.roboto(
-            fontSize: screenWidth * 0.05,
+            fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.05,
             fontWeight: FontWeight.bold,
             color: ConstantColors.black,
           ),
         ),
       ),
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -273,29 +273,52 @@ class ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               height: screenHeight * 0.1,
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 40, right: 40, top: 20, bottom: 20),
+              padding: EdgeInsets.only(
+                  left: isTablet ? 400 : 40,
+                  right: isTablet ? 400 : 40,
+                  top: 20,
+                  bottom: 20),
               child: Center(
                 child: Image.asset(ImgPath.pngName),
               ),
             ),
             SizedBox(
-              height: screenHeight * 0.1,
+              height: isTablet ? screenHeight * 0.05 : screenHeight * 0.1,
             ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: isTablet
+                  ? const EdgeInsets.symmetric(horizontal: 200, vertical: 20)
+                  : const EdgeInsets.all(20),
               child: TextField(
                 controller: emailController,
                 style: GoogleFonts.roboto(
                   color: ConstantColors.mainlyTextColor,
                   fontWeight: FontWeight.w500,
-                  fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
+                  fontSize: isTablet ? screenWidth * 0.03 : screenWidth * 0.04,
                 ),
                 decoration: InputDecorationStyle.textFieldDecoration(
                     placeholder: "Email", context: context),
                 textInputAction: TextInputAction.next,
               ),
             ),
+
+            // Padding(
+            //   padding: isTablet
+            //       ? const EdgeInsets.symmetric(horizontal: 200, vertical: 20)
+            //       : const EdgeInsets.all(20),
+            //   child: TextField(
+            //     controller: emailController,
+            //     style: GoogleFonts.roboto(
+            //       color: ConstantColors.mainlyTextColor,
+            //       fontWeight: FontWeight.w500,
+            //       fontSize: isTablet ? screenWidth * 0.05 : screenWidth * 0.04,
+            //     ),
+            //     decoration: InputDecorationStyle.textFieldDecoration(
+            //         placeholder: "Email", context: context),
+            //     textInputAction: TextInputAction.next,
+            //   ),
+            // ),
+
             SizedBox(
               height: screenHeight * 0.05,
             ),

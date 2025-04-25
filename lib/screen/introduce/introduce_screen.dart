@@ -35,8 +35,10 @@ class IntroductionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    final isTablet = screenWidth >= 600;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       body: Swiper(
@@ -54,15 +56,15 @@ class IntroductionScreen extends StatelessWidget {
         },
         pagination: SwiperPagination(
           builder: DotSwiperPaginationBuilder(
-            color: ConstantColors.dotColor,
-            size: screenHeight * 0.05,
+            color: const Color.fromRGBO(246, 249, 255, 1),
+            size: isTablet ? screenHeight * 0.03 : screenHeight * 0.05,
             activeColor: ConstantColors.lightBlueColor,
           ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: ConstantColors.backgroundColor,
-        height: screenHeight * 0.1,
+        height: isTablet ? screenHeight * 0.15 : screenHeight * 0.1,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

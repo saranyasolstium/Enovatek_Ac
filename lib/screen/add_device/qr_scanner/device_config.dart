@@ -124,55 +124,57 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isTablet = screenWidth >= 600;
+
     return SafeArea(
       top: false,
       bottom: false,
       child: Scaffold(
         extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
-          appBar: AppBar(
-        backgroundColor: ConstantColors.backgroundColor,
-        automaticallyImplyLeading: false,
-        elevation: 0.0,
-        title: Stack(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Image.asset(
-                          ImgPath.pngArrowBack,
-                          height: 22,
-                          width: 22,
-                          color: ConstantColors.appColor,
+        appBar: AppBar(
+          backgroundColor: ConstantColors.backgroundColor,
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          title: Stack(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Image.asset(
+                            ImgPath.pngArrowBack,
+                            height: 22,
+                            width: 22,
+                            color: ConstantColors.appColor,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'QR Scanner',
-                        style: GoogleFonts.roboto(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.appColor,
+                        const SizedBox(width: 10),
+                        Text(
+                          'QR Scanner',
+                          style: GoogleFonts.roboto(
+                            fontSize: isTablet ? 22 : 18,
+                            fontWeight: FontWeight.bold,
+                            color: ConstantColors.appColor,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
-       
-      ),
-    
         body: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             return QrScannerWithEffect(

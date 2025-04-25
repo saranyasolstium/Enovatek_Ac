@@ -10,7 +10,6 @@ import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
@@ -118,8 +117,8 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: 22,
-                          width: 22,
+                          height: isTablet ? 40 : 22,
+                          width: isTablet ? 40 : 22,
                           color: ConstantColors.appColor,
                         ),
                       ),
@@ -127,7 +126,9 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                       Text(
                         'Devices',
                         style: GoogleFonts.roboto(
-                          fontSize: screenWidth * 0.045,
+                          fontSize: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),
@@ -154,10 +155,10 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                 (Route<dynamic> route) => false,
               );
             },
-            child: const Icon(
+            child: Icon(
               Icons.home,
               color: ConstantColors.iconColr,
-              size: 30,
+              size: isTablet ? 40 : 30,
             ),
           ),
           const SizedBox(
@@ -165,7 +166,7 @@ class LiveDataScreenState extends State<LiveDataScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
@@ -201,7 +202,7 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                           decoration: BoxDecoration(
                               color: ConstantColors.whiteColor,
                               borderRadius: BorderRadius.circular(10)),
-                          height: 100,
+                          height: isTablet ? 160 : 100,
                           child: Column(children: [
                             Padding(
                               padding: const EdgeInsets.only(
@@ -219,7 +220,9 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                                             color:
                                                 ConstantColors.mainlyTextColor,
                                             fontWeight: FontWeight.bold,
-                                            fontSize: screenWidth * 0.04,
+                                            fontSize: isTablet
+                                                ? screenWidth * 0.03
+                                                : screenWidth * 0.04,
                                           ),
                                         ),
                                         TextSpan(
@@ -228,17 +231,19 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                                           style: GoogleFonts.roboto(
                                             color:
                                                 ConstantColors.mainlyTextColor,
-                                            fontSize: screenWidth * 0.035,
+                                            fontSize: isTablet
+                                                ? screenWidth * 0.025
+                                                : screenWidth * 0.035,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                   const SizedBox(width: 20),
-                                  const Icon(
+                                  Icon(
                                     Icons.arrow_forward_ios,
                                     color: ConstantColors.mainlyTextColor,
-                                    size: 20,
+                                    size: isTablet ? 40 : 20,
                                   ),
                                 ],
                               ),

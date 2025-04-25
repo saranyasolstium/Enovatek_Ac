@@ -22,7 +22,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
-import 'package:http/http.dart' as http;
 import 'package:live_currency_rate/live_currency_rate.dart';
 import 'package:intl/intl.dart';
 
@@ -395,6 +394,7 @@ class BillingScreenState extends State<BillingScreen>
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
 
     return Scaffold(
         backgroundColor: ConstantColors.liveBgColor,
@@ -417,8 +417,8 @@ class BillingScreenState extends State<BillingScreen>
                           },
                           child: Image.asset(
                             ImgPath.pngArrowBack,
-                            height: 22,
-                            width: 22,
+                            height: isTablet ? 40 : 22,
+                            width: isTablet ? 40 : 22,
                             color: ConstantColors.appColor,
                           ),
                         ),
@@ -426,7 +426,9 @@ class BillingScreenState extends State<BillingScreen>
                         Text(
                           'Billing',
                           style: GoogleFonts.roboto(
-                            fontSize: screenWidth * 0.045,
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.045,
                             fontWeight: FontWeight.bold,
                             color: ConstantColors.appColor,
                           ),
@@ -449,8 +451,8 @@ class BillingScreenState extends State<BillingScreen>
                   return CountryFlag.fromCountryCode(
                     value,
                     shape: const Circle(),
-                    height: 30.dynamic,
-                    width: 30.dynamic,
+                    height: isTablet ? 40.dynamic : 30.dynamic,
+                    width: isTablet ? 40.dynamic : 30.dynamic,
                   );
                 },
               ),
@@ -470,8 +472,8 @@ class BillingScreenState extends State<BillingScreen>
               },
               child: Image.asset(
                 ImgPath.liveData,
-                height: 30.dynamic,
-                width: 30.dynamic,
+                height: isTablet ? 40.dynamic : 30.dynamic,
+                width: isTablet ? 40.dynamic : 30.dynamic,
               ),
             ),
             const SizedBox(
@@ -494,11 +496,11 @@ class BillingScreenState extends State<BillingScreen>
               child: Icon(
                 Icons.home,
                 color: ConstantColors.iconColr,
-                size: 30.dynamic,
+                size: isTablet ? 40.dynamic : 30.dynamic,
               ),
             ),
-            const SizedBox(
-              width: 20,
+            SizedBox(
+              width: isTablet ? 40 : 20,
             ),
           ],
         ),
@@ -512,13 +514,15 @@ class BillingScreenState extends State<BillingScreen>
                 children: [
                   Container(
                     padding: EdgeInsets.symmetric(
-                        horizontal: 20.dynamic, vertical: 10.dynamic),
+                        horizontal: isTablet ? 80 : 20.dynamic,
+                        vertical: 10.dynamic),
                     child: Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SizedBox(
-                            width: 120.dynamic,
+                            width: isTablet ? 200.dynamic : 120.dynamic,
+                            height: isTablet ? 60 : 40,
                             child: CustomDropdownButton(
                               value: currentMonthYear,
                               items: last12Months.map((month) {
@@ -571,7 +575,9 @@ class BillingScreenState extends State<BillingScreen>
                               Text(
                                 'Consumption',
                                 style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.035,
+                                  fontSize: isTablet
+                                      ? screenWidth * 0.025
+                                      : screenWidth * 0.035,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.appColor,
                                 ),
@@ -584,7 +590,9 @@ class BillingScreenState extends State<BillingScreen>
                                     ? '$consumption kw.h'
                                     : '0 kw.h',
                                 style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.045,
+                                  fontSize: isTablet
+                                      ? screenWidth * 0.03
+                                      : screenWidth * 0.045,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.appColor,
                                 ),
@@ -601,7 +609,9 @@ class BillingScreenState extends State<BillingScreen>
                               Text(
                                 'Billed Amount',
                                 style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.035,
+                                  fontSize: isTablet
+                                      ? screenWidth * 0.025
+                                      : screenWidth * 0.035,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.appColor,
                                 ),
@@ -614,7 +624,9 @@ class BillingScreenState extends State<BillingScreen>
                                     ? 'S\$ $totalBillAmount'
                                     : 'S\$ 0',
                                 style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.045,
+                                  fontSize: isTablet
+                                      ? screenWidth * 0.03
+                                      : screenWidth * 0.045,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.appColor,
                                 ),
@@ -651,7 +663,9 @@ class BillingScreenState extends State<BillingScreen>
                       child: Text(
                         'Device code ($selectedMonth)',
                         style: GoogleFonts.roboto(
-                          fontSize: screenWidth * 0.045,
+                          fontSize: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),
@@ -666,7 +680,8 @@ class BillingScreenState extends State<BillingScreen>
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          columnSpacing: 30,
+                          columnSpacing: isTablet ? 40 : 30,
+                          dataRowHeight: isTablet ? 60 : 30,
                           headingRowColor: MaterialStateProperty.all(
                               ConstantColors.darkBackgroundColor),
                           columns: [
@@ -730,7 +745,8 @@ class BillingScreenState extends State<BillingScreen>
                   ? Card(
                       color: Colors.white,
                       child: DataTable(
-                        columnSpacing: 15,
+                        columnSpacing: isTablet ? 40 : 15,
+                        dataRowHeight: isTablet ? 60 : 30,
                         headingRowColor: MaterialStateProperty.all(
                             ConstantColors.darkBackgroundColor),
                         columns: [
@@ -857,7 +873,7 @@ Widget _buildTableHeader(String text, BuildContext context) {
     text,
     style: GoogleFonts.roboto(
       fontWeight: FontWeight.bold,
-      fontSize: screenWidth * 0.035,
+      fontSize: screenWidth >= 600 ? screenWidth * 0.022 : screenWidth * 0.035,
       color: ConstantColors.appColor,
     ),
   );
@@ -872,7 +888,8 @@ Widget _buildLeftTableCell(String text, BuildContext context) {
       text,
       textAlign: TextAlign.left,
       style: GoogleFonts.roboto(
-        fontSize: screenWidth * 0.035,
+        fontSize:
+            screenWidth >= 600 ? screenWidth * 0.022 : screenWidth * 0.035,
         color: ConstantColors.appColor,
       ),
     ),
@@ -888,7 +905,7 @@ Widget _buildTableCell(String text, BuildContext context) {
       text,
       textAlign: TextAlign.left,
       style: GoogleFonts.roboto(
-        fontSize: screenWidth * 0.035,
+        fontSize: screenWidth >= 600 ? screenWidth * 0.02 : screenWidth * 0.035,
         color: ConstantColors.appColor,
       ),
     ),

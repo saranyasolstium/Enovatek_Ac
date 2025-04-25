@@ -16,7 +16,7 @@ import 'package:enavatek_mobile/screen/menu/menu.dart';
 import 'package:enavatek_mobile/screen/menu/request.dart';
 import 'package:enavatek_mobile/screen/menu/support.dart';
 import 'package:enavatek_mobile/screen/notification/notification_screen.dart';
-import 'package:enavatek_mobile/screen/profile/profile_screen.dart';
+import 'package:enavatek_mobile/screen/register/registration_screen.dart';
 import 'package:enavatek_mobile/screen/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -41,9 +41,9 @@ class Routers {
           type: PageTransitionType.rightToLeft,
         );
 
-      case profileRoute:
+      case registerRoute:
         return PageTransition(
-          child: const ProfileScreen(),
+          child: const RegistrationScreen(),
           type: PageTransitionType.rightToLeft,
         );
 

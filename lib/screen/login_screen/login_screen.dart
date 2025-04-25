@@ -17,7 +17,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -30,12 +29,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
-  // final GoogleSignIn _googleSignIn = GoogleSignIn();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  User? _user;
   String? deviceID;
   bool obscureText = true;
   @override
@@ -52,10 +48,8 @@ class LoginScreenState extends State<LoginScreen> {
   Future<void> loginToken(String emailId, String password) async {
     try {
       deviceID = await SharedPreferencesHelper.instance.getDeviceId();
-      print(deviceID);
       Response response =
           await RemoteServices.login(emailId, password, deviceID!);
-      print(response.statusCode);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
 
@@ -86,9 +80,6 @@ class LoginScreenState extends State<LoginScreen> {
             Navigator.of(context)
                 .pushNamedAndRemoveUntil(enginnerHomeRounte, (route) => false);
           } else {
-            // Navigator.of(context)
-            //     .pushNamedAndRemoveUntil(homedRoute, (route) => false);
-
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
@@ -122,135 +113,12 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // Future<void> signInWithGoogle() async {
-  //   try {
-  //     final GoogleSignInAccount? googleSignInAccount =
-  //         await _googleSignIn.signIn();
-  //     final GoogleSignInAuthentication googleSignInAuthentication =
-  //         await googleSignInAccount!.authentication;
-
-  //     final AuthCredential credential = GoogleAuthProvider.credential(
-  //       accessToken: googleSignInAuthentication.accessToken,
-  //       idToken: googleSignInAuthentication.idToken,
-  //     );
-
-  //     final UserCredential authResult =
-  //         await _auth.signInWithCredential(credential);
-  //     _user = authResult.user;
-
-  //     assert(!_user!.isAnonymous);
-  //     assert(await _user!.getIdToken() != null);
-
-  //     final User currentUser = _auth.currentUser!;
-
-  //     assert(_user!.uid == currentUser.uid);
-
-  //     print("User Name: ${_user!.displayName}");
-  //     print("User Email: ${_user!.email}");
-
-  //     print('Google Sign-In Successful');
-  //     String? displayname = _user!.displayName;
-  //     String? email = _user!.email;
-  //     deviceID = await SharedPreferencesHelper.instance.getDeviceId();
-  //     Response response =
-  //         await RemoteServices.googleApiLogin(displayname!, email!, deviceID!);
-  //     if (response.statusCode == 200) {
-  //       AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
-  //       signOutGoogle();
-  //       var data = jsonDecode(response.body);
-  //       String accessToken = data['accessToken'];
-  //       int loginId = data['loginId'];
-  //       Map<String, dynamic> profile = data['profile'];
-  //       int userId = profile['userId'];
-  //       await SharedPreferencesHelper.instance.setUserID(userId);
-  //       await SharedPreferencesHelper.instance.setAuthToken(accessToken);
-  //       await SharedPreferencesHelper.instance.setLoginID(loginId);
-  //       await SharedPreferencesHelper.instance
-  //           .saveUserDataToSharedPreferences(displayname, email);
-  //       Navigator.of(context)
-  //           .pushNamedAndRemoveUntil(homedRoute, (route) => false);
-  //       authHelper.setLoggedIn(true);
-  //       SnackbarHelper.showSnackBar(context, "Login Successful");
-  //     } else {
-  //       SnackbarHelper.showSnackBar(
-  //           context, "Login  failed! Please try again!");
-  //     }
-  //   } catch (error) {
-  //     print(error);
-  //   }
-  // }
-
-  // Future<void> signInWithFacebook() async {
-  //   final LoginResult loginResult = await FacebookAuth.instance.login(
-  //     permissions: ['email'], // Request the 'email' permission.
-  //   );
-
-  //   if (loginResult.status == LoginStatus.success) {
-  //     final userData = await FacebookAuth.instance.getUserData();
-  //     if (userData.containsKey('email') && userData['email'] != null) {
-  //       final userEmail = userData['email'];
-  //       print("User Email: $userEmail");
-  //     } else {
-  //       print("Email not found in user data or is null.");
-  //     }
-
-  //     print("User Name: ${userData['name']}");
-  //     print("User Email: ${userData['email']}");
-  //     String displayname = userData['name'];
-  //     String email = userData['email'] ?? "";
-
-  //     deviceID = await SharedPreferencesHelper.instance.getDeviceId();
-  //     Response response =
-  //         await RemoteServices.fbApiLogin(displayname, email, deviceID!);
-  //     signOutWithFacebook();
-
-  //     if (response.statusCode == 200) {
-  //       var data = jsonDecode(response.body);
-  //       String accessToken = data['accessToken'];
-  //       int loginId = data['loginId'];
-  //       Map<String, dynamic> profile = data['profile'];
-  //       int userId = profile['userId'];
-  //       await SharedPreferencesHelper.instance.setUserID(userId);
-  //       await SharedPreferencesHelper.instance.setAuthToken(accessToken);
-  //       await SharedPreferencesHelper.instance.setLoginID(loginId);
-  //       await SharedPreferencesHelper.instance
-  //           .saveUserDataToSharedPreferences(displayname, email);
-  //       Navigator.of(context)
-  //           .pushNamedAndRemoveUntil(homedRoute, (route) => false);
-  //       AuthHelper authHelper = Provider.of<AuthHelper>(context, listen: false);
-  //       authHelper.setLoggedIn(true);
-  //       SnackbarHelper.showSnackBar(context, "Login Successful");
-  //     } else {
-  //       SnackbarHelper.showSnackBar(
-  //           context, "Login  failed! Please try again!");
-  //     }
-  //   } else {
-  //     // Handle login failure.
-  //     print("Facebook login failed: ${loginResult.status}");
-  //   }
-  // }
-
-  // Future<void> signOutWithFacebook() async {
-  //   await FacebookAuth.instance.logOut();
-  //   print("User Signed Out");
-  // }
-
-  // Future<void> signOutGoogle() async {
-  //   try {
-  //     await FirebaseAuth.instance.signOut();
-  //     await _googleSignIn.signOut();
-  //   } catch (error) {
-  //     print(error);
-  //   }
-  // }
-
   bool isEmailValid(String email) {
     final emailRegExp = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
     return emailRegExp.hasMatch(email);
   }
 
   void _launchURL(String webURL) async {
-    print(webURL);
     String encodedURL = Uri.encodeFull(webURL);
     if (await canLaunch(encodedURL)) {
       await launch(encodedURL);
@@ -266,7 +134,8 @@ class LoginScreenState extends State<LoginScreen> {
 
     final isTablet = screenWidth >= 600;
     return Scaffold(
-      bottomNavigationBar: Footer(),
+      backgroundColor: ConstantColors.backgroundColor,
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -277,7 +146,7 @@ class LoginScreenState extends State<LoginScreen> {
               child: Text(
                 'Welcome to',
                 style: GoogleFonts.roboto(
-                  fontSize: screenWidth * 0.04,
+                  fontSize: screenWidth * 0.03,
                   color: ConstantColors.black,
                   fontWeight: FontWeight.w700,
                 ),
@@ -285,8 +154,8 @@ class LoginScreenState extends State<LoginScreen> {
             ),
             Padding(
               padding: EdgeInsets.only(
-                  left: isTablet ? 100 : 40,
-                  right: isTablet ? 100 : 40,
+                  left: isTablet ? 400 : 40,
+                  right: isTablet ? 400 : 40,
                   top: 20,
                   bottom: 20),
               child: Center(
@@ -294,7 +163,9 @@ class LoginScreenState extends State<LoginScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: isTablet
+                  ? const EdgeInsets.symmetric(horizontal: 200, vertical: 20)
+                  : const EdgeInsets.all(20),
               child: TextField(
                 controller: emailController,
                 style: GoogleFonts.roboto(
@@ -308,7 +179,9 @@ class LoginScreenState extends State<LoginScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: isTablet
+                  ? const EdgeInsets.symmetric(horizontal: 200, vertical: 20)
+                  : const EdgeInsets.all(20),
               child: TextField(
                 controller: passwordController,
                 obscureText: obscureText,
@@ -327,24 +200,29 @@ class LoginScreenState extends State<LoginScreen> {
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal:
-                        isTablet ? screenWidth * 0.05 : screenWidth * 0.05,
+                        isTablet ? screenWidth * 0.03 : screenWidth * 0.05,
                     vertical:
-                        isTablet ? screenWidth * 0.035 : screenWidth * 0.05,
+                        isTablet ? screenWidth * 0.015 : screenWidth * 0.05,
                   ),
                   hintText: "Password",
                   fillColor: ConstantColors.inputColor,
                   filled: true,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      size: isTablet ? 50 : 25,
-                      obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: ConstantColors.mainlyTextColor,
+                  suffixIcon: Padding(
+                    padding: EdgeInsets.only(
+                      right: isTablet ? screenWidth * 0.02 : 0,
                     ),
-                    onPressed: toggleVisibility,
+                    child: IconButton(
+                      icon: Icon(
+                        size: isTablet ? 40 : 25,
+                        obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: ConstantColors.mainlyTextColor,
+                      ),
+                      onPressed: toggleVisibility,
+                    ),
                   ),
                   hintStyle: GoogleFonts.roboto(
                     fontSize:
-                        isTablet ? screenWidth * 0.035 : screenWidth * 0.04,
+                        isTablet ? screenWidth * 0.025 : screenWidth * 0.04,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -363,7 +241,9 @@ class LoginScreenState extends State<LoginScreen> {
                     style: GoogleFonts.lato(
                         color: ConstantColors.blueColor,
                         fontWeight: FontWeight.bold,
-                        fontSize: screenWidth * 0.035),
+                        fontSize: isTablet
+                            ? screenWidth * 0.022
+                            : screenWidth * 0.035),
                   ),
                 ),
               ),
@@ -391,7 +271,7 @@ class LoginScreenState extends State<LoginScreen> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, profileRoute);
+                Navigator.pushNamed(context, registerRoute);
               },
               child: Padding(
                   padding: const EdgeInsets.only(left: 30, right: 60),
@@ -404,7 +284,7 @@ class LoginScreenState extends State<LoginScreen> {
                           style: GoogleFonts.lato(
                               color: ConstantColors.mainlyTextColor,
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.037),
                         ),
                         TextSpan(
@@ -413,76 +293,28 @@ class LoginScreenState extends State<LoginScreen> {
                                 color: ConstantColors.blueColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: isTablet
-                                    ? screenWidth * 0.03
+                                    ? screenWidth * 0.025
                                     : screenWidth * 0.037)),
                       ],
                     ),
                   )),
             ),
             const SizedBox(
-              height: 30,
+              height: 20,
             ),
             Center(
               child: Text(
                 'OR',
                 style: GoogleFonts.roboto(
-                  fontSize: isTablet ? screenWidth * 0.03 : screenWidth * 0.04,
+                  fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.04,
                   color: ConstantColors.black,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
-            // Container(
-            //   padding: const EdgeInsets.all(20.0),
-            //   width: double.infinity,
-            //   child: ElevatedButton.icon(
-            //     onPressed: () {
-            //       // signInWithGoogle();
-            //       // Navigator.of(context).pushNamedAndRemoveUntil(
-            //       //     enginnerHomeRounte, (route) => false);
-            //     },
-            //     icon: const Icon(
-            //       FontAwesomeIcons.google,
-            //       color: Colors.white,
-            //     ),
-            //     label: const Text(
-            //       'Google',
-            //       style: TextStyle(color: Colors.white),
-            //     ),
-            //     style: ElevatedButton.styleFrom(
-            //       padding: const EdgeInsets.all(20),
-            //       backgroundColor: googleColor,
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(12),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // Container(
-            //   padding: const EdgeInsets.all(20.0),
-            //   width: double.infinity,
-            //   child: ElevatedButton.icon(
-            //     onPressed: () {
-            //       // signInWithFacebook();
-            //     },
-            //     icon: const Icon(
-            //       FontAwesomeIcons.facebook,
-            //       color: Colors.white,
-            //     ),
-            //     label: const Text(
-            //       'Facebook',
-            //       style: TextStyle(color: Colors.white),
-            //     ),
-            //     style: ElevatedButton.styleFrom(
-            //       padding: const EdgeInsets.all(20),
-            //       backgroundColor: facebookColor,
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(12),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-
+            const SizedBox(
+              height: 20,
+            ),
             Padding(
                 padding: const EdgeInsets.only(left: 30, right: 60),
                 child: RichText(
@@ -493,14 +325,18 @@ class LoginScreenState extends State<LoginScreen> {
                         text: 'By selecting option you are agreeing to our ',
                         style: GoogleFonts.lato(
                             color: ConstantColors.mainlyTextColor,
-                            fontSize: screenWidth * 0.037),
+                            fontSize: isTablet
+                                ? screenWidth * 0.02
+                                : screenWidth * 0.037),
                       ),
                       TextSpan(
                         text: 'Privacy Policy',
                         style: GoogleFonts.lato(
                             color: ConstantColors.blueColor,
                             fontWeight: FontWeight.bold,
-                            fontSize: screenWidth * 0.035),
+                            fontSize: isTablet
+                                ? screenWidth * 0.02
+                                : screenWidth * 0.035),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             _launchURL(
@@ -512,7 +348,7 @@ class LoginScreenState extends State<LoginScreen> {
                         style: GoogleFonts.lato(
                             color: ConstantColors.mainlyTextColor,
                             fontSize: isTablet
-                                ? screenWidth * 0.03
+                                ? screenWidth * 0.02
                                 : screenWidth * 0.037),
                       ),
                       TextSpan(
@@ -521,7 +357,7 @@ class LoginScreenState extends State<LoginScreen> {
                             color: ConstantColors.blueColor,
                             fontWeight: FontWeight.bold,
                             fontSize: isTablet
-                                ? screenWidth * 0.03
+                                ? screenWidth * 0.02
                                 : screenWidth * 0.037),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
@@ -532,6 +368,7 @@ class LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 )),
+            const SizedBox(height: 40)
           ],
         ),
       ),

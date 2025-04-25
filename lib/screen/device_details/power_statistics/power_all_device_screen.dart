@@ -215,8 +215,8 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                             },
                             child: Image.asset(
                               ImgPath.pngArrowBack,
-                              height: 22,
-                              width: 22,
+                              height: isTablet ? 40 : 22,
+                              width: isTablet ? 40 : 22,
                               color: ConstantColors.appColor,
                             ),
                           ),
@@ -224,7 +224,9 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                           Text(
                             'Devices',
                             style: GoogleFonts.roboto(
-                              fontSize: screenWidth * 0.045,
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.045,
                               fontWeight: FontWeight.bold,
                               color: ConstantColors.appColor,
                             ),
@@ -245,10 +247,10 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                         builder: (context) => const FilterScreen()),
                   );
                 },
-                child: const Icon(
+                child: Icon(
                   Icons.filter_alt_rounded,
                   color: ConstantColors.iconColr,
-                  size: 30,
+                  size: isTablet ? 40 : 30,
                 ),
               ),
               const SizedBox(width: 20),
@@ -266,10 +268,10 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                     (Route<dynamic> route) => false,
                   );
                 },
-                child: const Icon(
+                child: Icon(
                   Icons.home,
                   color: ConstantColors.iconColr,
-                  size: 30,
+                  size: isTablet ? 40 : 30,
                 ),
               ),
               const SizedBox(
@@ -277,7 +279,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
               ),
             ],
           ),
-          bottomNavigationBar: Footer(),
+          bottomNavigationBar: const Footer(),
           body: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
               isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,
@@ -287,86 +289,6 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
             ),
             child: Column(
               children: [
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.start,
-                //   children: [
-                //     Expanded(
-                //       child: Row(
-                //         mainAxisAlignment: MainAxisAlignment.start,
-                //         children: [
-                //           GestureDetector(
-                //             onTap: () {
-                //               Navigator.pushAndRemoveUntil(
-                //                 context,
-                //                 MaterialPageRoute(
-                //                   builder: (context) => PowerStatisticsScreen(
-                //                     deviceId: "",
-                //                     deviceList: deviceList,
-                //                     tabIndex: 1,
-                //                   ),
-                //                 ),
-                //                 (Route<dynamic> route) => false,
-                //               );
-                //               // Navigator.pop(context);
-                //             },
-                //             child: Image.asset(
-                //               ImgPath.pngArrowBack,
-                //               height: 25,
-                //               width: 25,
-                //             ),
-                //           ),
-                //           const SizedBox(width: 10),
-                //           Text(
-                //             'Devices',
-                //             style: GoogleFonts.roboto(
-                //                 fontSize: screenWidth * 0.045,
-                //                 fontWeight: FontWeight.bold,
-                //                 color: ConstantColors.black),
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //     GestureDetector(
-                //       onTap: () {
-                //         Navigator.pushReplacement(
-                //           context,
-                //           MaterialPageRoute(
-                //               builder: (context) => const FilterScreen()),
-                //         );
-                //       },
-                //       child: const Icon(
-                //         Icons.filter_alt_rounded,
-                //         color: ConstantColors.iconColr,
-                //         size: 30,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 20),
-                //     GestureDetector(
-                //       onTap: () {
-                //         Navigator.pushAndRemoveUntil(
-                //           context,
-                //           MaterialPageRoute(
-                //             builder: (context) => const PowerStatisticsScreen(
-                //               deviceId: "",
-                //               deviceList: [],
-                //               tabIndex: 1,
-                //             ),
-                //           ),
-                //           (Route<dynamic> route) => false,
-                //         );
-                //       },
-                //       child: const Icon(
-                //         Icons.home,
-                //         color: ConstantColors.iconColr,
-                //         size: 30,
-                //       ),
-                //     ),
-                //     const SizedBox(
-                //       width: 20,
-                //     ),
-                //   ],
-                // ),
-
                 devices.isEmpty
                     ? Container(
                         height: 500,
@@ -399,7 +321,7 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                                         color: ConstantColors.whiteColor,
                                         borderRadius:
                                             BorderRadius.circular(10)),
-                                    height: 100,
+                                    height: isTablet ? 160 : 100,
                                     child: Column(children: [
                                       Padding(
                                         padding: const EdgeInsets.only(
@@ -422,8 +344,9 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                                                           .mainlyTextColor,
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      fontSize:
-                                                          screenWidth * 0.04,
+                                                      fontSize: isTablet
+                                                          ? screenWidth * 0.03
+                                                          : screenWidth * 0.04,
                                                     ),
                                                   ),
                                                   TextSpan(
@@ -432,8 +355,9 @@ class PowerStatisticsAllScreenState extends State<PowerStatisticsAllScreen> {
                                                     style: GoogleFonts.roboto(
                                                       color: ConstantColors
                                                           .mainlyTextColor,
-                                                      fontSize:
-                                                          screenWidth * 0.035,
+                                                      fontSize: isTablet
+                                                          ? screenWidth * 0.025
+                                                          : screenWidth * 0.035,
                                                     ),
                                                   ),
                                                 ],

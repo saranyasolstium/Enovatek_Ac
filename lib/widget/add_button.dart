@@ -26,8 +26,8 @@ class MaterialAddButton extends StatelessWidget {
       ),
       child: Image.asset(
         ImgPath.pngPlus,
-        width: isTablet ? 0.03 * screenWidth : 0.025 * screenWidth,
-        height: isTablet ? 0.03 * screenHeight : 0.02 * screenHeight,
+        width: isTablet ? 0.025 * screenWidth : 0.025 * screenWidth,
+        height: isTablet ? 0.025 * screenHeight : 0.02 * screenHeight,
         color: ConstantColors.lightBlueColor,
       ),
     );

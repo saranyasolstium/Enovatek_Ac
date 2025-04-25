@@ -9,28 +9,26 @@ class RoundedButton extends StatelessWidget {
   final Color textColor;
   final Function onPressed;
 
-
-  const RoundedButton({
-    super.key,
-    required this.text,
-    required this.backgroundColor,
-    required this.textColor,
-    required this. onPressed
-
-  });
+  const RoundedButton(
+      {super.key,
+      required this.text,
+      required this.backgroundColor,
+      required this.textColor,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-        final isTablet = screenWidth >= 600;
-
+    final isTablet = screenWidth >= 600;
 
     return Padding(
       padding: const EdgeInsets.all(0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          foregroundColor: textColor, backgroundColor: backgroundColor, shape: RoundedRectangleBorder(
+          foregroundColor: textColor,
+          backgroundColor: backgroundColor,
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(screenHeight * 0.1),
           ),
           side: const BorderSide(
@@ -45,13 +43,13 @@ class RoundedButton extends StatelessWidget {
         // },
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal:15.dynamic,
-            vertical: 15.dynamic,
+            horizontal: isTablet ? 30.dynamic : 15.dynamic,
+            vertical: isTablet ? 10 : 15.dynamic,
           ),
           child: Text(
             text,
             style: GoogleFonts.roboto(
-              fontSize: screenWidth * 0.04,
+              fontSize: isTablet ? screenWidth * 0.02 : screenWidth * 0.04,
             ),
           ),
         ),

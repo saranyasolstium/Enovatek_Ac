@@ -36,6 +36,8 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
   TextEditingController floorNameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
     return WillPopScope(
         onWillPop: () async {
           Navigator.pushReplacement(
@@ -54,8 +56,7 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
         },
         child: Scaffold(
           backgroundColor: ConstantColors.backgroundColor,
-          bottomNavigationBar: Footer(),
-
+          bottomNavigationBar: const Footer(),
           body: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
             child: Column(
@@ -78,15 +79,15 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
                       },
                       child: Image.asset(
                         ImgPath.pngArrowBack,
-                        height: 25,
-                        width: 25,
+                        height: isTablet ? 40 : 22,
+                        width: isTablet ? 40 : 22,
                       ),
                     ),
                     const SizedBox(width: 10),
                     Text(
                       'Add Floor',
                       style: GoogleFonts.roboto(
-                          fontSize: 18,
+                          fontSize: isTablet ? 26 : 18,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.black),
                     ),
@@ -100,6 +101,12 @@ class DeviceAddFloorState extends State<DeviceAddFloor> {
                   child: TextFormField(
                     controller: floorNameController,
                     maxLines: 1,
+                    style: GoogleFonts.roboto(
+                      color: ConstantColors.mainlyTextColor,
+                      fontSize:
+                          isTablet ? screenWidth * 0.025 : screenWidth * 0.04,
+                      fontWeight: FontWeight.w500,
+                    ),
                     decoration: const InputDecoration(
                       labelText: "Add floor name",
                       enabledBorder: UnderlineInputBorder(

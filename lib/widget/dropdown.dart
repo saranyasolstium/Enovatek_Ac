@@ -7,7 +7,8 @@ class CustomDropdownButton extends StatefulWidget {
   final ValueChanged<String?> onChanged;
   final bool readOnly;
 
-  CustomDropdownButton({
+  const CustomDropdownButton({
+    super.key,
     required this.value,
     required this.items,
     required this.onChanged,
@@ -15,10 +16,10 @@ class CustomDropdownButton extends StatefulWidget {
   });
 
   @override
-  _CustomDropdownButtonState createState() => _CustomDropdownButtonState();
+  CustomDropdownButtonState createState() => CustomDropdownButtonState();
 }
 
-class _CustomDropdownButtonState extends State<CustomDropdownButton> {
+class CustomDropdownButtonState extends State<CustomDropdownButton> {
   String? dropdownValue;
 
   @override
@@ -30,6 +31,7 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= 600;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -55,7 +57,8 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
                   child: Text(
                     item.child is Text ? (item.child as Text).data ?? '' : '',
                     style: TextStyle(
-                      fontSize: screenWidth * 0.035,
+                      fontSize:
+                          isTablet ? screenWidth * 0.02 : screenWidth * 0.035,
                     ),
                   ),
                 );

@@ -88,7 +88,7 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
       backgroundColor: ConstantColors.backgroundColor,
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-          screenWidth * 0.05,
+          isTablet ? screenHeight * 0.02 : screenWidth * 0.05,
           screenHeight * 0.06,
           screenWidth * 0.05,
           screenHeight * 0.02,
@@ -109,15 +109,17 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: screenWidth * 0.05,
-                          width: screenWidth * 0.05,
+                          height: isTablet ? 40 : 22,
+                          width: isTablet ? 40 : 22,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         'Building',
                         style: GoogleFonts.roboto(
-                            fontSize: screenWidth * 0.05,
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.05,
                             fontWeight: FontWeight.bold,
                             color: ConstantColors.black),
                       ),
@@ -135,21 +137,26 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
               child: TextFormField(
                 controller: buildingNameController,
                 maxLines: 1,
-                decoration: const InputDecoration(
+                style: GoogleFonts.roboto(
+                  color: ConstantColors.mainlyTextColor,
+                  fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.04,
+                  fontWeight: FontWeight.w500,
+                ),
+                decoration: InputDecoration(
                   labelText: "building name",
                   suffixIcon: Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Icon(
                       Icons.edit,
-                      size: 20,
+                      size: isTablet ? 30 : 20,
                       color: ConstantColors.mainlyTextColor,
                     ),
                   ),
-                  enabledBorder: UnderlineInputBorder(
+                  enabledBorder: const UnderlineInputBorder(
                     borderSide:
                         BorderSide(color: ConstantColors.mainlyTextColor),
                   ),
-                  focusedBorder: UnderlineInputBorder(
+                  focusedBorder: const UnderlineInputBorder(
                     borderSide:
                         BorderSide(color: ConstantColors.mainlyTextColor),
                   ),
@@ -213,7 +220,9 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                           Text(
                             'Floor',
                             style: GoogleFonts.roboto(
-                              fontSize: screenWidth * 0.04,
+                              fontSize: isTablet
+                                  ? screenWidth * 0.025
+                                  : screenWidth * 0.04,
                               color: ConstantColors.mainlyTextColor,
                             ),
                           ),
@@ -239,7 +248,9 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                             child: Text(
                               'No floor added',
                               style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.04,
+                                  fontSize: isTablet
+                                      ? screenWidth * 0.025
+                                      : screenWidth * 0.04,
                                   color: Colors.grey),
                               textAlign: TextAlign.left,
                             ),
@@ -266,7 +277,9 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                           style: GoogleFonts.roboto(
                                             color:
                                                 ConstantColors.mainlyTextColor,
-                                            fontSize: screenWidth * 0.04,
+                                            fontSize: isTablet
+                                                ? screenWidth * 0.025
+                                                : screenWidth * 0.04,
                                           ),
                                         ),
                                         Row(
@@ -349,7 +362,9 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                             child: Text(
                                               'No room added',
                                               style: GoogleFonts.roboto(
-                                                  fontSize: screenWidth * 0.04,
+                                                  fontSize: isTablet
+                                                      ? screenWidth * 0.03
+                                                      : screenWidth * 0.04,
                                                   color: Colors.grey),
                                               textAlign: TextAlign.left,
                                             ),
@@ -375,8 +390,10 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                                             GoogleFonts.roboto(
                                                           color: ConstantColors
                                                               .mainlyTextColor,
-                                                          fontSize:
-                                                              screenWidth *
+                                                          fontSize: isTablet
+                                                              ? screenWidth *
+                                                                  0.025
+                                                              : screenWidth *
                                                                   0.04,
                                                         ),
                                                       ),

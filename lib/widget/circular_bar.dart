@@ -22,6 +22,7 @@ class CircularBar extends StatelessWidget {
   Widget build(BuildContext context) {
     // Calculate the progress ratio as percentage
     final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
 
     double progress = (value / maxValue) * 100;
 
@@ -30,12 +31,13 @@ class CircularBar extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-              fontSize: screenWidth * 0.04, fontWeight: FontWeight.bold),
+              fontSize: isTablet ? screenWidth * 0.03 : screenWidth * 0.04,
+              fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 20),
         SizedBox(
-          width: 120,
-          height: 120,
+          width: isTablet ? 200 : 120,
+          height: isTablet ? 200 : 120,
           child: SfRadialGauge(
             axes: <RadialAxis>[
               RadialAxis(
@@ -68,15 +70,17 @@ class CircularBar extends StatelessWidget {
                       children: [
                         Text(
                           value.toStringAsFixed(2),
-                          style:  TextStyle(
-                            fontSize: screenWidth * 0.04,
+                          style: TextStyle(
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.04,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 5),
                         Text(
                           unit,
-                          style:  TextStyle(
+                          style: TextStyle(
                             fontSize: screenWidth * 0.03,
                             fontWeight: FontWeight.bold,
                           ),

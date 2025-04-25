@@ -43,9 +43,9 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
     getAllDevice();
   }
 
-   Future<void> getAllDevice() async {
-    String?authToken = await SharedPreferencesHelper.instance.getAuthToken();
-    int?userId = await SharedPreferencesHelper.instance.getUserID();
+  Future<void> getAllDevice() async {
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? userId = await SharedPreferencesHelper.instance.getUserID();
     Response response =
         await RemoteServices.getAllDeviceByUserId(authToken!, userId!);
     if (response.statusCode == 200) {
@@ -74,10 +74,11 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= 600;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
-
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
         child: Column(
@@ -90,32 +91,33 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
-                    height: 25,
-                    width: 25,
+                    height: isTablet ? 40 : 22,
+                    width: isTablet ? 40 : 22,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Device assigning',
                   style: GoogleFonts.roboto(
-                      fontSize: 18,
+                      fontSize:
+                          isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
               ],
             ),
-            const SizedBox(
-              height: 50,
+            SizedBox(
+              height: isTablet ? 20 : 50,
             ),
             Text(
-              widget.buildingName ?? 'Lorem ipsum building',
+              widget.buildingName,
               style: GoogleFonts.roboto(
-                  fontSize: 18,
+                  fontSize: isTablet ? screenWidth * 0.02 : 18,
                   fontWeight: FontWeight.bold,
                   color: ConstantColors.black),
             ),
-            const SizedBox(
-              height: 50,
+            SizedBox(
+              height: isTablet ? 20 : 50,
             ),
             Container(
               decoration: BoxDecoration(
@@ -132,7 +134,7 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                           style: GoogleFonts.roboto(
                               color: ConstantColors.mainlyTextColor,
                               fontWeight: FontWeight.bold,
-                              fontSize: 14),
+                              fontSize: isTablet ? 20 : 14),
                         ),
                         const Spacer(),
                         MaterialButton(
@@ -150,8 +152,8 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                           },
                           color: ConstantColors.whiteColor,
                           textColor: Colors.white,
-                          minWidth: 20,
-                          height: 20,
+                          minWidth: isTablet ? 25 : 20,
+                          height: isTablet ? 25 : 20,
                           shape: const CircleBorder(
                             side: BorderSide(
                               color: ConstantColors.borderButtonColor,
@@ -160,8 +162,8 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                           ),
                           child: Image.asset(
                             ImgPath.pngPlus,
-                            height: 10,
-                            width: 10,
+                            height: isTablet ? 15 : 10,
+                            width: isTablet ? 15 : 10,
                           ),
                         ),
                       ],
@@ -187,7 +189,7 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                                   style: GoogleFonts.roboto(
                                     color: ConstantColors.mainlyTextColor,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 14,
+                                    fontSize: isTablet ? 20 : 14,
                                   ),
                                 ),
                                 const Spacer(),
@@ -208,8 +210,8 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                                   },
                                   color: ConstantColors.whiteColor,
                                   textColor: Colors.white,
-                                  minWidth: 20,
-                                  height: 20,
+                                  minWidth: isTablet ? 25 : 20,
+                                  height: isTablet ? 25 : 20,
                                   shape: const CircleBorder(
                                     side: BorderSide(
                                       color: ConstantColors.borderButtonColor,
@@ -257,7 +259,7 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                                                   color: ConstantColors
                                                       .mainlyTextColor,
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
+                                                  fontSize: isTablet ? 20 : 14,
                                                 ),
                                               ),
                                               const Spacer(),

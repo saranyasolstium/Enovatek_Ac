@@ -23,12 +23,14 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final isTablet = screenWidth >= 600;
+
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-          screenWidth * 0.05,
+          isTablet ? screenWidth * 0.02 : screenWidth * 0.05,
           screenHeight * 0.05,
           screenWidth * 0.05,
           screenHeight * 0.02,
@@ -43,15 +45,16 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                   },
                   child: Image.asset(
                     ImgPath.pngArrowBack,
-                    height: screenWidth * 0.05,
-                    width: screenWidth * 0.05,
+                    height: isTablet ? 40 : 22,
+                    width: isTablet ? 40 : 22,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Add Device',
                   style: GoogleFonts.roboto(
-                      fontSize: screenWidth * 0.05,
+                      fontSize:
+                          isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
@@ -64,7 +67,8 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
               child: Text(
                 'Select option',
                 style: GoogleFonts.roboto(
-                    fontSize: screenWidth * 0.05,
+                    fontSize:
+                        isTablet ? screenWidth * 0.03 : screenWidth * 0.05,
                     fontWeight: FontWeight.bold,
                     color: ConstantColors.black),
               ),
@@ -101,24 +105,28 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                               style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
                                 fontWeight: FontWeight.bold,
-                                fontSize: screenWidth * 0.04,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.028
+                                    : screenWidth * 0.05,
                               ),
                             ),
                             TextSpan(
                               text: 'Scan the QR code available on your device',
                               style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
-                                fontSize: screenWidth * 0.034,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.025
+                                    : screenWidth * 0.034,
                               ),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 20),
-                      const Icon(
+                      Icon(
                         Icons.arrow_forward_ios,
                         color: ConstantColors.mainlyTextColor,
-                        size: 20,
+                        size: isTablet ? 30 : 20,
                       ),
                     ],
                   ),
@@ -150,24 +158,28 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                               style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
                                 fontWeight: FontWeight.bold,
-                                fontSize: screenWidth * 0.04,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.028
+                                    : screenWidth * 0.04,
                               ),
                             ),
                             TextSpan(
                               text: 'Scan the QR code available on your device',
                               style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
-                                fontSize: screenWidth * 0.034,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.025
+                                    : screenWidth * 0.034,
                               ),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 20),
-                      const Icon(
+                      Icon(
                         Icons.arrow_forward_ios,
                         color: ConstantColors.mainlyTextColor,
-                        size: 20,
+                        size: isTablet ? 30 : 20,
                       ),
                     ],
                   ),
@@ -206,7 +218,9 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                               style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
                                 fontWeight: FontWeight.bold,
-                                fontSize: screenWidth * 0.04,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.028
+                                    : screenWidth * 0.04,
                               ),
                             ),
                             TextSpan(
@@ -214,17 +228,19 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                                   'Enter the serial number manually to connect',
                               style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
-                                fontSize: screenWidth * 0.034,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.025
+                                    : screenWidth * 0.034,
                               ),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 20),
-                      const Icon(
+                      Icon(
                         Icons.arrow_forward_ios,
                         color: ConstantColors.mainlyTextColor,
-                        size: 20,
+                        size: isTablet ? 30 : 20,
                       ),
                     ],
                   ),

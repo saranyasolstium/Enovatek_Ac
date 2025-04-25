@@ -244,6 +244,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   Widget buildGraph(
       {required List<EnergyData> data, required BuildContext context}) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= 600;
 
     return Container(
       height: 350.dynamic,
@@ -260,7 +261,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             text: 'Energy Consumed (kWh)',
             textStyle: TextStyle(
               color: Colors.black,
-              fontSize: screenWidth * 0.032,
+              fontSize: isTablet ? screenWidth * 0.018 : screenWidth * 0.032,
             ),
           ),
         ),
@@ -752,10 +753,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final isTablet = screenWidth >= 600;
+
     return Scaffold(
       backgroundColor: ConstantColors.liveBgColor,
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       appBar: AppBar(
         backgroundColor: ConstantColors.darkBackgroundColor,
         automaticallyImplyLeading: false,
@@ -769,11 +771,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(width: 10.dynamic),
+                      SizedBox(width: isTablet ? 20.dynamic : 10.dynamic),
                       Text(
                         'Power Statistics',
                         style: GoogleFonts.roboto(
-                          fontSize: screenWidth * 0.045,
+                          fontSize: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),
@@ -796,8 +800,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                 return CountryFlag.fromCountryCode(
                   value,
                   shape: const Circle(),
-                  height: 30.dynamic,
-                  width: 30.dynamic,
+                  height: isTablet ? 40.dynamic : 30.dynamic,
+                  width: isTablet ? 40.dynamic : 30.dynamic,
                 );
               },
             ),
@@ -817,8 +821,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             },
             child: Image.asset(
               ImgPath.liveData,
-              height: 30.dynamic,
-              width: 30.dynamic,
+              height: isTablet ? 60.dynamic : 30.dynamic,
+              width: isTablet ? 60.dynamic : 30.dynamic,
             ),
           ),
           const SizedBox(
@@ -830,13 +834,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             },
             child: Image.asset(
               ImgPath.pngMenu,
-              height: 30.dynamic,
-              width: 30.dynamic,
+              height: isTablet ? 60.dynamic : 30.dynamic,
+              width: isTablet ? 60.dynamic : 30.dynamic,
               color: ConstantColors.borderButtonColor,
             ),
           ),
-          const SizedBox(
-            width: 20,
+          SizedBox(
+            width: isTablet ? 30 : 20,
           ),
         ],
       ),
@@ -848,7 +852,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
               child: Column(
                 children: [
                   SizedBox(
-                    height: 10.dynamic,
+                    height: isTablet ? 40.dynamic : 10.dynamic,
                   ),
                   Center(
                     child: Row(
@@ -859,8 +863,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           children: [
                             Image.asset(
                               ImgPath.pngSolarPlane,
-                              width: 50.dynamic,
+                              width: isTablet ? 250.dynamic : 50.dynamic,
                               height: 50.dynamic,
+                              fit: BoxFit.contain,
                             ),
                           ],
                         ),
@@ -896,7 +901,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                               color: dcValue > (index * 10)
                                                   ? ConstantColors.iconColr
                                                   : ConstantColors.arrowColor,
-                                              height: 15,
+                                              height: isTablet ? 40 : 15,
                                             ),
                                           ),
                                         );
@@ -919,7 +924,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                                       horizontal: 1),
                                               child: Image.asset(
                                                 ImgPath.leftArrow1,
-                                                height: 15,
+                                                height: isTablet ? 40 : 15,
                                               ),
                                             ),
                                           );
@@ -932,8 +937,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         SizedBox(width: 30.dynamic),
                         Image.asset(
                           ImgPath.totalPower,
-                          width: 50.dynamic,
+                          width: isTablet ? 250.dynamic : 50.dynamic,
                           height: 50.dynamic,
+                          fit: BoxFit.contain,
                         ),
                         SizedBox(width: 30.dynamic),
                         ValueListenableBuilder<double>(
@@ -979,7 +985,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                                       horizontal: 1),
                                               child: Image.asset(
                                                 imagePath,
-                                                height: 15,
+                                                height: isTablet ? 40 : 15,
                                               ),
                                             ),
                                           );
@@ -1047,7 +1053,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                                   milliseconds: 300),
                                               child: Image.asset(
                                                 ImgPath.rightArrow5,
-                                                height: 15,
+                                                height: isTablet ? 40 : 15,
                                                 color: color,
                                               ),
                                             ),
@@ -1064,8 +1070,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           children: [
                             Image.asset(
                               ImgPath.pngTower,
-                              width: 50.dynamic,
+                              width: isTablet ? 250.dynamic : 50.dynamic,
                               height: 50.dynamic,
+                              fit: BoxFit.contain,
                             ),
                           ],
                         ),
@@ -1083,7 +1090,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               'DC Power',
                               style: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.04,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.025
+                                    : screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.black,
                               ),
@@ -1092,7 +1101,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               dcPower!,
                               style: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.045,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.025
+                                    : screenWidth * 0.045,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
                               ),
@@ -1105,7 +1116,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               'Total Power',
                               style: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.04,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.025
+                                    : screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.iconColr,
                               ),
@@ -1114,7 +1127,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               totalPower!,
                               style: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.045,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.025
+                                    : screenWidth * 0.045,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.iconColr,
                               ),
@@ -1127,7 +1142,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               'AC Power',
                               style: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.04,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.025
+                                    : screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
                               ),
@@ -1136,7 +1153,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             Text(
                               acPower!,
                               style: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.04,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.025
+                                    : screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
                               ),
@@ -1156,7 +1175,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                 return Container(
                   color: ConstantColors.liveBgColor,
                   padding: EdgeInsets.symmetric(
-                      horizontal: 40.dynamic, vertical: 10.dynamic),
+                      horizontal: isTablet ? 100.dynamic : 40.dynamic,
+                      vertical: 10.dynamic),
                   child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1179,8 +1199,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               SizedBox(height: 10.dynamic),
                               Image.asset(
                                 ImgPath.energyIcon,
-                                width: 30.dynamic,
-                                height: 30.dynamic,
+                                width: isTablet ? 50.dynamic : 30.dynamic,
+                                height: isTablet ? 50.dynamic : 30.dynamic,
+                                fit: BoxFit.contain,
                                 color: value == 0
                                     ? ConstantColors.borderButtonColor
                                     : ConstantColors.appColor,
@@ -1189,7 +1210,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               Text(
                                 'Energy Saving',
                                 style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.032,
+                                  fontSize: isTablet
+                                      ? screenWidth * 0.025
+                                      : screenWidth * 0.032,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
                                 ),
@@ -1218,7 +1241,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     ? 'S${currencySymbolNotifier.value}'
                                     : currencySymbolNotifier.value,
                                 style: GoogleFonts.roboto(
-                                  fontSize: 30,
+                                  fontSize: isTablet ? 40 : 30,
                                   fontWeight: FontWeight.bold,
                                   color: value == 1
                                       ? ConstantColors.borderButtonColor
@@ -1228,7 +1251,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               Text(
                                 'Saving',
                                 style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.032,
+                                  fontSize: isTablet
+                                      ? screenWidth * 0.025
+                                      : screenWidth * 0.032,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
                                 ),
@@ -1254,8 +1279,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               SizedBox(height: 10.dynamic),
                               Image.asset(
                                 ImgPath.treeIcon,
-                                width: 30.dynamic,
-                                height: 30.dynamic,
+                                width: isTablet ? 50.dynamic : 30.dynamic,
+                                height: isTablet ? 50.dynamic : 30.dynamic,
+                                fit: BoxFit.contain,
                                 color: value == 2
                                     ? ConstantColors.borderButtonColor
                                     : ConstantColors.appColor,
@@ -1264,7 +1290,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               Text(
                                 'Tree Planted',
                                 style: GoogleFonts.roboto(
-                                  fontSize: screenWidth * 0.032,
+                                  fontSize: isTablet
+                                      ? screenWidth * 0.025
+                                      : screenWidth * 0.032,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
                                 ),
@@ -1289,7 +1317,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         Container(
                           color: Colors.white,
                           padding: EdgeInsets.symmetric(
-                              horizontal: 20.dynamic, vertical: 10.dynamic),
+                              horizontal: isTablet ? 100.dynamic : 40.dynamic,
+                              vertical: 10.dynamic),
                           child: Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1304,7 +1333,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       'Total Energy Saving',
                                       style: GoogleFonts.roboto(
-                                        fontSize: screenWidth * 0.032,
+                                        fontSize: isTablet
+                                            ? screenWidth * 0.025
+                                            : screenWidth * 0.032,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1315,7 +1346,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       '$totalEnergy %',
                                       style: GoogleFonts.roboto(
-                                        fontSize: screenWidth * 0.05,
+                                        fontSize: isTablet
+                                            ? screenWidth * 0.03
+                                            : screenWidth * 0.05,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1330,8 +1363,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Container(
                                           color:
                                               ConstantColors.borderButtonColor,
-                                          width: 10.dynamic,
-                                          height: 2.dynamic,
+                                          width: isTablet
+                                              ? 20.dynamic
+                                              : 10.dynamic,
+                                          height:
+                                              isTablet ? 4.dynamic : 2.dynamic,
                                         ),
                                         SizedBox(
                                           width: 10.dynamic,
@@ -1339,7 +1375,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Text(
                                           'AC',
                                           style: GoogleFonts.roboto(
-                                            fontSize: screenWidth * 0.032,
+                                            fontSize: isTablet
+                                                ? screenWidth * 0.025
+                                                : screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1353,8 +1391,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       children: [
                                         Container(
                                           color: ConstantColors.greenColor,
-                                          width: 10.dynamic,
-                                          height: 2.dynamic,
+                                          width: isTablet
+                                              ? 20.dynamic
+                                              : 10.dynamic,
+                                          height:
+                                              isTablet ? 4.dynamic : 2.dynamic,
                                         ),
                                         SizedBox(
                                           width: 10.dynamic,
@@ -1362,7 +1403,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Text(
                                           'DC',
                                           style: GoogleFonts.roboto(
-                                            fontSize: screenWidth * 0.032,
+                                            fontSize: isTablet
+                                                ? screenWidth * 0.025
+                                                : screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1372,7 +1415,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   ],
                                 ),
                                 SizedBox(
-                                  width: 120.dynamic,
+                                  width: isTablet ? 200.dynamic : 120.dynamic,
                                   child: CustomDropdownButton(
                                     value: "Intraday",
                                     items: const [
@@ -1446,10 +1489,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         Container(
                           color: Colors.white,
                           padding: EdgeInsets.symmetric(
-                              horizontal: 20.dynamic, vertical: 10.dynamic),
+                              horizontal: isTablet ? 100.dynamic : 40.dynamic,
+                              vertical: 10.dynamic),
                           child: Center(
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1461,7 +1505,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       'Total saving in ${currencyCodeNotifier.value}',
                                       style: GoogleFonts.roboto(
-                                        fontSize: screenWidth * 0.032,
+                                        fontSize: isTablet
+                                            ? screenWidth * 0.025
+                                            : screenWidth * 0.032,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1472,7 +1518,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       totalSavings,
                                       style: GoogleFonts.roboto(
-                                        fontSize: screenWidth * 0.05,
+                                        fontSize: isTablet
+                                            ? screenWidth * 0.03
+                                            : screenWidth * 0.05,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1483,7 +1531,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   width: 30.dynamic,
                                 ),
                                 SizedBox(
-                                  width: 120.dynamic,
+                                  width: isTablet ? 200.dynamic : 120.dynamic,
                                   child: CustomDropdownButton(
                                     value: "Day",
                                     items: const [
@@ -1548,7 +1596,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         Container(
                           color: Colors.white,
                           padding: EdgeInsets.symmetric(
-                              horizontal: 20.dynamic, vertical: 10.dynamic),
+                              horizontal: isTablet ? 100.dynamic : 40.dynamic,
+                              vertical: 10.dynamic),
                           child: Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1560,7 +1609,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       'Total Tree Planted',
                                       style: GoogleFonts.roboto(
-                                        fontSize: screenWidth * 0.032,
+                                        fontSize: isTablet
+                                            ? screenWidth * 0.025
+                                            : screenWidth * 0.032,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1571,7 +1622,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Text(
                                       totalTree,
                                       style: GoogleFonts.roboto(
-                                        fontSize: screenWidth * 0.05,
+                                        fontSize: isTablet
+                                            ? screenWidth * 0.03
+                                            : screenWidth * 0.05,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
                                       ),
@@ -1588,8 +1641,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       children: [
                                         Container(
                                           color: ConstantColors.greenColor,
-                                          width: 10.dynamic,
-                                          height: 2.dynamic,
+                                          width: isTablet
+                                              ? 20.dynamic
+                                              : 10.dynamic,
+                                          height:
+                                              isTablet ? 4.dynamic : 2.dynamic,
                                         ),
                                         SizedBox(
                                           width: 5.dynamic,
@@ -1597,7 +1653,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Text(
                                           'Tree Planted',
                                           style: GoogleFonts.roboto(
-                                            fontSize: screenWidth * 0.032,
+                                            fontSize: isTablet
+                                                ? screenWidth * 0.025
+                                                : screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1612,8 +1670,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Container(
                                           color:
                                               ConstantColors.borderButtonColor,
-                                          width: 10.dynamic,
-                                          height: 2.dynamic,
+                                          width: isTablet
+                                              ? 20.dynamic
+                                              : 10.dynamic,
+                                          height:
+                                              isTablet ? 4.dynamic : 2.dynamic,
                                         ),
                                         SizedBox(
                                           width: 10.dynamic,
@@ -1621,7 +1682,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Text(
                                           'S\$ Savings',
                                           style: GoogleFonts.roboto(
-                                            fontSize: screenWidth * 0.032,
+                                            fontSize: isTablet
+                                                ? screenWidth * 0.025
+                                                : screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1635,8 +1698,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       children: [
                                         Container(
                                           color: ConstantColors.appColor,
-                                          width: 10.dynamic,
-                                          height: 2.dynamic,
+                                          width: isTablet
+                                              ? 20.dynamic
+                                              : 10.dynamic,
+                                          height:
+                                              isTablet ? 4.dynamic : 2.dynamic,
                                         ),
                                         SizedBox(
                                           width: 10.dynamic,
@@ -1644,7 +1710,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                         Text(
                                           'CO2',
                                           style: GoogleFonts.roboto(
-                                            fontSize: screenWidth * 0.032,
+                                            fontSize: isTablet
+                                                ? screenWidth * 0.025
+                                                : screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
                                           ),
@@ -1657,7 +1725,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   width: 15.dynamic,
                                 ),
                                 SizedBox(
-                                  width: 120.dynamic,
+                                  width: isTablet ? 200.dynamic : 120.dynamic,
                                   child: CustomDropdownButton(
                                     value: "Day",
                                     items: const [
@@ -1763,7 +1831,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     text: 'Energy Consumed (kWh)',
                                     textStyle: TextStyle(
                                       color: Colors.black,
-                                      fontSize: screenWidth * 0.032,
+                                      fontSize: isTablet
+                                          ? screenWidth * 0.018
+                                          : screenWidth * 0.032,
                                     ),
                                   ),
                                 ),
@@ -1843,7 +1913,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               text: 'Saving in doller',
                               textStyle: TextStyle(
                                 color: Colors.black,
-                                fontSize: screenWidth * 0.032,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.025
+                                    : screenWidth * 0.032,
                               ),
                             ),
                           ),

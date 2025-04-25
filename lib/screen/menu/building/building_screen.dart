@@ -72,10 +72,10 @@ class BuildingScreenState extends State<BuildingScreen> {
 
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-          screenWidth * 0.05,
+          isTablet ? screenHeight * 0.02 : screenWidth * 0.05,
           screenHeight * 0.05,
           screenWidth * 0.05,
           screenHeight * 0.02,
@@ -97,15 +97,17 @@ class BuildingScreenState extends State<BuildingScreen> {
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: screenWidth * 0.05,
-                          width: screenWidth * 0.05,
+                          height: isTablet ? 40 : 22,
+                          width: isTablet ? 40 : 22,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         'Building',
                         style: GoogleFonts.roboto(
-                            fontSize: screenWidth * 0.05,
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.05,
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
                       ),
@@ -156,10 +158,10 @@ class BuildingScreenState extends State<BuildingScreen> {
                   ),
                   child: Padding(
                       padding: EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                        top: isTablet ? 30 : 0,
-                        bottom: isTablet ? 30 : 0,
+                        left: isTablet ? 40 : 20,
+                        right: isTablet ? 40 : 20,
+                        top: isTablet ? 20 : 0,
+                        bottom: isTablet ? 20 : 0,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -169,7 +171,9 @@ class BuildingScreenState extends State<BuildingScreen> {
                             style: GoogleFonts.roboto(
                               color: ConstantColors.mainlyTextColor,
                               fontWeight: FontWeight.bold,
-                              fontSize: screenWidth * 0.04,
+                              fontSize: isTablet
+                                  ? screenWidth * 0.025
+                                  : screenWidth * 0.04,
                             ),
                           ),
                           Row(
@@ -203,10 +207,10 @@ class BuildingScreenState extends State<BuildingScreen> {
                                 child: Image.asset(
                                   ImgPath.pngEdit,
                                   width: isTablet
-                                      ? 0.03 * screenWidth
+                                      ? 0.02 * screenWidth
                                       : 0.025 * screenWidth,
                                   height: isTablet
-                                      ? 0.03 * screenHeight
+                                      ? 0.02 * screenHeight
                                       : 0.02 * screenHeight,
                                   color: ConstantColors.lightBlueColor,
                                 ),
@@ -262,10 +266,10 @@ class BuildingScreenState extends State<BuildingScreen> {
                                 child: Image.asset(
                                   ImgPath.pngDelete,
                                   width: isTablet
-                                      ? 0.03 * screenWidth
+                                      ? 0.02 * screenWidth
                                       : 0.025 * screenWidth,
                                   height: isTablet
-                                      ? 0.03 * screenHeight
+                                      ? 0.02 * screenHeight
                                       : 0.025 * screenHeight,
                                 ),
                               ),

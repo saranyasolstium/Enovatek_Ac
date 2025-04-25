@@ -118,10 +118,10 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-
+    final bool isTablet = screenWidth >= 600;
     return Scaffold(
       backgroundColor: ConstantColors.darkBackgroundColor,
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       appBar: AppBar(
         backgroundColor: ConstantColors.darkBackgroundColor,
         automaticallyImplyLeading: false,
@@ -141,15 +141,17 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: 22,
-                          width: 22,
+                          height: isTablet ? 40 : 22,
+                          width: isTablet ? 40 : 22,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         'Live Data',
                         style: GoogleFonts.roboto(
-                            fontSize: screenWidth * 0.045,
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.045,
                             fontWeight: FontWeight.bold,
                             color: ConstantColors.black),
                       ),
@@ -176,10 +178,10 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
                 (Route<dynamic> route) => false,
               );
             },
-            child: const Icon(
+            child: Icon(
               Icons.home,
               color: ConstantColors.iconColr,
-              size: 30,
+              size: isTablet ? 40 : 30,
             ),
           ),
           SizedBox(width: 20.dynamic),
