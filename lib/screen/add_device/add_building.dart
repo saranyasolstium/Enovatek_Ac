@@ -85,7 +85,7 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
       bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-          screenWidth * 0.05,
+          isTablet ? screenHeight * 0.02 : screenWidth * 0.05,
           screenHeight * 0.05,
           screenWidth * 0.05,
           screenHeight * 0.02,
@@ -180,10 +180,10 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                     ),
                     child: Padding(
                         padding: EdgeInsets.only(
-                          left: 20,
-                          right: 20,
-                          top: isTablet ? 30 : 0,
-                          bottom: isTablet ? 30 : 0,
+                          left: isTablet ? 40 : 20,
+                          right: isTablet ? 40 : 20,
+                          top: isTablet ? 20 : 0,
+                          bottom: isTablet ? 20 : 0,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -194,7 +194,7 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                                 color: ConstantColors.mainlyTextColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: isTablet
-                                    ? screenWidth * 0.03
+                                    ? screenWidth * 0.022
                                     : screenWidth * 0.04,
                               ),
                             ),

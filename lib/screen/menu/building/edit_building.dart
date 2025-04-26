@@ -139,7 +139,7 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                 maxLines: 1,
                 style: GoogleFonts.roboto(
                   color: ConstantColors.mainlyTextColor,
-                  fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.04,
+                  fontSize: isTablet ? screenWidth * 0.02 : screenWidth * 0.04,
                   fontWeight: FontWeight.w500,
                 ),
                 decoration: InputDecoration(
@@ -220,11 +220,11 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                           Text(
                             'Floor',
                             style: GoogleFonts.roboto(
-                              fontSize: isTablet
-                                  ? screenWidth * 0.025
-                                  : screenWidth * 0.04,
-                              color: ConstantColors.mainlyTextColor,
-                            ),
+                                fontSize: isTablet
+                                    ? screenWidth * 0.018
+                                    : screenWidth * 0.04,
+                                color: ConstantColors.mainlyTextColor,
+                                fontWeight: FontWeight.w500),
                           ),
                           MaterialAddButton(onPressed: () {
                             Navigator.pushReplacement(
@@ -249,8 +249,9 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                               'No floor added',
                               style: GoogleFonts.roboto(
                                   fontSize: isTablet
-                                      ? screenWidth * 0.025
+                                      ? screenWidth * 0.018
                                       : screenWidth * 0.04,
+                                  fontWeight: FontWeight.w500,
                                   color: Colors.grey),
                               textAlign: TextAlign.left,
                             ),
@@ -275,12 +276,12 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                         Text(
                                           floor.name,
                                           style: GoogleFonts.roboto(
-                                            color:
-                                                ConstantColors.mainlyTextColor,
-                                            fontSize: isTablet
-                                                ? screenWidth * 0.025
-                                                : screenWidth * 0.04,
-                                          ),
+                                              color: ConstantColors
+                                                  .mainlyTextColor,
+                                              fontSize: isTablet
+                                                  ? screenWidth * 0.018
+                                                  : screenWidth * 0.04,
+                                              fontWeight: FontWeight.w500),
                                         ),
                                         Row(
                                           children: [
@@ -363,8 +364,9 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                               'No room added',
                                               style: GoogleFonts.roboto(
                                                   fontSize: isTablet
-                                                      ? screenWidth * 0.03
+                                                      ? screenWidth * 0.018
                                                       : screenWidth * 0.04,
+                                                  fontWeight: FontWeight.w500,
                                                   color: Colors.grey),
                                               textAlign: TextAlign.left,
                                             ),
@@ -386,16 +388,17 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                                     children: [
                                                       Text(
                                                         room.name,
-                                                        style:
-                                                            GoogleFonts.roboto(
-                                                          color: ConstantColors
-                                                              .mainlyTextColor,
-                                                          fontSize: isTablet
-                                                              ? screenWidth *
-                                                                  0.025
-                                                              : screenWidth *
-                                                                  0.04,
-                                                        ),
+                                                        style: GoogleFonts.roboto(
+                                                            color: ConstantColors
+                                                                .mainlyTextColor,
+                                                            fontSize: isTablet
+                                                                ? screenWidth *
+                                                                    0.018
+                                                                : screenWidth *
+                                                                    0.04,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
                                                       ),
                                                       Row(
                                                         children: [

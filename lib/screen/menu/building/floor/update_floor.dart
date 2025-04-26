@@ -7,6 +7,7 @@ import 'package:enavatek_mobile/screen/menu/building/edit_building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/custom_textfiled.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,8 @@ class UpdateFloorState extends State<UpdateFloor> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final bool isTablet = screenWidth >= 600;
+
     TextEditingController floorNameController = TextEditingController();
     floorNameController.text = widget.floorName;
     return WillPopScope(
@@ -54,7 +57,7 @@ class UpdateFloorState extends State<UpdateFloor> {
           backgroundColor: ConstantColors.backgroundColor,
           body: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
-              screenWidth * 0.05,
+              isTablet ? screenHeight * 0.02 : screenWidth * 0.05,
               screenHeight * 0.06,
               screenWidth * 0.05,
               screenHeight * 0.02,
@@ -81,15 +84,17 @@ class UpdateFloorState extends State<UpdateFloor> {
                             },
                             child: Image.asset(
                               ImgPath.pngArrowBack,
-                              height: screenWidth * 0.05,
-                              width: screenWidth * 0.05,
+                              height: isTablet ? 40 : 22,
+                              width: isTablet ? 40 : 22,
                             ),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             'Floor',
                             style: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.05,
+                                fontSize: isTablet
+                                    ? screenWidth * 0.03
+                                    : screenWidth * 0.05,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.black),
                           ),
@@ -101,32 +106,10 @@ class UpdateFloorState extends State<UpdateFloor> {
                 SizedBox(
                   height: screenHeight * 0.02,
                 ),
-                Padding(
-                  padding: EdgeInsets.only(
-                      left: 0.03 * screenWidth, right: 0.03 * screenWidth),
-                  child: TextFormField(
-                    controller: floorNameController,
-                    maxLines: 1,
-                    decoration: const InputDecoration(
-                      labelText: "Floor name",
-                      suffixIcon: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Icon(
-                          Icons.edit,
-                          size: 20,
-                          color: ConstantColors.mainlyTextColor,
-                        ),
-                      ),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: ConstantColors.mainlyTextColor),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: ConstantColors.mainlyTextColor),
-                      ),
-                    ),
-                  ),
+                CustomTextField(
+                  controller: floorNameController,
+                  label: "Floor name",
+                  suffixIcon: Icons.edit,
                 ),
                 SizedBox(
                   height: screenHeight * 0.05,

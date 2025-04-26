@@ -15,12 +15,14 @@ void showLogoutDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       final double screenWidth = MediaQuery.of(context).size.width;
+      final bool isTablet = screenWidth >= 600;
+
       return AlertDialog(
         backgroundColor: ConstantColors.whiteColor,
         content: Text(
           'Are you sure to log out?',
           style: GoogleFonts.roboto(
-              fontSize: screenWidth * 0.05,
+              fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.05,
               fontWeight: FontWeight.bold,
               color: ConstantColors.mainlyTextColor),
         ),
@@ -48,7 +50,10 @@ void showLogoutDialog(BuildContext context) {
                   },
                   child: Text(
                     "Cancel",
-                    style: GoogleFonts.roboto(fontSize: screenWidth * 0.035),
+                    style: GoogleFonts.roboto(
+                        fontSize: isTablet
+                            ? screenWidth * 0.02
+                            : screenWidth * 0.035),
                   ),
                 ),
               ),
@@ -80,7 +85,10 @@ void showLogoutDialog(BuildContext context) {
                   },
                   child: Text(
                     "Log out",
-                    style: GoogleFonts.roboto(fontSize: screenWidth * 0.035),
+                    style: GoogleFonts.roboto(
+                        fontSize: isTablet
+                            ? screenWidth * 0.02
+                            : screenWidth * 0.035),
                   ),
                 ),
               ),
@@ -126,15 +134,16 @@ void showDeleteDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       final double screenWidth = MediaQuery.of(context).size.width;
+      final bool isTablet = screenWidth >= 600;
 
       return AlertDialog(
         backgroundColor: ConstantColors.whiteColor,
         content: SizedBox(
-          width: screenWidth * 0.9,
+          width: isTablet ? screenWidth * 0.4 : screenWidth * 0.9,
           child: Text(
             'Are you sure to Delete Account?',
             style: GoogleFonts.roboto(
-              fontSize: screenWidth * 0.05,
+              fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.05,
               fontWeight: FontWeight.bold,
               color: ConstantColors.mainlyTextColor,
             ),
@@ -164,7 +173,9 @@ void showDeleteDialog(BuildContext context) {
                 },
                 child: Text(
                   "Cancel",
-                  style: GoogleFonts.roboto(fontSize: screenWidth * 0.035),
+                  style: GoogleFonts.roboto(
+                      fontSize:
+                          isTablet ? screenWidth * 0.02 : screenWidth * 0.035),
                 ),
               ),
               const SizedBox(width: 30),
@@ -196,7 +207,9 @@ void showDeleteDialog(BuildContext context) {
                 },
                 child: Text(
                   "Delete",
-                  style: GoogleFonts.roboto(fontSize: screenWidth * 0.035),
+                  style: GoogleFonts.roboto(
+                      fontSize:
+                          isTablet ? screenWidth * 0.02 : screenWidth * 0.035),
                 ),
               ),
             ],

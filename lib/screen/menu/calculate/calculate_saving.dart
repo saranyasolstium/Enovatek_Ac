@@ -2,6 +2,7 @@ import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
+import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -118,6 +119,8 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final bool isTablet = screenWidth >= 600;
+
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
       appBar: AppBar(
@@ -139,8 +142,8 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: 22,
-                          width: 22,
+                          height: isTablet ? 40 : 22,
+                          width: isTablet ? 40 : 22,
                           color: ConstantColors.appColor,
                         ),
                       ),
@@ -148,7 +151,9 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                       Text(
                         'Calculate Saving',
                         style: GoogleFonts.roboto(
-                          fontSize: 18,
+                          fontSize: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
                         ),
@@ -161,7 +166,6 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
           ],
         ),
         actions: [
-        
           GestureDetector(
             onTap: () {
               Navigator.pushAndRemoveUntil(
@@ -176,10 +180,10 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                 (Route<dynamic> route) => false,
               );
             },
-            child: const Icon(
+            child: Icon(
               Icons.home,
               color: ConstantColors.iconColr,
-              size: 30,
+              size: isTablet ? 40 : 30,
             ),
           ),
           const SizedBox(
@@ -187,7 +191,7 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           screenWidth * 0.05,
@@ -207,25 +211,34 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
               height: screenHeight * 0.05,
             ),
             Container(
-              padding: const EdgeInsets.only(left: 20, right: 20),
+              padding: EdgeInsets.only(
+                  left: isTablet ? 40 : 20, right: isTablet ? 40 : 20),
               decoration: BoxDecoration(
                 color: ConstantColors.inputColor,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: DropdownButtonFormField<int>(
                 decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintStyle: GoogleFonts.roboto(fontSize: screenWidth * 0.04),
-                  hintText: 'Select Country',
-                ),
+                    border: InputBorder.none,
+                    hintStyle: GoogleFonts.roboto(
+                        fontSize:
+                            isTablet ? screenWidth * 0.02 : screenWidth * 0.04),
+                    hintText: 'Select Country',
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: isTablet ? 30 : 0)),
                 value: selectedCountry,
+                style: TextStyle(
+                    fontSize:
+                        isTablet ? screenWidth * 0.03 : screenWidth * 0.04,
+                    color: Colors.black),
                 onChanged: (newValue) {
                   setState(() {
                     selectedCountry = newValue!;
                   });
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.expand_more,
+                  size: isTablet ? 30 : 15,
                   color: ConstantColors.mainlyTextColor,
                 ),
                 items: [
@@ -234,25 +247,51 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                     child: Text(
                       "Select Country",
                       style: TextStyle(
-                        fontSize: screenWidth * 0.035,
+                        fontSize: isTablet
+                            ? screenWidth * 0.025
+                            : screenWidth * 0.035,
                       ),
                     ),
                   ),
-                  const DropdownMenuItem<int>(
+                  DropdownMenuItem<int>(
                     value: 1,
-                    child: Text("Singapore"),
+                    child: Text(
+                      "Singapore",
+                      style: TextStyle(
+                        fontSize:
+                            isTablet ? screenWidth * 0.02 : screenWidth * 0.035,
+                      ),
+                    ),
                   ),
-                  const DropdownMenuItem<int>(
+                  DropdownMenuItem<int>(
                     value: 2,
-                    child: Text("Thailand"),
+                    child: Text(
+                      "Thailand",
+                      style: TextStyle(
+                        fontSize:
+                            isTablet ? screenWidth * 0.02 : screenWidth * 0.035,
+                      ),
+                    ),
                   ),
-                  const DropdownMenuItem<int>(
+                  DropdownMenuItem<int>(
                     value: 3,
-                    child: Text("Malaysia"),
+                    child: Text(
+                      "Malaysia",
+                      style: TextStyle(
+                        fontSize:
+                            isTablet ? screenWidth * 0.02 : screenWidth * 0.035,
+                      ),
+                    ),
                   ),
-                  const DropdownMenuItem<int>(
+                  DropdownMenuItem<int>(
                     value: 4,
-                    child: Text("Philippines"),
+                    child: Text(
+                      "Philippines",
+                      style: TextStyle(
+                        fontSize:
+                            isTablet ? screenWidth * 0.02 : screenWidth * 0.035,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -266,7 +305,8 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                 '      No. of days your facility use the Air Con',
                 textAlign: TextAlign.left,
                 style: GoogleFonts.roboto(
-                    fontSize: screenWidth * 0.035,
+                    fontSize:
+                        isTablet ? screenWidth * 0.02 : screenWidth * 0.035,
                     color: ConstantColors.mainlyTextColor),
               ),
             ),
@@ -279,18 +319,19 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
               children: [
                 IconButton(
                   onPressed: _decrement,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.remove_circle_outline,
                     color: ConstantColors.lightBlueColor,
-                    size: 30,
+                    size: isTablet ? 40 : 30,
                   ),
                 ),
                 SizedBox(
-                  width: 50,
+                  width: isTablet ? 100 : 50,
                   child: TextField(
                     textAlign: TextAlign.center,
                     controller: dayController,
                     keyboardType: TextInputType.number,
+                    style: TextStyle(fontSize: isTablet ? 28 : 18),
                     onChanged: (newValue) {
                       setState(() {
                         _value = int.tryParse(newValue) ?? 0;
@@ -300,8 +341,11 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                 ),
                 IconButton(
                   onPressed: _increment,
-                  icon: const Icon(Icons.add_circle_outline_outlined,
-                      color: ConstantColors.lightBlueColor, size: 30),
+                  icon: Icon(
+                    Icons.add_circle_outline_outlined,
+                    color: ConstantColors.lightBlueColor,
+                    size: isTablet ? 40 : 30,
+                  ),
                 ),
               ],
             ),
@@ -316,20 +360,26 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
               ),
               child: DropdownButtonFormField<int>(
                 decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintStyle: GoogleFonts.roboto(
-                    fontSize: screenWidth * 0.04,
-                  ),
-                  hintText: 'Select the timings of use',
-                ),
+                    border: InputBorder.none,
+                    hintStyle: GoogleFonts.roboto(
+                        fontSize:
+                            isTablet ? screenWidth * 0.02 : screenWidth * 0.04),
+                    hintText: 'Select the timings of use',
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: isTablet ? 30 : 0)),
+                style: TextStyle(
+                    fontSize:
+                        isTablet ? screenWidth * 0.03 : screenWidth * 0.04,
+                    color: Colors.black),
                 value: selectTimeUse,
                 onChanged: (newValue) {
                   setState(() {
                     selectTimeUse = newValue!;
                   });
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.expand_more,
+                  size: isTablet ? 30 : 15,
                   color: ConstantColors.mainlyTextColor,
                 ),
                 items: [
@@ -338,17 +388,33 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                     child: Text(
                       "Select the timings of use",
                       style: TextStyle(
-                        fontSize: screenWidth * 0.035,
+                        fontSize: isTablet
+                            ? screenWidth * 0.025
+                            : screenWidth * 0.035,
                       ),
                     ),
                   ),
-                  const DropdownMenuItem<int>(
+                  DropdownMenuItem<int>(
                     value: 1,
-                    child: Text("9am - 5pm "),
+                    child: Text(
+                      "9am - 5pm ",
+                      style: TextStyle(
+                        fontSize: isTablet
+                            ? screenWidth * 0.025
+                            : screenWidth * 0.035,
+                      ),
+                    ),
                   ),
-                  const DropdownMenuItem<int>(
+                  DropdownMenuItem<int>(
                     value: 2,
-                    child: Text("24 hours"),
+                    child: Text(
+                      "24 hours",
+                      style: TextStyle(
+                        fontSize: isTablet
+                            ? screenWidth * 0.025
+                            : screenWidth * 0.035,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -364,18 +430,26 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
               ),
               child: DropdownButtonFormField<int>(
                 decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintStyle: GoogleFonts.roboto(fontSize: screenWidth * 0.04),
-                  hintText: 'Select the BTU/HP/Tonnage of your air con',
-                ),
+                    border: InputBorder.none,
+                    hintStyle: GoogleFonts.roboto(
+                        fontSize:
+                            isTablet ? screenWidth * 0.02 : screenWidth * 0.04),
+                    hintText: 'Select the BTU/HP/Tonnage of your air con',
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: isTablet ? 30 : 0)),
                 value: selectTonnage,
+                style: TextStyle(
+                    fontSize:
+                        isTablet ? screenWidth * 0.03 : screenWidth * 0.04,
+                    color: Colors.black),
                 onChanged: (newValue) {
                   setState(() {
                     selectTonnage = newValue!;
                   });
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.expand_more,
+                  size: isTablet ? 30 : 15,
                   color: ConstantColors.mainlyTextColor,
                 ),
                 items: [
@@ -384,25 +458,55 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
                     child: Text(
                       "Select the BTU/HP/Tonnage of your air con",
                       style: TextStyle(
-                        fontSize: screenWidth * 0.035,
+                        fontSize: isTablet
+                            ? screenWidth * 0.025
+                            : screenWidth * 0.035,
                       ),
                     ),
                   ),
-                  const DropdownMenuItem<int>(
+                  DropdownMenuItem<int>(
                     value: 1,
-                    child: Text("9000 Btu/1HP/0.75 Ton - 2.6 KW"),
+                    child: Text(
+                      "9000 Btu/1HP/0.75 Ton - 2.6 KW",
+                      style: TextStyle(
+                        fontSize: isTablet
+                            ? screenWidth * 0.025
+                            : screenWidth * 0.035,
+                      ),
+                    ),
                   ),
-                  const DropdownMenuItem<int>(
+                  DropdownMenuItem<int>(
                     value: 2,
-                    child: Text("12000 Btu/1.5/1 Ton - 3.5 KW"),
+                    child: Text(
+                      "12000 Btu/1.5/1 Ton - 3.5 KW",
+                      style: TextStyle(
+                        fontSize: isTablet
+                            ? screenWidth * 0.025
+                            : screenWidth * 0.035,
+                      ),
+                    ),
                   ),
-                  const DropdownMenuItem<int>(
+                  DropdownMenuItem<int>(
                     value: 3,
-                    child: Text("18000 Btu/2/1.5 Ton - 5.2 KW"),
+                    child: Text(
+                      "18000 Btu/2/1.5 Ton - 5.2 KW",
+                      style: TextStyle(
+                        fontSize: isTablet
+                            ? screenWidth * 0.025
+                            : screenWidth * 0.035,
+                      ),
+                    ),
                   ),
-                  const DropdownMenuItem<int>(
+                  DropdownMenuItem<int>(
                     value: 4,
-                    child: Text("24000 Btu/3HP/2 Ton - 7.0 KW"),
+                    child: Text(
+                      "24000 Btu/3HP/2 Ton - 7.0 KW",
+                      style: TextStyle(
+                        fontSize: isTablet
+                            ? screenWidth * 0.025
+                            : screenWidth * 0.035,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -411,30 +515,13 @@ class CalculateSavingScreenState extends State<CalculateSavingScreen> {
               height: 40,
             ),
             Center(
-              child: SizedBox(
-                width: 150,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: ConstantColors.whiteColor,
-                    backgroundColor: ConstantColors.borderButtonColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    side: const BorderSide(
-                      color: ConstantColors.borderButtonColor,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                  onPressed: () {
-                    onProceedButtonPressed();
-                  },
-                  child: Text(
-                    "Proceed",
-                    style: GoogleFonts.roboto(fontSize: screenWidth * 0.05),
-                  ),
-                ),
+              child: RoundedButton(
+                onPressed: () async {
+                  onProceedButtonPressed();
+                },
+                text: "Proceed",
+                backgroundColor: ConstantColors.borderButtonColor,
+                textColor: ConstantColors.whiteColor,
               ),
             )
           ],

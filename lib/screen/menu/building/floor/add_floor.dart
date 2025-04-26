@@ -7,6 +7,7 @@ import 'package:enavatek_mobile/screen/menu/building/edit_building.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
+import 'package:enavatek_mobile/widget/custom_textfiled.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,9 @@ class AddFloorNameState extends State<AddFloorName> {
   TextEditingController floorNameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
     return WillPopScope(
         onWillPop: () async {
           Navigator.pushReplacement(
@@ -63,15 +67,17 @@ class AddFloorNameState extends State<AddFloorName> {
                       },
                       child: Image.asset(
                         ImgPath.pngArrowBack,
-                        height: 25,
-                        width: 25,
+                        height: isTablet ? 40 : 22,
+                        width: isTablet ? 40 : 22,
                       ),
                     ),
                     const SizedBox(width: 10),
                     Text(
                       'Add Floor',
                       style: GoogleFonts.roboto(
-                          fontSize: 18,
+                          fontSize: isTablet
+                              ? screenWidth * 0.03
+                              : screenWidth * 0.05,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.black),
                     ),
@@ -80,23 +86,10 @@ class AddFloorNameState extends State<AddFloorName> {
                 const SizedBox(
                   height: 50,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: TextFormField(
-                    controller: floorNameController,
-                    maxLines: 1,
-                    decoration: const InputDecoration(
-                      labelText: "Add floor name",
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: ConstantColors.mainlyTextColor),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: ConstantColors.mainlyTextColor),
-                      ),
-                    ),
-                  ),
+                CustomTextField(
+                  controller: floorNameController,
+                  label: "Add floor name",
+                  suffixIcon: null,
                 ),
                 const SizedBox(
                   height: 50,
