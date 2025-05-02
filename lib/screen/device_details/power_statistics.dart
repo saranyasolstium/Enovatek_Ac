@@ -674,56 +674,89 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     );
   }
 
-  Future<void> requestStoragePermission() async {
-    if (Platform.isAndroid) {
-      var status = await Permission.storage.status;
-      if (!status.isGranted) {
-        var result = await Permission.storage.request();
-        if (!result.isGranted) {
-          throw Exception('Storage permission not granted');
-        }
-      }
-    }
-  }
+  // Future<void> requestStoragePermission() async {
+  //   if (Platform.isAndroid) {
+  //     if (await Permission.storage.request().isGranted) {
+  //       return;
+  //     } else {
+  //       throw Exception("Storage permission not granted");
+  //     }
+  //   }
+  // }
 
   Future<void> exportCSV(
-      String csvContent, String fileName, BuildContext context) async {
-    await requestStoragePermission();
+      String content, String fileName, BuildContext context) async {
+    //  await requestStoragePermission();
 
     Directory? directory;
 
-    if (Platform.isIOS) {
-      directory = await getApplicationDocumentsDirectory();
-    } else if (Platform.isAndroid) {
-      // Use app-specific external directory on Android
-      directory = await getDownloadsDirectory();
+    if (Platform.isAndroid) {
+      // App-specific external storage (does NOT need MANAGE_EXTERNAL_STORAGE)
+      directory = await getExternalStorageDirectory();
     } else {
-      throw UnsupportedError('Unsupported platform');
+      directory = await getApplicationDocumentsDirectory();
     }
 
     if (directory != null) {
-      final path = '${directory.path}/$fileName';
-      final file = File(path);
+      final filePath = '${directory.path}/$fileName';
+      final file = File(filePath);
 
       try {
-        await file.writeAsString(csvContent);
+        await file.writeAsString(content);
+        print('File saved at: $filePath');
 
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text('CSV downloaded successfully to $path')),
-        // );
-
-        print('File saved at $path');
-
-        // Share the file after download
+        // Optionally share file after saving
         ShareExtend.share(file.path, "file");
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('File saved at $filePath')),
+        );
       } catch (e) {
         print('Error writing file: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to download CSV: $e')),
+          SnackBar(content: Text('Failed to save file')),
         );
       }
     }
   }
+  // Future<void> exportCSV(
+  //     String csvContent, String fileName, BuildContext context) async {
+  //   await requestStoragePermission();
+
+  //   Directory? directory;
+
+  //   if (Platform.isIOS) {
+  //     directory = await getApplicationDocumentsDirectory();
+  //   } else if (Platform.isAndroid) {
+  //     // Use app-specific external directory on Android
+  //     directory = await getDownloadsDirectory();
+  //   } else {
+  //     throw UnsupportedError('Unsupported platform');
+  //   }
+
+  //   if (directory != null) {
+  //     final path = '${directory.path}/$fileName';
+  //     final file = File(path);
+
+  //     try {
+  //       await file.writeAsString(csvContent);
+
+  //       // ScaffoldMessenger.of(context).showSnackBar(
+  //       //   SnackBar(content: Text('CSV downloaded successfully to $path')),
+  //       // );
+
+  //       print('File saved at $path');
+
+  //       // Share the file after download
+  //       ShareExtend.share(file.path, "file");
+  //     } catch (e) {
+  //       print('Error writing file: $e');
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Failed to download CSV: $e')),
+  //       );
+  //     }
+  //   }
+  // }
 
   Future<void> exportPowerConsumptionData() async {
     try {
