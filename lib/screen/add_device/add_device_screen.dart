@@ -68,7 +68,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                 'Select option',
                 style: GoogleFonts.roboto(
                     fontSize:
-                        isTablet ? screenWidth * 0.03 : screenWidth * 0.05,
+                        isTablet ? screenWidth * 0.025 : screenWidth * 0.05,
                     fontWeight: FontWeight.bold,
                     color: ConstantColors.black),
               ),
@@ -106,7 +106,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                                 color: ConstantColors.mainlyTextColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: isTablet
-                                    ? screenWidth * 0.028
+                                    ? screenWidth * 0.025
                                     : screenWidth * 0.05,
                               ),
                             ),
@@ -115,7 +115,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                               style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
                                 fontSize: isTablet
-                                    ? screenWidth * 0.025
+                                    ? screenWidth * 0.022
                                     : screenWidth * 0.034,
                               ),
                             ),
@@ -159,7 +159,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                                 color: ConstantColors.mainlyTextColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: isTablet
-                                    ? screenWidth * 0.028
+                                    ? screenWidth * 0.025
                                     : screenWidth * 0.04,
                               ),
                             ),
@@ -168,7 +168,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                               style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
                                 fontSize: isTablet
-                                    ? screenWidth * 0.025
+                                    ? screenWidth * 0.022
                                     : screenWidth * 0.034,
                               ),
                             ),
@@ -219,7 +219,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                                 color: ConstantColors.mainlyTextColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: isTablet
-                                    ? screenWidth * 0.028
+                                    ? screenWidth * 0.025
                                     : screenWidth * 0.04,
                               ),
                             ),
@@ -229,7 +229,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                               style: GoogleFonts.roboto(
                                 color: ConstantColors.mainlyTextColor,
                                 fontSize: isTablet
-                                    ? screenWidth * 0.025
+                                    ? screenWidth * 0.022
                                     : screenWidth * 0.034,
                               ),
                             ),

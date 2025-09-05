@@ -114,7 +114,7 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                         'Buildings',
                         style: GoogleFonts.roboto(
                             fontSize: isTablet
-                                ? screenWidth * 0.03
+                                ? screenWidth * 0.025
                                 : screenWidth * 0.045,
                             fontWeight: FontWeight.bold,
                             color: ConstantColors.black),

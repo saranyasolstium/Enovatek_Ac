@@ -18,11 +18,9 @@ import 'package:enavatek_mobile/widget/dropdown.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:country_picker/country_picker.dart';
 import 'dart:io';
@@ -30,9 +28,8 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:money2/money2.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
-import 'package:share_extend/share_extend.dart';
 
 class PowerStatisticsScreen extends StatefulWidget {
   final String deviceId;
@@ -92,6 +89,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     super.initState();
     getCountryCurrency(AppState().selectedCountryNotifier.value);
     getAllDevice();
+
     _tooltipBehavior = TooltipBehavior(
       enable: true,
     );
@@ -153,7 +151,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   }
 
   Future<void> getAllDevice() async {
-    await FirebaseApi().initNotifications();
+    // await FirebaseApi().initNotifications();
 
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
@@ -183,6 +181,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         });
         fetchCountry(false);
         powerusages(periodType);
+        fetchData('intraday');
       } else {
         print('Response body does not contain buildings');
       }
@@ -248,10 +247,11 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
 
     return Container(
       height: 350.dynamic,
-      width: 1800.dynamic,
+      width: isTablet ? 1200.dynamic : 950.dynamic,
       child: SfCartesianChart(
+        margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
         primaryXAxis: DateTimeAxis(
-          dateFormat: DateFormat.Hm(),
+          dateFormat: DateFormat.H(),
           intervalType: DateTimeIntervalType.hours,
           interval: 1,
         ),
@@ -261,8 +261,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             text: 'Energy Consumed (kWh)',
             textStyle: TextStyle(
               color: Colors.black,
-              fontSize: isTablet ? screenWidth * 0.018 : screenWidth * 0.032,
+              fontSize: isTablet ? screenWidth * 0.018 : screenWidth * 0.030,
             ),
+            alignment: ChartAlignment.center,
           ),
         ),
         tooltipBehavior: TooltipBehavior(
@@ -278,7 +279,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
             },
             yValueMapper: (EnergyData data, _) => data.acEnergyConsumed,
             name: 'AC Power',
-            color: ConstantColors.borderButtonColor,
+            color: Colors.red,
             enableTooltip: true,
           ),
           ColumnSeries<EnergyData, DateTime>(
@@ -362,15 +363,19 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     int? userId = await SharedPreferencesHelper.instance.getUserID();
 
     final response = await RemoteServices.powerusages(
-        authToken!, deviceList, periodType, formattedDate, "all", userId!);
+        authToken!, deviceList, "day", formattedDate, "all", userId!);
+    print('jdjjjs ${response.body}');
+
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (!mounted) return;
-
       setState(() {
         totalPower = responseData['total_power'];
+        print("saranya $totalPower");
         acPower = responseData['ac_power'];
+        print("saranya $acPower");
         dcPower = responseData['dc_power'];
+        print("saranya $dcPower");
         String acPowerValueStr = acPower!.replaceAll(RegExp(r'[^0-9.]'), '');
         String dcPowerValueStr = dcPower!.replaceAll(RegExp(r'[^0-9.]'), '');
         acNotifier.value = double.parse(acPowerValueStr);
@@ -684,79 +689,73 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   //   }
   // }
 
-  Future<void> exportCSV(
-      String content, String fileName, BuildContext context) async {
-    //  await requestStoragePermission();
-
-    Directory? directory;
-
-    if (Platform.isAndroid) {
-      // App-specific external storage (does NOT need MANAGE_EXTERNAL_STORAGE)
-      directory = await getExternalStorageDirectory();
-    } else {
-      directory = await getApplicationDocumentsDirectory();
-    }
-
-    if (directory != null) {
-      final filePath = '${directory.path}/$fileName';
-      final file = File(filePath);
-
-      try {
-        await file.writeAsString(content);
-        print('File saved at: $filePath');
-
-        // Optionally share file after saving
-        ShareExtend.share(file.path, "file");
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('File saved at $filePath')),
-        );
-      } catch (e) {
-        print('Error writing file: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save file')),
-        );
-      }
-    }
-  }
   // Future<void> exportCSV(
-  //     String csvContent, String fileName, BuildContext context) async {
-  //   await requestStoragePermission();
+  //     String content, String fileName, BuildContext context) async {
+  //   //  await requestStoragePermission();
 
   //   Directory? directory;
 
-  //   if (Platform.isIOS) {
-  //     directory = await getApplicationDocumentsDirectory();
-  //   } else if (Platform.isAndroid) {
-  //     // Use app-specific external directory on Android
-  //     directory = await getDownloadsDirectory();
+  //   if (Platform.isAndroid) {
+  //     // App-specific external storage (does NOT need MANAGE_EXTERNAL_STORAGE)
+  //     directory = await getExternalStorageDirectory();
   //   } else {
-  //     throw UnsupportedError('Unsupported platform');
+  //     directory = await getApplicationDocumentsDirectory();
   //   }
 
   //   if (directory != null) {
-  //     final path = '${directory.path}/$fileName';
-  //     final file = File(path);
+  //     final filePath = '${directory.path}/$fileName';
+  //     final file = File(filePath);
 
   //     try {
-  //       await file.writeAsString(csvContent);
+  //       await file.writeAsString(content);
+  //       print('File saved at: $filePath');
 
-  //       // ScaffoldMessenger.of(context).showSnackBar(
-  //       //   SnackBar(content: Text('CSV downloaded successfully to $path')),
-  //       // );
-
-  //       print('File saved at $path');
-
-  //       // Share the file after download
+  //       // Optionally share file after saving
   //       ShareExtend.share(file.path, "file");
+
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('File saved at $filePath')),
+  //       );
   //     } catch (e) {
   //       print('Error writing file: $e');
   //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Failed to download CSV: $e')),
+  //         const SnackBar(content: Text('Failed to save file')),
   //       );
   //     }
   //   }
   // }
+
+  Future<void> exportCSV(
+      String content, String fileName, BuildContext context) async {
+    try {
+      // Use a share-friendly folder
+      final Directory dir = await getTemporaryDirectory();
+      final String filePath = p.join(dir.path, fileName);
+
+      final file = File(filePath);
+      await file.writeAsString(content);
+
+      // Open native share sheet (WhatsApp, Drive, Gmail, etc.)
+      await Share.shareXFiles(
+        [XFile(file.path, name: fileName, mimeType: 'text/csv')],
+        subject: 'Power consumption data',
+        text: 'Power consumption data ($fileName)',
+      );
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Saved & opened share sheet: $filePath')),
+        );
+      }
+    } catch (e) {
+      debugPrint('Export/share error: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to export/share CSV')),
+        );
+      }
+    }
+  }
 
   Future<void> exportPowerConsumptionData() async {
     try {
@@ -809,7 +808,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         'Power Statistics',
                         style: GoogleFonts.roboto(
                           fontSize: isTablet
-                              ? screenWidth * 0.03
+                              ? screenWidth * 0.025
                               : screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
@@ -896,7 +895,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           children: [
                             Image.asset(
                               ImgPath.pngSolarPlane,
-                              width: isTablet ? 250.dynamic : 50.dynamic,
+                              width: isTablet ? 250.dynamic : 40.dynamic,
                               height: 50.dynamic,
                               fit: BoxFit.contain,
                             ),
@@ -932,8 +931,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                                   ? ImgPath.leftArrow1
                                                   : ImgPath.leftArrow2,
                                               color: dcValue > (index * 10)
-                                                  ? ConstantColors.iconColr
-                                                  : ConstantColors.arrowColor,
+                                                  ? Colors.green
+                                                  : Colors.green.shade300,
                                               height: isTablet ? 40 : 15,
                                             ),
                                           ),
@@ -967,14 +966,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   );
                           },
                         ),
-                        SizedBox(width: 30.dynamic),
+                        SizedBox(width: 20.dynamic),
                         Image.asset(
                           ImgPath.totalPower,
-                          width: isTablet ? 250.dynamic : 50.dynamic,
+                          width: isTablet ? 250.dynamic : 40.dynamic,
                           height: 50.dynamic,
                           fit: BoxFit.contain,
                         ),
-                        SizedBox(width: 30.dynamic),
+                        SizedBox(width: 20.dynamic),
                         ValueListenableBuilder<double>(
                           valueListenable: acNotifier,
                           builder: (context, acValue, child) {
@@ -1041,36 +1040,36 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                                 ? ImgPath.rightArrow5
                                                 : ImgPath.rightArrow4;
                                             color = acValue > 40
-                                                ? ConstantColors.iconColr
-                                                : ConstantColors.arrowColor;
+                                                ? Colors.red
+                                                : Colors.red.shade300;
                                           } else if (index == 1) {
                                             imagePath = acValue > 30
                                                 ? ImgPath.rightArrow5
                                                 : ImgPath.rightArrow4;
                                             color = acValue > 30
-                                                ? ConstantColors.iconColr
-                                                : ConstantColors.arrowColor;
+                                                ? Colors.red
+                                                : Colors.red.shade300;
                                           } else if (index == 2) {
                                             imagePath = acValue > 20
                                                 ? ImgPath.rightArrow5
                                                 : ImgPath.rightArrow4;
                                             color = acValue > 20
-                                                ? ConstantColors.iconColr
-                                                : ConstantColors.arrowColor;
+                                                ? Colors.red
+                                                : Colors.red.shade300;
                                           } else if (index == 3) {
                                             imagePath = acValue > 10
                                                 ? ImgPath.rightArrow5
                                                 : ImgPath.rightArrow4;
                                             color = acValue > 10
-                                                ? ConstantColors.iconColr
-                                                : ConstantColors.arrowColor;
+                                                ? Colors.red
+                                                : Colors.red.shade300;
                                           } else {
                                             imagePath = acValue > 0
                                                 ? ImgPath.rightArrow5
                                                 : ImgPath.rightArrow4;
                                             color = acValue > 0
-                                                ? ConstantColors.iconColr
-                                                : ConstantColors.arrowColor;
+                                                ? Colors.red
+                                                : Colors.red.shade300;
                                           }
 
                                           return Container(
@@ -1097,14 +1096,14 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             );
                           },
                         ),
-                        const SizedBox(width: 20),
+                        const SizedBox(width: 15),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Image.asset(
                               ImgPath.pngTower,
                               width: isTablet ? 250.dynamic : 50.dynamic,
-                              height: 50.dynamic,
+                              height: 40.dynamic,
                               fit: BoxFit.contain,
                             ),
                           ],
@@ -1124,7 +1123,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               'DC Power',
                               style: GoogleFonts.roboto(
                                 fontSize: isTablet
-                                    ? screenWidth * 0.025
+                                    ? screenWidth * 0.022
                                     : screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.black,
@@ -1135,7 +1134,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               dcPower!,
                               style: GoogleFonts.roboto(
                                 fontSize: isTablet
-                                    ? screenWidth * 0.025
+                                    ? screenWidth * 0.022
                                     : screenWidth * 0.045,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
@@ -1150,7 +1149,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               'Total Power',
                               style: GoogleFonts.roboto(
                                 fontSize: isTablet
-                                    ? screenWidth * 0.025
+                                    ? screenWidth * 0.022
                                     : screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.iconColr,
@@ -1161,7 +1160,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               totalPower!,
                               style: GoogleFonts.roboto(
                                 fontSize: isTablet
-                                    ? screenWidth * 0.025
+                                    ? screenWidth * 0.022
                                     : screenWidth * 0.045,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.iconColr,
@@ -1176,7 +1175,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               'AC Power',
                               style: GoogleFonts.roboto(
                                 fontSize: isTablet
-                                    ? screenWidth * 0.025
+                                    ? screenWidth * 0.022
                                     : screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
@@ -1187,7 +1186,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               acPower!,
                               style: GoogleFonts.roboto(
                                 fontSize: isTablet
-                                    ? screenWidth * 0.025
+                                    ? screenWidth * 0.022
                                     : screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
                                 color: ConstantColors.appColor,
@@ -1244,7 +1243,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 'Energy Saving',
                                 style: GoogleFonts.roboto(
                                   fontSize: isTablet
-                                      ? screenWidth * 0.025
+                                      ? screenWidth * 0.02
                                       : screenWidth * 0.032,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
@@ -1282,10 +1281,10 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 ),
                               ),
                               Text(
-                                'Saving',
+                                'Currency',
                                 style: GoogleFonts.roboto(
                                   fontSize: isTablet
-                                      ? screenWidth * 0.025
+                                      ? screenWidth * 0.022
                                       : screenWidth * 0.032,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
@@ -1324,7 +1323,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                 'Tree Planted',
                                 style: GoogleFonts.roboto(
                                   fontSize: isTablet
-                                      ? screenWidth * 0.025
+                                      ? screenWidth * 0.022
                                       : screenWidth * 0.032,
                                   fontWeight: FontWeight.bold,
                                   color: ConstantColors.black,
@@ -1367,7 +1366,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       'Total Energy Saving',
                                       style: GoogleFonts.roboto(
                                         fontSize: isTablet
-                                            ? screenWidth * 0.025
+                                            ? screenWidth * 0.022
                                             : screenWidth * 0.032,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
@@ -1380,7 +1379,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                       '$totalEnergy %',
                                       style: GoogleFonts.roboto(
                                         fontSize: isTablet
-                                            ? screenWidth * 0.03
+                                            ? screenWidth * 0.025
                                             : screenWidth * 0.05,
                                         fontWeight: FontWeight.bold,
                                         color: ConstantColors.appColor,
@@ -1394,13 +1393,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Row(
                                       children: [
                                         Container(
-                                          color:
-                                              ConstantColors.borderButtonColor,
+                                          color: Colors.red,
                                           width: isTablet
-                                              ? 20.dynamic
-                                              : 10.dynamic,
+                                              ? 30.dynamic
+                                              : 20.dynamic,
                                           height:
-                                              isTablet ? 4.dynamic : 2.dynamic,
+                                              isTablet ? 8.dynamic : 6.dynamic,
                                         ),
                                         SizedBox(
                                           width: 10.dynamic,
@@ -1409,7 +1407,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                           'AC',
                                           style: GoogleFonts.roboto(
                                             fontSize: isTablet
-                                                ? screenWidth * 0.025
+                                                ? screenWidth * 0.022
                                                 : screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
@@ -1423,12 +1421,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     Row(
                                       children: [
                                         Container(
-                                          color: ConstantColors.greenColor,
+                                          color: Colors.green,
                                           width: isTablet
-                                              ? 20.dynamic
-                                              : 10.dynamic,
+                                              ? 30.dynamic
+                                              : 20.dynamic,
                                           height:
-                                              isTablet ? 4.dynamic : 2.dynamic,
+                                              isTablet ? 8.dynamic : 6.dynamic,
                                         ),
                                         SizedBox(
                                           width: 10.dynamic,
@@ -1437,7 +1435,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                           'DC',
                                           style: GoogleFonts.roboto(
                                             fontSize: isTablet
-                                                ? screenWidth * 0.025
+                                                ? screenWidth * 0.022
                                                 : screenWidth * 0.032,
                                             fontWeight: FontWeight.bold,
                                             color: ConstantColors.black,
@@ -1629,7 +1627,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         Container(
                           color: Colors.white,
                           padding: EdgeInsets.symmetric(
-                              horizontal: isTablet ? 100.dynamic : 40.dynamic,
+                              horizontal: isTablet ? 100.dynamic : 20.dynamic,
                               vertical: 10.dynamic),
                           child: Center(
                             child: Row(
@@ -1676,9 +1674,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                           color: ConstantColors.greenColor,
                                           width: isTablet
                                               ? 20.dynamic
-                                              : 10.dynamic,
+                                              : 15.dynamic,
                                           height:
-                                              isTablet ? 4.dynamic : 2.dynamic,
+                                              isTablet ? 8.dynamic : 6.dynamic,
                                         ),
                                         SizedBox(
                                           width: 5.dynamic,
@@ -1705,9 +1703,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                               ConstantColors.borderButtonColor,
                                           width: isTablet
                                               ? 20.dynamic
-                                              : 10.dynamic,
+                                              : 15.dynamic,
                                           height:
-                                              isTablet ? 4.dynamic : 2.dynamic,
+                                              isTablet ? 8.dynamic : 6.dynamic,
                                         ),
                                         SizedBox(
                                           width: 10.dynamic,
@@ -1733,9 +1731,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                           color: ConstantColors.appColor,
                                           width: isTablet
                                               ? 20.dynamic
-                                              : 10.dynamic,
+                                              : 15.dynamic,
                                           height:
-                                              isTablet ? 4.dynamic : 2.dynamic,
+                                              isTablet ? 8.dynamic : 6.dynamic,
                                         ),
                                         SizedBox(
                                           width: 10.dynamic,
@@ -1758,7 +1756,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   width: 15.dynamic,
                                 ),
                                 SizedBox(
-                                  width: isTablet ? 200.dynamic : 120.dynamic,
+                                  width: isTablet ? 200.dynamic : 100.dynamic,
                                   child: CustomDropdownButton(
                                     value: "Day",
                                     items: const [
@@ -1813,9 +1811,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     ),
                   );
                 }),
-            // const SizedBox(
-            //   height: 20,
-            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -1850,10 +1845,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           : Container(
                               height: 350.dynamic,
                               width: energyType == "day"
-                                  ? 1800.dynamic
+                                  ? 1200.dynamic
                                   : energyType == "month"
                                       ? 600.dynamic
-                                      : 400.dynamic,
+                                      : energyType == "year"
+                                          ? 380.dynamic
+                                          : 400.dynamic,
                               child: SfCartesianChart(
                                 primaryXAxis: const CategoryAxis(
                                   interval: 1,
@@ -1895,7 +1892,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     yValueMapper: (EnergyData data, _) =>
                                         data.acEnergyConsumed,
                                     name: 'AC Power',
-                                    color: ConstantColors.borderButtonColor,
+                                    color: Colors.red,
                                   ),
                                   ColumnSeries<EnergyData, String>(
                                     dataSource: energyDataList,
@@ -1985,7 +1982,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                     ));
               },
             ),
-
             ValueListenableBuilder(
               valueListenable: treeNotiifer,
               builder: (context, value, child) {

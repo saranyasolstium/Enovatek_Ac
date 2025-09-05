@@ -34,7 +34,7 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
 
   void sendConfigurationPackage() async {
     const String deviceIP = '192.6.6.6';
-    const int devicePort = 8006;
+    const int devicePort = 8000;
 
     const String packageHead = 'C6F9G0';
     String deviceId = deviceIDController.text.toString();

@@ -36,7 +36,6 @@ class EnginnerHomeScreenState extends State<EnginnerHomeScreen> {
         status[Permission.systemAlertWindow]!.isGranted;
   }
 
-
   void _connectToControllerWifi() async {
     if (await _checkPermissions()) {
       FlutterIotWifi.connect("PM20H20Q", "Eno420714Vatek", prefix: true)

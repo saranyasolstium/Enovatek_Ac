@@ -59,7 +59,7 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
                   'Add Device',
                   style: GoogleFonts.roboto(
                       fontSize:
-                          isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
+                          isTablet ? screenWidth * 0.025 : screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
@@ -73,7 +73,7 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
                 'Add serial no. manually of your device',
                 style: GoogleFonts.roboto(
                     fontSize:
-                        isTablet ? screenWidth * 0.028 : screenWidth * 0.05,
+                        isTablet ? screenWidth * 0.022 : screenWidth * 0.05,
                     fontWeight: FontWeight.bold,
                     color: ConstantColors.black),
               ),
@@ -83,8 +83,8 @@ class ManualAddDeviceState extends State<ManualAddDevice> {
             ),
             Image.asset(
               ImgPath.pngSerialNo,
-              height: isTablet ? screenWidth * 0.22 : screenWidth * 0.6,
-              width: isTablet ? screenWidth * 0.22 : screenWidth * 0.6,
+              height: isTablet ? screenWidth * 0.2 : screenWidth * 0.6,
+              width: isTablet ? screenWidth * 0.2 : screenWidth * 0.6,
             ),
             const SizedBox(
               height: 30,

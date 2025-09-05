@@ -1,4 +1,4 @@
 {
-    "dart.flutterPreviewEnabled": true
-  }
-  
+  "dart.flutterPreviewEnabled": true,
+  "cmake.sourceDirectory": "C:/Users/saran/Desktop/Solstium_Project/Enovatek_Ac/linux"
+}

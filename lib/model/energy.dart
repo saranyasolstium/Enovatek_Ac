@@ -23,6 +23,7 @@ class EnergyData {
 
   factory EnergyData.fromJson(Map<String, dynamic> json) {
     try {
+      print(json);
       double totalEnergy = (json['total_energy'] as num).toDouble();
       double acEnergyConsumed = (json['ac_energy_consumed'] as num).toDouble();
       double dcEnergyConsumed = (json['dc_energy_consumed'] as num).toDouble();
@@ -54,18 +55,28 @@ class EnergyData {
       rethrow;
     }
   }
+
   DateTime getFormattedTimeAsDateTime() {
-    // Return DateTime with only hours, minutes and seconds as zero
     return DateTime(
       period.year,
       period.month,
       period.day,
       period.hour,
-    );
+      period.minute,
+      period.second,
+    ); // keep mins/seconds
   }
 
+  // DateTime getFormattedTimeAsDateTime() {
+  //   return DateTime(
+  //     period.year,
+  //     period.month,
+  //     period.day,
+  //     period.hour,
+  //   );
+  // }
+
   String getFormattedTime() {
-    // Use DateFormat to return time in 'HH' format (e.g., '14' for 2 PM)
     return DateFormat('HH').format(period);
   }
 

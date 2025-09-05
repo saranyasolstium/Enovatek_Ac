@@ -495,7 +495,7 @@ class RemoteServices {
         "period_value": typeValue,
         "consumption_type": consumptionType
       };
-      print(requestBody);
+      print('hshhdhd $requestBody');
       String jsonBody = jsonEncode(requestBody);
 
       http.Response response = await http.post(

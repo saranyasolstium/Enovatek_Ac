@@ -100,7 +100,7 @@ class DeviceAssigningScreenState extends State<DeviceAssigningScreen> {
                   'Device assigning',
                   style: GoogleFonts.roboto(
                       fontSize:
-                          isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
+                          isTablet ? screenWidth * 0.025 : screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),

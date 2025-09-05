@@ -59,8 +59,9 @@ class BasicDetailScreenState extends State<BasicDetailScreen> {
                   Text(
                     'Add Device',
                     style: GoogleFonts.roboto(
-                        fontSize:
-                            isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
+                        fontSize: isTablet
+                            ? screenWidth * 0.025
+                            : screenWidth * 0.045,
                         fontWeight: FontWeight.bold,
                         color: ConstantColors.black),
                   ),
@@ -82,7 +83,7 @@ class BasicDetailScreenState extends State<BasicDetailScreen> {
                           'Business Unit',
                           style: GoogleFonts.roboto(
                               fontSize: isTablet
-                                  ? screenWidth * 0.025
+                                  ? screenWidth * 0.022
                                   : screenWidth * 0.03,
                               color: ConstantColors.mainlyTextColor,
                               fontWeight: FontWeight.bold),
@@ -119,7 +120,7 @@ class BasicDetailScreenState extends State<BasicDetailScreen> {
                           'Location',
                           style: GoogleFonts.roboto(
                               fontSize: isTablet
-                                  ? screenWidth * 0.025
+                                  ? screenWidth * 0.022
                                   : screenWidth * 0.03,
                               color: ConstantColors.mainlyTextColor,
                               fontWeight: FontWeight.bold),

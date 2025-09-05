@@ -70,8 +70,8 @@ class MenuScreenState extends State<MenuScreen> {
                         },
                         child: Image.asset(
                           ImgPath.pngArrowBack,
-                          height: isTablet ? 40 : 22,
-                          width: isTablet ? 40 : 22,
+                          height: isTablet ? 30 : 22,
+                          width: isTablet ? 30 : 22,
                           color: ConstantColors.appColor,
                         ),
                       ),
@@ -80,7 +80,7 @@ class MenuScreenState extends State<MenuScreen> {
                         'Menu',
                         style: GoogleFonts.roboto(
                           fontSize: isTablet
-                              ? screenWidth * 0.03
+                              ? screenWidth * 0.025
                               : screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
                           color: ConstantColors.appColor,
@@ -148,7 +148,7 @@ class MenuScreenState extends State<MenuScreen> {
                             color: ConstantColors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: isTablet
-                                ? screenWidth * 0.03
+                                ? screenWidth * 0.025
                                 : screenWidth * 0.042,
                           ),
                         ),
@@ -157,7 +157,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                             color: ConstantColors.mainlyTextColor,
                             fontSize: isTablet
-                                ? screenWidth * 0.03
+                                ? screenWidth * 0.025
                                 : screenWidth * 0.042,
                           ),
                         ),
@@ -222,7 +222,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: const Color.fromARGB(255, 7, 3, 3),
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -269,7 +269,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -315,7 +315,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -365,7 +365,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: const Color.fromARGB(255, 7, 3, 3),
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -415,7 +415,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -465,7 +465,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -551,7 +551,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -598,7 +598,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: const Color.fromARGB(255, 7, 3, 3),
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -638,7 +638,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -672,7 +672,7 @@ class MenuScreenState extends State<MenuScreen> {
                         style: GoogleFonts.roboto(
                             color: ConstantColors.black,
                             fontSize: isTablet
-                                ? screenWidth * 0.03
+                                ? screenWidth * 0.025
                                 : screenWidth * 0.045),
                       ),
                     ],
@@ -711,7 +711,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -751,7 +751,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -798,7 +798,7 @@ class MenuScreenState extends State<MenuScreen> {
                           style: GoogleFonts.roboto(
                               color: ConstantColors.black,
                               fontSize: isTablet
-                                  ? screenWidth * 0.03
+                                  ? screenWidth * 0.025
                                   : screenWidth * 0.045),
                         ),
                       ],
@@ -808,43 +808,43 @@ class MenuScreenState extends State<MenuScreen> {
                     height:
                         isTablet ? 0.04 * screenHeight : 0.03 * screenHeight,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      showDeleteDialog(context);
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Image.asset(
-                          ImgPath.pngAccountDelete,
-                          height: isTablet
-                              ? screenWidth * 0.03
-                              : screenWidth * 0.05,
-                          width: isTablet
-                              ? screenWidth * 0.03
-                              : screenWidth * 0.05,
-                          fit: BoxFit.contain,
-                          color: ConstantColors.iconDarkColr,
-                        ),
-                        SizedBox(
-                          width: isTablet
-                              ? 0.035 * screenHeight
-                              : 0.02 * screenHeight,
-                        ),
-                        Text(
-                          'Delete Account',
-                          style: GoogleFonts.roboto(
-                              color: ConstantColors.black,
-                              fontSize: isTablet
-                                  ? screenWidth * 0.03
-                                  : screenWidth * 0.045),
-                        ),
-                      ],
-                    ),
-                  ),
+                  //   GestureDetector(
+                  //     onTap: () {
+                  //       showDeleteDialog(context);
+                  //     },
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.start,
+                  //       children: [
+                  //         const SizedBox(
+                  //           width: 10,
+                  //         ),
+                  //         Image.asset(
+                  //           ImgPath.pngAccountDelete,
+                  //           height: isTablet
+                  //               ? screenWidth * 0.03
+                  //               : screenWidth * 0.05,
+                  //           width: isTablet
+                  //               ? screenWidth * 0.03
+                  //               : screenWidth * 0.05,
+                  //           fit: BoxFit.contain,
+                  //           color: ConstantColors.iconDarkColr,
+                  //         ),
+                  //         SizedBox(
+                  //           width: isTablet
+                  //               ? 0.035 * screenHeight
+                  //               : 0.02 * screenHeight,
+                  //         ),
+                  //         Text(
+                  //           'Delete Account',
+                  //           style: GoogleFonts.roboto(
+                  //               color: ConstantColors.black,
+                  //               fontSize: isTablet
+                  //                   ? screenWidth * 0.025
+                  //                   : screenWidth * 0.045),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
                 ],
               ),
             ),

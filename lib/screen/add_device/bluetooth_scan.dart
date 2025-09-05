@@ -23,7 +23,7 @@ class BluetoothScanState extends State<BluetoothScan> {
       bottomNavigationBar: const Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-          isTablet ? screenWidth * 0.02 : screenWidth * 0.05,
+          isTablet ? screenWidth * 0.025 : screenWidth * 0.05,
           screenHeight * 0.05,
           screenWidth * 0.05,
           screenHeight * 0.02,
@@ -47,7 +47,7 @@ class BluetoothScanState extends State<BluetoothScan> {
                   'Add Device',
                   style: GoogleFonts.roboto(
                       fontSize:
-                          isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
+                          isTablet ? screenWidth * 0.025 : screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
                       color: ConstantColors.black),
                 ),
@@ -61,7 +61,7 @@ class BluetoothScanState extends State<BluetoothScan> {
                 'Bring you phone closer to the device',
                 style: GoogleFonts.roboto(
                     fontSize:
-                        isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
+                        isTablet ? screenWidth * 0.025 : screenWidth * 0.045,
                     fontWeight: FontWeight.bold,
                     color: ConstantColors.black),
               ),
@@ -72,15 +72,15 @@ class BluetoothScanState extends State<BluetoothScan> {
             Center(
               child: Image.asset(
                 ImgPath.pngWifi,
-                height: isTablet ? screenWidth * 0.1 : screenWidth * 0.2,
-                width: isTablet ? screenWidth * 0.1 : screenWidth * 0.3,
+                height: isTablet ? screenWidth * 0.05 : screenWidth * 0.2,
+                width: isTablet ? screenWidth * 0.05 : screenWidth * 0.3,
               ),
             ),
             Center(
               child: Image.asset(
                 ImgPath.pngAirConditioner,
-                height: isTablet ? screenWidth * 0.25 : screenWidth * 0.5,
-                width: isTablet ? screenWidth * 0.25 : screenWidth * 0.5,
+                height: isTablet ? screenWidth * 0.2 : screenWidth * 0.5,
+                width: isTablet ? screenWidth * 0.2 : screenWidth * 0.5,
               ),
             ),
           ],
