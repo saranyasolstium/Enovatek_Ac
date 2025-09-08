@@ -1845,7 +1845,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                           : Container(
                               height: 350.dynamic,
                               width: energyType == "day"
-                                  ? 1200.dynamic
+                                  ? 800.dynamic
                                   : energyType == "month"
                                       ? 600.dynamic
                                       : energyType == "year"
