@@ -38,18 +38,31 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
   Timer? timer;
   String periodType = "day";
 
+  int? userId = 1;
+
   @override
   void initState() {
     super.initState();
+
     DateTime currentDate = DateTime.now();
     String formattedDate =
         "${currentDate.day}-${currentDate.month}-${currentDate.year}";
+
     powerusages("day", formattedDate);
+    _loadUserId();
+  }
+
+  Future<void> _loadUserId() async {
+    int? userTypeId = await SharedPreferencesHelper.instance.getUserTypeID();
+    setState(() {
+      userId = userTypeId;
+    });
   }
 
   Future<void> powerusages(String periodType, String periodValue) async {
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
+
     List<String> device = [];
     device.add(widget.deviceId);
     final response = await RemoteServices.powerusages(
@@ -191,102 +204,106 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
         padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: CircularBar(
-                    label: 'AC Energy',
-                    value: acEnergy!,
-                    maxValue: 10,
-                    unit: "kWh",
-                    color: ConstantColors.iconColr,
+            if (userId == 1 || userId == 2 || userId == 3)
+              Row(
+                children: [
+                  Expanded(
+                    child: CircularBar(
+                      label: 'AC Energy',
+                      value: acEnergy!,
+                      maxValue: 10,
+                      unit: "kWh",
+                      color: ConstantColors.iconColr,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: CircularBar(
-                    label: 'DC Energy',
-                    value: dcEnergy!,
-                    maxValue: 10,
-                    unit: "kWh",
-                    color: ConstantColors.iconColr,
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: CircularBar(
+                      label: 'DC Energy',
+                      value: dcEnergy!,
+                      maxValue: 10,
+                      unit: "kWh",
+                      color: ConstantColors.iconColr,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: CircularBar(
-                    label: 'AC Power',
-                    value: acValue!,
-                    maxValue: 500,
-                    unit: "W",
-                    color: ConstantColors.iconColr,
+            if (userId == 1 || userId == 2 || userId == 3)
+              Row(
+                children: [
+                  Expanded(
+                    child: CircularBar(
+                      label: 'AC Power',
+                      value: acValue!,
+                      maxValue: 500,
+                      unit: "W",
+                      color: ConstantColors.iconColr,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: CircularBar(
-                    label: 'DC Power',
-                    value: dcValue!,
-                    maxValue: 500,
-                    unit: "W",
-                    color: ConstantColors.iconColr,
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: CircularBar(
+                      label: 'DC Power',
+                      value: dcValue!,
+                      maxValue: 500,
+                      unit: "W",
+                      color: ConstantColors.iconColr,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: CircularBar(
-                    label: 'AC Voltage',
-                    value: acVoltage!,
-                    unit: "V",
-                    maxValue: 500,
-                    color: ConstantColors.iconColr,
+            if (userId == 3)
+              Row(
+                children: [
+                  Expanded(
+                    child: CircularBar(
+                      label: 'AC Voltage',
+                      value: acVoltage!,
+                      unit: "V",
+                      maxValue: 500,
+                      color: ConstantColors.iconColr,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                    width: 20), // Adjust the spacing between the bars
-                Expanded(
-                  child: CircularBar(
-                    label: 'DC Voltage',
-                    value: dcVoltgae!,
-                    maxValue: 500,
-                    unit: "V",
-                    color: ConstantColors.iconColr,
+                  const SizedBox(
+                      width: 20), // Adjust the spacing between the bars
+                  Expanded(
+                    child: CircularBar(
+                      label: 'DC Voltage',
+                      value: dcVoltgae!,
+                      maxValue: 500,
+                      unit: "V",
+                      color: ConstantColors.iconColr,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: CircularBar(
-                    label: 'AC Current',
-                    value: acCurrent!,
-                    maxValue: 10,
-                    unit: "A",
-                    color: ConstantColors.iconColr,
+            if (userId == 3)
+              Row(
+                children: [
+                  Expanded(
+                    child: CircularBar(
+                      label: 'AC Current',
+                      value: acCurrent!,
+                      maxValue: 10,
+                      unit: "A",
+                      color: ConstantColors.iconColr,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: CircularBar(
-                    label: 'DC Current',
-                    value: dcCurrent!,
-                    maxValue: 10,
-                    unit: "A",
-                    color: ConstantColors.iconColr,
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: CircularBar(
+                      label: 'DC Current',
+                      value: dcCurrent!,
+                      maxValue: 10,
+                      unit: "A",
+                      color: ConstantColors.iconColr,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
       ),

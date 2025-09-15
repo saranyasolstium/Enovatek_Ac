@@ -10,4 +10,6 @@ class AppState {
 
   final ValueNotifier<String> selectedCountryNotifier =
       ValueNotifier<String>('sg');
+
+  final ValueNotifier<int> selectedCountryIdNotifier = ValueNotifier<int>(6);
 }

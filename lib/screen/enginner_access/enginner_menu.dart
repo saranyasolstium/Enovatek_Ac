@@ -1,3 +1,4 @@
+import 'package:enavatek_mobile/screen/device_details/power_statistics/power_all_device_screen.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/dialog_logout.dart';
@@ -38,8 +39,7 @@ class EnginnerMenuScreenState extends State<EnginnerMenuScreen> {
     final bool isTablet = screenWidth >= 600;
     return Scaffold(
       backgroundColor: ConstantColors.backgroundColor,
-            bottomNavigationBar: Footer(),
-
+      bottomNavigationBar: Footer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           isTablet ? 0.05 * screenWidth : 0.05 * screenWidth,

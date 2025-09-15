@@ -106,8 +106,8 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                                 color: ConstantColors.mainlyTextColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: isTablet
-                                    ? screenWidth * 0.025
-                                    : screenWidth * 0.05,
+                                    ? screenWidth * 0.022
+                                    : screenWidth * 0.034,
                               ),
                             ),
                             TextSpan(

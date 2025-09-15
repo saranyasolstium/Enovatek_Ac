@@ -82,7 +82,8 @@ class BillingScreenState extends State<BillingScreen>
     // currentMonthYear = getCurrentMonthYear();
     selectedMonthYear = widget.monthYear;
     currentMonthYear = widget.monthYear;
-    dateController.text = widget.monthYear; //extra add
+    dateController.text = widget.monthYear;
+    fetchCountry(false);
 
     for (int i = 0; i < 12; i++) {
       DateTime month = DateTime(currentDate.year, currentDate.month - i);
@@ -208,9 +209,11 @@ class BillingScreenState extends State<BillingScreen>
 
       billingDataList = [];
       summaryBillList = [];
+      String country = AppState().selectedCountryNotifier.value.toUpperCase();
+
       int? userId = await SharedPreferencesHelper.instance.getUserID();
       final result = await RemoteServices.consumptionBillStatus(
-          deviceList, userId!, 6, periodType);
+          deviceList, userId!, country == "sg" ? 6 : 9, periodType);
 
       setState(() {
         billingDataList = result['billingData'];
@@ -681,7 +684,7 @@ class BillingScreenState extends State<BillingScreen>
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
                           columnSpacing: isTablet ? 40 : 30,
-                          dataRowHeight: isTablet ? 60 : 30,
+                          dataRowHeight: isTablet ? 60 : 50,
                           headingRowColor: MaterialStateProperty.all(
                               ConstantColors.darkBackgroundColor),
                           columns: [
@@ -745,8 +748,8 @@ class BillingScreenState extends State<BillingScreen>
                   ? Card(
                       color: Colors.white,
                       child: DataTable(
-                        columnSpacing: isTablet ? 40 : 15,
-                        dataRowHeight: isTablet ? 60 : 30,
+                        columnSpacing: isTablet ? 40 : 10,
+                        dataRowHeight: isTablet ? 60 : 50,
                         headingRowColor: MaterialStateProperty.all(
                             ConstantColors.darkBackgroundColor),
                         columns: [
@@ -757,7 +760,7 @@ class BillingScreenState extends State<BillingScreen>
                               label:
                                   _buildTableHeader("Energy Saving", context)),
                           DataColumn(
-                              label: _buildTableHeader("Saving", context)),
+                              label: _buildTableHeader("   Saving", context)),
                           DataColumn(
                               label:
                                   _buildTableHeader("Tree Planted", context)),
