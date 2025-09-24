@@ -54,7 +54,7 @@ class PDFViewerScreenState extends State<PDFViewerScreen> {
       if (Platform.isAndroid) {
         if (await Permission.storage.request().isDenied) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
                 content:
                     Text('Storage permission is required to download the PDF')),
           );

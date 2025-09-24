@@ -863,22 +863,23 @@ class BillingScreenState extends State<BillingScreen>
                               AppState().selectedCountryNotifier.value;
 
                           print("saranya123456 $selectedCountry");
-                          double finalAmount = 0.0;
-                          if (selectedCountry == "MY") {
-                            CurrencyRate rate =
-                                await LiveCurrencyRate.convertCurrency(
-                                    'SGD', 'MYR', amountToPay);
-                            print(rate.result);
-                            finalAmount =
-                                double.parse(rate.result.toStringAsFixed(2));
-                          }
+                          // double finalAmount = 0.0;
+                          // if (selectedCountry == "MY") {
+                          //   CurrencyRate rate =
+                          //       await LiveCurrencyRate.convertCurrency(
+                          //           'SGD', 'MYR', amountToPay);
+                          //   print(rate.result);
+                          //   finalAmount =
+                          //       double.parse(rate.result.toStringAsFixed(2));
+                          // }
 
                           await PaymentService().createPaymentRequest(
                               context,
                               //amountToPay,
-                              selectedCountry == "MY"
-                                  ? finalAmount
-                                  : amountToPay,
+                              // selectedCountry == "MY"
+                              //     ? finalAmount
+                              // :
+                              amountToPay,
                               deviceList,
                               selectedMonthYear,
                               selectedCountry == "MY" ? "MYR" : "SGD");
