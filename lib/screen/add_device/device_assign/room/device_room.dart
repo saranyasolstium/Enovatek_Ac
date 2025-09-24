@@ -64,37 +64,37 @@ class DeviceAddRoomState extends State<DeviceAddRoom> {
             padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DeviceAssigningScreen(
-                                    deviceSerialNo: widget.deviceSerialNo,
-                                    location: widget.location,
-                                    business: widget.business,
-                                    buildingID: widget.buildingID!,
-                                    buildingName: "",
-                                  )),
-                        );
-                      },
-                      child: Image.asset(
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DeviceAssigningScreen(
+                                deviceSerialNo: widget.deviceSerialNo,
+                                location: widget.location,
+                                business: widget.business,
+                                buildingID: widget.buildingID!,
+                                buildingName: "",
+                              )),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Image.asset(
                         ImgPath.pngArrowBack,
                         height: isTablet ? 40 : 22,
                         width: isTablet ? 40 : 22,
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Add Room',
-                      style: GoogleFonts.roboto(
-                          fontSize: isTablet ? 26 : 18,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.black),
-                    ),
-                  ],
+                      const SizedBox(width: 10),
+                      Text(
+                        'Add Room',
+                        style: GoogleFonts.roboto(
+                            fontSize: isTablet ? 26 : 18,
+                            fontWeight: FontWeight.bold,
+                            color: ConstantColors.black),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 50,

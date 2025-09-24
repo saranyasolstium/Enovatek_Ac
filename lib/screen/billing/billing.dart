@@ -210,10 +210,11 @@ class BillingScreenState extends State<BillingScreen>
       billingDataList = [];
       summaryBillList = [];
       String country = AppState().selectedCountryNotifier.value.toUpperCase();
+      print("iururncnbcbn $country");
 
       int? userId = await SharedPreferencesHelper.instance.getUserID();
       final result = await RemoteServices.consumptionBillStatus(
-          deviceList, userId!, country == "sg" ? 6 : 9, periodType);
+          deviceList, userId!, country == "SG" ? 6 : 9, periodType);
 
       setState(() {
         billingDataList = result['billingData'];
@@ -362,6 +363,8 @@ class BillingScreenState extends State<BillingScreen>
                               print(radioValue);
                               AppState().selectedCountryNotifier.value =
                                   radioValue;
+                              fetchData(currentMonthYear);
+
                               Navigator.pop(context);
                             });
                           }),
@@ -407,40 +410,32 @@ class BillingScreenState extends State<BillingScreen>
           elevation: 0.0,
           title: Stack(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Image.asset(
-                            ImgPath.pngArrowBack,
-                            height: isTablet ? 40 : 22,
-                            width: isTablet ? 40 : 22,
-                            color: ConstantColors.appColor,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          'Billing',
-                          style: GoogleFonts.roboto(
-                            fontSize: isTablet
-                                ? screenWidth * 0.03
-                                : screenWidth * 0.045,
-                            fontWeight: FontWeight.bold,
-                            color: ConstantColors.appColor,
-                          ),
-                        ),
-                      ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      ImgPath.pngArrowBack,
+                      height: isTablet ? 40 : 22,
+                      width: isTablet ? 40 : 22,
+                      color: ConstantColors.appColor,
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Billing',
+                      style: GoogleFonts.roboto(
+                        fontSize:
+                            isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
+                        fontWeight: FontWeight.bold,
+                        color: ConstantColors.appColor,
+                      ),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
           actions: [
@@ -622,18 +617,35 @@ class BillingScreenState extends State<BillingScreen>
                               SizedBox(
                                 height: 5.dynamic,
                               ),
-                              Text(
-                                billingDataList.isNotEmpty
-                                    ? 'S\$ $totalBillAmount'
-                                    : 'S\$ 0',
-                                style: GoogleFonts.roboto(
-                                  fontSize: isTablet
-                                      ? screenWidth * 0.03
-                                      : screenWidth * 0.045,
-                                  fontWeight: FontWeight.bold,
-                                  color: ConstantColors.appColor,
-                                ),
-                              ),
+                              AppState()
+                                          .selectedCountryNotifier
+                                          .value
+                                          .toUpperCase() ==
+                                      "SG"
+                                  ? Text(
+                                      billingDataList.isNotEmpty
+                                          ? 'S\$ $totalBillAmount'
+                                          : 'S\$ 0',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: isTablet
+                                            ? screenWidth * 0.03
+                                            : screenWidth * 0.045,
+                                        fontWeight: FontWeight.bold,
+                                        color: ConstantColors.appColor,
+                                      ),
+                                    )
+                                  : Text(
+                                      billingDataList.isNotEmpty
+                                          ? 'RM $totalBillAmount'
+                                          : 'RM 0',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: isTablet
+                                            ? screenWidth * 0.03
+                                            : screenWidth * 0.045,
+                                        fontWeight: FontWeight.bold,
+                                        color: ConstantColors.appColor,
+                                      ),
+                                    ),
                             ],
                           ),
                         ],
@@ -712,12 +724,28 @@ class BillingScreenState extends State<BillingScreen>
                                 DataCell(_buildTableCell(
                                     '${billing.totalConsumption.toString()} kwh',
                                     context)),
-                                DataCell(_buildTableCell(
-                                    'S\$ ${billing.energySaving.toString()}',
-                                    context)),
-                                DataCell(_buildTableCell(
-                                    'S\$ ${billing.billAmount.toString()}',
-                                    context)),
+                                AppState()
+                                            .selectedCountryNotifier
+                                            .value
+                                            .toUpperCase() ==
+                                        "SG"
+                                    ? DataCell(_buildTableCell(
+                                        'S\$ ${billing.energySaving.toString()}',
+                                        context))
+                                    : DataCell(_buildTableCell(
+                                        'RM ${billing.energySaving.toString()}',
+                                        context)),
+                                AppState()
+                                            .selectedCountryNotifier
+                                            .value
+                                            .toUpperCase() ==
+                                        "SG"
+                                    ? DataCell(_buildTableCell(
+                                        'S\$ ${billing.billAmount.toString()}',
+                                        context))
+                                    : DataCell(_buildTableCell(
+                                        'RM ${billing.billAmount.toString()}',
+                                        context)),
                                 DataCell(_buildTableCell(
                                     billing.getFormattedBillDate(), context)),
                                 DataCell(_buildTableCell(
@@ -772,8 +800,15 @@ class BillingScreenState extends State<BillingScreen>
                                   summary.getFormattedPeriod(), context)),
                               DataCell(_buildTableCell(
                                   '${summary.energySaving} kwh', context)),
-                              DataCell(_buildTableCell(
-                                  'S\$ ${summary.saving}', context)),
+                              AppState()
+                                          .selectedCountryNotifier
+                                          .value
+                                          .toUpperCase() ==
+                                      "SG"
+                                  ? DataCell(_buildTableCell(
+                                      'S\$ ${summary.saving}', context))
+                                  : DataCell(_buildTableCell(
+                                      'RM ${summary.saving}', context)),
                               DataCell(_buildTableCell(
                                   summary.treesPlanted.toString(), context))
                             ],

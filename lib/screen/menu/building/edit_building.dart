@@ -95,38 +95,29 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
         ),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacementNamed(
-                              context, buildingRoute);
-                        },
-                        child: Image.asset(
-                          ImgPath.pngArrowBack,
-                          height: isTablet ? 40 : 22,
-                          width: isTablet ? 40 : 22,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Building',
-                        style: GoogleFonts.roboto(
-                            fontSize: isTablet
-                                ? screenWidth * 0.03
-                                : screenWidth * 0.05,
-                            fontWeight: FontWeight.bold,
-                            color: ConstantColors.black),
-                      ),
-                    ],
+            GestureDetector(
+              onTap: () {
+                Navigator.pushReplacementNamed(context, buildingRoute);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: isTablet ? 40 : 22,
+                    width: isTablet ? 40 : 22,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Text(
+                    'Building',
+                    style: GoogleFonts.roboto(
+                        fontSize:
+                            isTablet ? screenWidth * 0.03 : screenWidth * 0.05,
+                        fontWeight: FontWeight.bold,
+                        color: ConstantColors.black),
+                  ),
+                ],
+              ),
             ),
             SizedBox(
               height: screenHeight * 0.02,

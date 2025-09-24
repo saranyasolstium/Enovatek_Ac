@@ -52,36 +52,36 @@ class AddFloorNameState extends State<AddFloorName> {
             padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EditBuildingScreen(
-                                    buildingName: widget.buildingName,
-                                    buildingID: widget.buildingID!,
-                                  )),
-                        );
-                      },
-                      child: Image.asset(
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditBuildingScreen(
+                                buildingName: widget.buildingName,
+                                buildingID: widget.buildingID!,
+                              )),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Image.asset(
                         ImgPath.pngArrowBack,
                         height: isTablet ? 40 : 22,
                         width: isTablet ? 40 : 22,
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Add Floor',
-                      style: GoogleFonts.roboto(
-                          fontSize: isTablet
-                              ? screenWidth * 0.03
-                              : screenWidth * 0.05,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.black),
-                    ),
-                  ],
+                      const SizedBox(width: 10),
+                      Text(
+                        'Add Floor',
+                        style: GoogleFonts.roboto(
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.05,
+                            fontWeight: FontWeight.bold,
+                            color: ConstantColors.black),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 50,

@@ -141,38 +141,30 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
         elevation: 0.0,
         title: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Image.asset(
-                          ImgPath.pngArrowBack,
-                          height: isTablet ? 40 : 22,
-                          width: isTablet ? 40 : 22,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Live Data',
-                        style: GoogleFonts.roboto(
-                            fontSize: isTablet
-                                ? screenWidth * 0.03
-                                : screenWidth * 0.045,
-                            fontWeight: FontWeight.bold,
-                            color: ConstantColors.black),
-                      ),
-                    ],
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: isTablet ? 40 : 22,
+                    width: isTablet ? 40 : 22,
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Live Data',
+                    style: GoogleFonts.roboto(
+                        fontSize:
+                            isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
+                        fontWeight: FontWeight.bold,
+                        color: ConstantColors.black),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
         actions: [

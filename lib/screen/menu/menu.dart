@@ -57,39 +57,31 @@ class MenuScreenState extends State<MenuScreen> {
         elevation: 0.0,
         title: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Image.asset(
-                          ImgPath.pngArrowBack,
-                          height: isTablet ? 30 : 22,
-                          width: isTablet ? 30 : 22,
-                          color: ConstantColors.appColor,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Menu',
-                        style: GoogleFonts.roboto(
-                          fontSize: isTablet
-                              ? screenWidth * 0.025
-                              : screenWidth * 0.045,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.appColor,
-                        ),
-                      ),
-                    ],
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: isTablet ? 30 : 22,
+                    width: isTablet ? 30 : 22,
+                    color: ConstantColors.appColor,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Text(
+                    'Menu',
+                    style: GoogleFonts.roboto(
+                      fontSize:
+                          isTablet ? screenWidth * 0.025 : screenWidth * 0.045,
+                      fontWeight: FontWeight.bold,
+                      color: ConstantColors.appColor,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

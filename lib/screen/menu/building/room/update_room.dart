@@ -67,44 +67,37 @@ class UpdateRoomState extends State<UpdateRoom> {
             ),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EditBuildingScreen(
-                                          buildingName: widget.buildingName,
-                                          buildingID: widget.buildingID,
-                                        )),
-                              );
-                            },
-                            child: Image.asset(
-                              ImgPath.pngArrowBack,
-                              height: isTablet ? 40 : 22,
-                              width: isTablet ? 40 : 22,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            'Room',
-                            style: GoogleFonts.roboto(
-                                fontSize: isTablet
-                                    ? screenWidth * 0.03
-                                    : screenWidth * 0.05,
-                                fontWeight: FontWeight.bold,
-                                color: ConstantColors.black),
-                          ),
-                        ],
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditBuildingScreen(
+                                buildingName: widget.buildingName,
+                                buildingID: widget.buildingID,
+                              )),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        ImgPath.pngArrowBack,
+                        height: isTablet ? 40 : 22,
+                        width: isTablet ? 40 : 22,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 10),
+                      Text(
+                        'Room',
+                        style: GoogleFonts.roboto(
+                            fontSize: isTablet
+                                ? screenWidth * 0.03
+                                : screenWidth * 0.05,
+                            fontWeight: FontWeight.bold,
+                            color: ConstantColors.black),
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: screenHeight * 0.02,

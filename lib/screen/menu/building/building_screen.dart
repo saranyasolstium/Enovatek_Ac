@@ -86,32 +86,30 @@ class BuildingScreenState extends State<BuildingScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          // Navigator.of(context).pushNamedAndRemoveUntil(
-                          //     homedRoute, (route) => false);
-                          Navigator.pop(context);
-                        },
-                        child: Image.asset(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset(
                           ImgPath.pngArrowBack,
                           height: isTablet ? 40 : 22,
                           width: isTablet ? 40 : 22,
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Building',
-                        style: GoogleFonts.roboto(
-                            fontSize: isTablet
-                                ? screenWidth * 0.03
-                                : screenWidth * 0.05,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
-                    ],
+                        const SizedBox(width: 10),
+                        Text(
+                          'Building',
+                          style: GoogleFonts.roboto(
+                              fontSize: isTablet
+                                  ? screenWidth * 0.03
+                                  : screenWidth * 0.05,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 MaterialButton(

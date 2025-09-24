@@ -140,38 +140,34 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           elevation: 0.0,
           title: Stack(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        GestureDetector(
+              GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        ImgPath.pngArrowBack,
+                        height: 22,
+                        width: 22,
+                        color: ConstantColors.appColor,
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
                           onTap: () {
                             Navigator.pop(context);
                           },
-                          child: Image.asset(
-                            ImgPath.pngArrowBack,
-                            height: 22,
-                            width: 22,
-                            color: ConstantColors.appColor,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          'QR Scanner',
-                          style: GoogleFonts.roboto(
-                            fontSize: isTablet ? 22 : 18,
-                            fontWeight: FontWeight.bold,
-                            color: ConstantColors.appColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                          child: Text(
+                            'QR Scanner',
+                            style: GoogleFonts.roboto(
+                              fontSize: isTablet ? 22 : 18,
+                              fontWeight: FontWeight.bold,
+                              color: ConstantColors.appColor,
+                            ),
+                          )),
+                    ],
+                  )),
             ],
           ),
         ),

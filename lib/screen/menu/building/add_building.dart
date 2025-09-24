@@ -41,27 +41,27 @@ class AddBuildingState extends State<AddBuilding> {
         padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
         child: Column(
           children: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Image.asset(
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Row(
+                children: [
+                  Image.asset(
                     ImgPath.pngArrowBack,
                     height: isTablet ? 40 : 22,
                     width: isTablet ? 40 : 22,
                   ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  'Add Building ',
-                  style: GoogleFonts.roboto(
-                      fontSize: isTablet ? 26 : 18,
-                      fontWeight: FontWeight.bold,
-                      color: ConstantColors.black),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Text(
+                    'Add Building ',
+                    style: GoogleFonts.roboto(
+                        fontSize: isTablet ? 26 : 18,
+                        fontWeight: FontWeight.bold,
+                        color: ConstantColors.black),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(
               height: 50,

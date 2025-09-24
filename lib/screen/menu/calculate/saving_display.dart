@@ -21,27 +21,27 @@ class SavingDisplayScreenState extends State<SavingDisplayScreen> {
         padding: const EdgeInsets.fromLTRB(20, 50, 20, 10),
         child: Column(
           children: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Image.asset(
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Row(
+                children: [
+                  Image.asset(
                     ImgPath.pngArrowBack,
                     height: 25,
                     width: 25,
                   ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  'Calculate saving',
-                  style: GoogleFonts.roboto(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: ConstantColors.black),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Text(
+                    'Calculate saving',
+                    style: GoogleFonts.roboto(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: ConstantColors.black),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(
               height: 50,

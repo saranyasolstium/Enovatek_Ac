@@ -186,12 +186,26 @@ class FilterScreenState extends State<FilterScreen> {
             ),
           ),
         ),
-        title: Text(
-          'Filter',
-          style: GoogleFonts.roboto(
-            fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.045,
-            fontWeight: FontWeight.bold,
-            color: ConstantColors.appColor,
+        title: GestureDetector(
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const PowerStatisticsAllScreen(
+                        isFilter: false,
+                        businessUnits: [],
+                        locationUnits: [],
+                        roomUnits: [],
+                      )),
+            );
+          },
+          child: Text(
+            'Filter',
+            style: GoogleFonts.roboto(
+              fontSize: isTablet ? screenWidth * 0.025 : screenWidth * 0.045,
+              fontWeight: FontWeight.bold,
+              color: ConstantColors.appColor,
+            ),
           ),
         ),
         actions: [

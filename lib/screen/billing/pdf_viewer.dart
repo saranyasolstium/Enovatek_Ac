@@ -12,7 +12,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
 class PDFViewerScreen extends StatefulWidget {
   final String? paymentId;
 
@@ -121,38 +120,31 @@ class PDFViewerScreenState extends State<PDFViewerScreen> {
         automaticallyImplyLeading: false,
         title: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Image.asset(
-                          ImgPath.pngArrowBack,
-                          height: 22,
-                          width: 22,
-                          color: ConstantColors.appColor,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'PDF Viewer',
-                        style: GoogleFonts.roboto(
-                          fontSize: 18.dynamic,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.appColor,
-                        ),
-                      ),
-                    ],
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: 22,
+                    width: 22,
+                    color: ConstantColors.appColor,
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'PDF Viewer',
+                    style: GoogleFonts.roboto(
+                      fontSize: 18.dynamic,
+                      fontWeight: FontWeight.bold,
+                      color: ConstantColors.appColor,
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
         actions: [

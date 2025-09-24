@@ -92,44 +92,37 @@ class PaymentPageState extends State<PaymentPage> {
         elevation: 0.0,
         title: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => BillingScreen(
-                                      monthYear: widget.month,
-                                    )),
-                          );
-                        },
-                        child: Image.asset(
-                          ImgPath.pngArrowBack,
-                          height: isTablet ? 28 : 22,
-                          width: isTablet ? 28 : 22,
-                          color: ConstantColors.appColor,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Payment',
-                        style: GoogleFonts.roboto(
-                          fontSize: isTablet ? 22.dynamic : 18.dynamic,
-                          fontWeight: FontWeight.bold,
-                          color: ConstantColors.appColor,
-                        ),
-                      ),
-                    ],
+            GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BillingScreen(
+                            monthYear: widget.month,
+                          )),
+                );
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    ImgPath.pngArrowBack,
+                    height: isTablet ? 28 : 22,
+                    width: isTablet ? 28 : 22,
+                    color: ConstantColors.appColor,
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Payment',
+                    style: GoogleFonts.roboto(
+                      fontSize: isTablet ? 22.dynamic : 18.dynamic,
+                      fontWeight: FontWeight.bold,
+                      color: ConstantColors.appColor,
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),

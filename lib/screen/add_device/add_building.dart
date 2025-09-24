@@ -96,18 +96,17 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Expanded(
+                    child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Image.asset(
-                          ImgPath.pngArrowBack,
-                          height: isTablet ? 40 : 22,
-                          width: isTablet ? 40 : 22,
-                        ),
+                      Image.asset(
+                        ImgPath.pngArrowBack,
+                        height: isTablet ? 40 : 22,
+                        width: isTablet ? 40 : 22,
                       ),
                       const SizedBox(width: 10),
                       Text(
@@ -121,7 +120,7 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                       ),
                     ],
                   ),
-                ),
+                )),
                 MaterialButton(
                   onPressed: () {
                     Navigator.pushNamed(context, addBuildingRoute);

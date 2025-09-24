@@ -55,28 +55,28 @@ class DeviceNameScreenState extends State<DeviceNameScreen> {
         ),
         child: Column(
           children: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Image.asset(
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Row(
+                children: [
+                  Image.asset(
                     ImgPath.pngArrowBack,
                     height: isTablet ? 40 : 22,
                     width: isTablet ? 40 : 22,
                   ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  'Add Device',
-                  style: GoogleFonts.roboto(
-                      fontSize:
-                          isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
-                      fontWeight: FontWeight.bold,
-                      color: ConstantColors.black),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Text(
+                    'Add Device',
+                    style: GoogleFonts.roboto(
+                        fontSize:
+                            isTablet ? screenWidth * 0.03 : screenWidth * 0.045,
+                        fontWeight: FontWeight.bold,
+                        color: ConstantColors.black),
+                  ),
+                ],
+              ),
             ),
             SizedBox(
               height: isTablet ? 20 : 50,
