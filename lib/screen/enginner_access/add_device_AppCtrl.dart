@@ -13,7 +13,9 @@ import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/rounded_btn.dart';
 
 class AddDeviceAppCtrlScreen extends StatefulWidget {
-  const AddDeviceAppCtrlScreen({Key? key}) : super(key: key);
+  final String serialID;
+  const AddDeviceAppCtrlScreen({Key? key, required this.serialID})
+      : super(key: key);
 
   @override
   AddDeviceAppCtrlScreenState createState() => AddDeviceAppCtrlScreenState();
@@ -31,6 +33,19 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
 
   int selectedFrequency = 0;
   String frequency = "60";
+
+  @override
+  void initState() {
+    super.initState();
+    deviceUIDController.text = widget.serialID.length > 12
+        ? widget.serialID.substring(widget.serialID.length - 12)
+        : widget.serialID;
+    mqttEndPointController.text =
+        "a3bd9ic9v4dpst-ats.iot.ap-southeast-1.amazonaws.com";
+    mqttPortController.text = "8883";
+    mqttPublishTopicController.text = "power/data";
+    mqttSubscribeTopicController.text = "power/cmd";
+  }
 
   void sendConfigurationPackage() async {
     const String deviceIP = '192.6.6.6';
@@ -271,6 +286,7 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                 ),
                 child: TextField(
                   autocorrect: false,
+                  enabled: false,
                   controller: mqttEndPointController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
@@ -294,6 +310,7 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                 ),
                 child: TextField(
                   autocorrect: false,
+                  enabled: false,
                   controller: mqttPortController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
@@ -317,6 +334,7 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                 ),
                 child: TextField(
                   autocorrect: false,
+                  enabled: false,
                   controller: mqttPublishTopicController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
@@ -340,6 +358,7 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                 ),
                 child: TextField(
                   autocorrect: false,
+                  enabled: false,
                   controller: mqttSubscribeTopicController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(

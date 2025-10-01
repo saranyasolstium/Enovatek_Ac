@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/enginner_access/add_device_AppCtrl.dart';
+import 'package:enavatek_mobile/screen/enginner_access/scan_deviceId.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/path/path.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
@@ -43,8 +44,7 @@ class EnginnerHomeScreenState extends State<EnginnerHomeScreen> {
         print("connect initiated: $value");
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => const AddDeviceAppCtrlScreen()),
+          MaterialPageRoute(builder: (context) => const ScannerScreen()),
         );
       });
     } else {
