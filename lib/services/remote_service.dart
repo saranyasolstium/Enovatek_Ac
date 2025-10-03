@@ -8,7 +8,8 @@ import 'package:http/http.dart';
 
 class RemoteServices {
   static var client = http.Client();
-  static String url = 'http://18.140.164.164/';
+  // static String url = 'http://18.140.164.164/';
+  static String url = 'http://api.enovatek.solstium.net/';
 
   //Facebook login
   static Future<Response> login(
@@ -932,6 +933,28 @@ class RemoteServices {
     } catch (e) {
       rethrow;
     }
+  }
+
+  static Future<Response> checkMqttStaus(
+    String authToken,
+    String deviceId,
+  ) async {
+    final apiUrl = '${url}api/mqtt/device_status';
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $authToken',
+    };
+    Map<String, dynamic> requestBody = {
+      "device_id": deviceId,
+    };
+    print(requestBody);
+    final body = jsonEncode(requestBody);
+
+    return await post(
+      Uri.parse(apiUrl),
+      headers: headers,
+      body: body,
+    );
   }
 
   static Future<Response> deleteAccount(

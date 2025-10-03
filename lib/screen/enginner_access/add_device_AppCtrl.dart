@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
+import 'package:enavatek_mobile/screen/enginner_access/mqtt_wait_screen.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/widget/footer.dart';
 import 'package:enavatek_mobile/widget/snackbar.dart';
@@ -43,8 +44,8 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
     mqttEndPointController.text =
         "a3bd9ic9v4dpst-ats.iot.ap-southeast-1.amazonaws.com";
     mqttPortController.text = "8883";
-    mqttPublishTopicController.text = "power/data";
-    mqttSubscribeTopicController.text = "power/cmd";
+    // mqttPublishTopicController.text = "power/data";
+    // mqttSubscribeTopicController.text = "power/cmd";
   }
 
   void sendConfigurationPackage() async {
@@ -78,9 +79,17 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
         String response = String.fromCharCodes(data);
         print('Response: $response');
         if (response.contains('CFGUOK')) {
-          SnackbarHelper.showSnackBar(context,
-              "Configuration has been successfully sent to the controller.");
+          AlertHelper.showMessage(context,
+              message:
+                  "Configuration has been successfully sent to the controller.",
+              isSuccess: true);
+
           sendConfig();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MQTTWaitingScreen(deviceName: deviceId)),
+          );
         } else {
           print('Configuration failed.');
         }
@@ -89,12 +98,13 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
       await socket.close();
       print('Connection closed.');
     } catch (e) {
-      print(e);
-      SnackbarHelper.showSnackBar(context, 'Error sending configuration: $e');
+      AlertHelper.showMessage(context,
+          message: "Error sending configuration", isSuccess: false);
+
       if (e is SocketException) {
-        SnackbarHelper.showSnackBar(context, 'SocketException: ${e.message}');
+        print('Connection closed.');
       } else {
-        SnackbarHelper.showSnackBar(context, 'Other exception: $e');
+        print('Connection closed.');
       }
     }
   }
@@ -334,7 +344,6 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                 ),
                 child: TextField(
                   autocorrect: false,
-                  enabled: false,
                   controller: mqttPublishTopicController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
@@ -358,7 +367,6 @@ class AddDeviceAppCtrlScreenState extends State<AddDeviceAppCtrlScreen> {
                 ),
                 child: TextField(
                   autocorrect: false,
-                  enabled: false,
                   controller: mqttSubscribeTopicController,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
