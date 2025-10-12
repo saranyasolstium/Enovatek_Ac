@@ -57,7 +57,15 @@ class LoginScreenState extends State<LoginScreen> {
           String errorMessage =
               data["error_description"] ?? "Unknown error occurred.";
           SnackbarHelper.showSnackBar(context, errorMessage);
-          return; // Stop further processing since it's an error
+          await RemoteServices.createUserActivity(
+            userId: 0, // unknown on failure
+            userTypeId: 0,
+            remarks:
+                'Login failed for $emailId (device: $deviceID): $errorMessage',
+            module: 'Auth',
+            action: 'Failed',
+          );
+          return;
         } else {
           String accessToken = data['accessToken'];
           int loginId = data['loginId'];
@@ -72,14 +80,19 @@ class LoginScreenState extends State<LoginScreen> {
           await SharedPreferencesHelper.instance.setUserTypeID(userType);
           await SharedPreferencesHelper.instance
               .saveUserDataToSharedPreferences(profileName, profileEmailId);
+          // await RemoteServices.createUserActivity(
+          //   userId: userId,
+          //   userTypeId: userType,
+          //   remarks: 'Login success for $emailId (device: $deviceID)',
+          //   module: 'Auth',
+          //   action: 'Login',
+          //   bearerToken: accessToken,
+          // );
           AuthHelper authHelper =
               Provider.of<AuthHelper>(context, listen: false);
           authHelper.setLoggedIn(true);
           //userType == 1 Enginner
-          if (userType == 1) {
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil(enginnerHomeRounte, (route) => false);
-          } else {
+          if (userType == 1 || userType == 2) {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
@@ -91,22 +104,41 @@ class LoginScreenState extends State<LoginScreen> {
               ),
               (Route<dynamic> route) => false,
             );
+          } else {
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(enginnerHomeRounte, (route) => false);
           }
           SnackbarHelper.showSnackBar(context, "Login Successful");
         }
       } else {
         var data = jsonDecode(response.body);
         print(data);
+        String? msg;
+
         if (data.containsKey("error_description")) {
+          msg = data["error_description"];
+
           String errorMessage = data["error_description"];
           SnackbarHelper.showSnackBar(context, errorMessage);
         } else if (data.containsKey("message")) {
+          msg = data["message"];
+
           String errorMessage = data["message"];
           SnackbarHelper.showSnackBar(context, errorMessage);
         } else {
+          msg ??= "Login failed! Please try again.";
+
           SnackbarHelper.showSnackBar(
               context, "Login failed! Please try again.");
         }
+        await RemoteServices.createUserActivity(
+          userId: 0,
+          userTypeId: 0,
+          remarks:
+              'Login failed for $emailId (device: $deviceID): HTTP ${response.statusCode} - $msg',
+          module: 'Auth',
+          action: 'Failed',
+        );
       }
     } catch (error) {
       print(error);

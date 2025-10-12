@@ -160,7 +160,8 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
             RoundedButton(
               onPressed: () async {
                 String buildingName = buildingNameController.text;
-
+                int? userTypeId =
+                    await SharedPreferencesHelper.instance.getUserTypeID();
                 if (buildingName.isEmpty) {
                   SnackbarHelper.showSnackBar(
                       context, "Please enter a building name");
@@ -175,12 +176,30 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                   if (data.containsKey("message")) {
                     String message = data["message"];
                     SnackbarHelper.showSnackBar(context, message);
+                    await RemoteServices.createUserActivity(
+                      userId: userId!,
+                      userTypeId: userTypeId!,
+                      remarks:
+                          'Success,MobileApp: Building Updated. name="$buildingName',
+                      module: 'Building',
+                      action: 'update',
+                      bearerToken: authToken,
+                    );
                   }
                   Navigator.pushReplacementNamed(context, buildingRoute);
                 } else {
                   if (data.containsKey("message")) {
                     String errorMessage = data["message"];
                     SnackbarHelper.showSnackBar(context, errorMessage);
+                    await RemoteServices.createUserActivity(
+                      userId: userId!,
+                      userTypeId: userTypeId!,
+                      remarks:
+                          'Success,MobileApp: Building Updated. name="$buildingName',
+                      module: 'Building',
+                      action: 'update',
+                      bearerToken: authToken,
+                    );
                   }
                 }
               },
@@ -315,6 +334,10 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                             ),
                                             MaterialDeleteButton(
                                                 onPressed: () async {
+                                              int? userTypeId =
+                                                  await SharedPreferencesHelper
+                                                      .instance
+                                                      .getUserTypeID();
                                               Response response =
                                                   await RemoteServices
                                                       .deleteFloor(
@@ -332,6 +355,16 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                                       data["message"];
                                                   SnackbarHelper.showSnackBar(
                                                       context, message);
+                                                  await RemoteServices
+                                                      .createUserActivity(
+                                                    userId: userId!,
+                                                    userTypeId: userTypeId!,
+                                                    remarks:
+                                                        'Success,MobileApp: Floor deleted. id="${widget.buildingID}',
+                                                    module: 'Building',
+                                                    action: 'delete',
+                                                    bearerToken: authToken,
+                                                  );
                                                 }
                                                 getAllDevice();
                                               } else {
@@ -341,6 +374,16 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                                       data["message"];
                                                   SnackbarHelper.showSnackBar(
                                                       context, errorMessage);
+                                                  await RemoteServices
+                                                      .createUserActivity(
+                                                    userId: userId!,
+                                                    userTypeId: userTypeId!,
+                                                    remarks:
+                                                        'Failed,MobileApp: Floor delete Failed. id="${widget.buildingID}',
+                                                    module: 'Building',
+                                                    action: 'delete',
+                                                    bearerToken: authToken,
+                                                  );
                                                 }
                                               }
                                             }),
@@ -417,6 +460,10 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                                           MaterialDeleteButton(
                                                               onPressed:
                                                                   () async {
+                                                            int? userTypeId =
+                                                                await SharedPreferencesHelper
+                                                                    .instance
+                                                                    .getUserTypeID();
                                                             Response response =
                                                                 await RemoteServices.deleteRoom(
                                                                     authToken!,
@@ -444,6 +491,21 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                                                     .showSnackBar(
                                                                         context,
                                                                         message);
+                                                                await RemoteServices
+                                                                    .createUserActivity(
+                                                                  userId:
+                                                                      userId!,
+                                                                  userTypeId:
+                                                                      userTypeId!,
+                                                                  remarks:
+                                                                      'Success,MobileApp: Room deleted. id="${widget.buildingID}',
+                                                                  module:
+                                                                      'Building',
+                                                                  action:
+                                                                      'delete',
+                                                                  bearerToken:
+                                                                      authToken,
+                                                                );
                                                               }
                                                               getAllDevice();
                                                             } else {
@@ -457,6 +519,21 @@ class EditBuildingScreenState extends State<EditBuildingScreen> {
                                                                     .showSnackBar(
                                                                         context,
                                                                         errorMessage);
+                                                                await RemoteServices
+                                                                    .createUserActivity(
+                                                                  userId:
+                                                                      userId!,
+                                                                  userTypeId:
+                                                                      userTypeId!,
+                                                                  remarks:
+                                                                      'Failed,MobileApp: Failed to room delete. id="${widget.buildingID}',
+                                                                  module:
+                                                                      'Building',
+                                                                  action:
+                                                                      'delete',
+                                                                  bearerToken:
+                                                                      authToken,
+                                                                );
                                                               }
                                                             }
                                                           }),

@@ -106,6 +106,8 @@ class AddBuildingState extends State<AddBuilding> {
                     await SharedPreferencesHelper.instance.getAuthToken();
                 int? userId =
                     await SharedPreferencesHelper.instance.getUserID();
+                int? userTypeId =
+                    await SharedPreferencesHelper.instance.getUserTypeID();
                 Response response = await RemoteServices.addBuildingName(
                     authToken!, buildingName, 0, userId!);
                 var data = jsonDecode(response.body);
@@ -114,13 +116,30 @@ class AddBuildingState extends State<AddBuilding> {
                   if (data.containsKey("message")) {
                     String message = data["message"];
                     SnackbarHelper.showSnackBar(context, message);
+                    await RemoteServices.createUserActivity(
+                      userId: userId,
+                      userTypeId: userTypeId!,
+                      remarks:
+                          'Success,MobileApp: Building created. name="$buildingName',
+                      module: 'Building',
+                      action: 'create',
+                      bearerToken: authToken,
+                    );
                   }
-                  // Navigator.pushReplacementNamed(context, buildingRoute);
                   Navigator.pop(context);
                 } else {
                   if (data.containsKey("message")) {
                     String errorMessage = data["message"];
                     SnackbarHelper.showSnackBar(context, errorMessage);
+                    await RemoteServices.createUserActivity(
+                      userId: userId,
+                      userTypeId: userTypeId!,
+                      remarks:
+                          'Failed,MobileApp: Building create FAILED. name="$buildingName',
+                      module: 'Building',
+                      action: 'create',
+                      bearerToken: authToken,
+                    );
                   }
                 }
               },

@@ -207,6 +207,9 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                                     int? userId = await SharedPreferencesHelper
                                         .instance
                                         .getUserID();
+                                    int? userTypeId =
+                                        await SharedPreferencesHelper.instance
+                                            .getUserTypeID();
                                     Response response =
                                         await RemoteServices.deleteBuilding(
                                             authToken!,
@@ -220,6 +223,15 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                                         String message = data["message"];
                                         SnackbarHelper.showSnackBar(
                                             context, message);
+                                        await RemoteServices.createUserActivity(
+                                          userId: userId,
+                                          userTypeId: userTypeId!,
+                                          remarks:
+                                              'Success,MobileApp: Building deleted. name="${building.name}',
+                                          module: 'Building',
+                                          action: 'delete',
+                                          bearerToken: authToken,
+                                        );
                                       }
                                       getAllDevice();
                                     } else {
@@ -227,6 +239,15 @@ class DeviceAddBuildingScreenState extends State<DeviceAddBuildingScreen> {
                                         String errorMessage = data["message"];
                                         SnackbarHelper.showSnackBar(
                                             context, errorMessage);
+                                        await RemoteServices.createUserActivity(
+                                          userId: userId,
+                                          userTypeId: userTypeId!,
+                                          remarks:
+                                              'Failed,MobileApp: Building deleted. name="${building.name}',
+                                          module: 'Building',
+                                          action: 'delete',
+                                          bearerToken: authToken,
+                                        );
                                       }
                                     }
                                   },

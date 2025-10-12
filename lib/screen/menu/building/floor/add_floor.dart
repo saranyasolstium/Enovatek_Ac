@@ -107,6 +107,8 @@ class AddFloorNameState extends State<AddFloorName> {
                         await SharedPreferencesHelper.instance.getAuthToken();
                     int? userId =
                         await SharedPreferencesHelper.instance.getUserID();
+                    int? userTypeId =
+                        await SharedPreferencesHelper.instance.getUserTypeID();
                     Response response = await RemoteServices.createFloor(
                         authToken!, floorName, widget.buildingID!, 0, userId!);
                     var data = jsonDecode(response.body);
@@ -115,6 +117,15 @@ class AddFloorNameState extends State<AddFloorName> {
                       if (data.containsKey("message")) {
                         String message = data["message"];
                         SnackbarHelper.showSnackBar(context, message);
+                        await RemoteServices.createUserActivity(
+                          userId: userId,
+                          userTypeId: userTypeId!,
+                          remarks:
+                              'Success,MobileApp: Floor created. name="$floorName',
+                          module: 'Floor',
+                          action: 'Create',
+                          bearerToken: authToken,
+                        );
                       }
                       Navigator.pushReplacement(
                         context,
@@ -128,6 +139,15 @@ class AddFloorNameState extends State<AddFloorName> {
                       if (data.containsKey("message")) {
                         String errorMessage = data["message"];
                         SnackbarHelper.showSnackBar(context, errorMessage);
+                        await RemoteServices.createUserActivity(
+                          userId: userId,
+                          userTypeId: userTypeId!,
+                          remarks:
+                              'Failed,MobileApp: Floor create Failed. name="$floorName',
+                          module: 'Floor',
+                          action: 'Create',
+                          bearerToken: authToken,
+                        );
                       }
                     }
                   },

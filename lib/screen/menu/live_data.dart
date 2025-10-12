@@ -185,6 +185,7 @@ class LiveDataScreenState extends State<LiveDataScreen> {
                         MaterialPageRoute(
                             builder: (context) => PowerStatisticsLiveScreen(
                                   deviceId: device.deviceId,
+                                  deviceName: device.displayName,
                                 )),
                       );
                     },

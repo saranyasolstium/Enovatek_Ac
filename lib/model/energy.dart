@@ -7,6 +7,7 @@ class EnergyData {
   final double energySaving;
   final double totalCo2Emission;
   final double dcCo2Reduction;
+  final double energySavingAc;
   final double treesPlanted;
   final DateTime period;
 
@@ -18,6 +19,7 @@ class EnergyData {
     required this.totalCo2Emission,
     required this.dcCo2Reduction,
     required this.treesPlanted,
+    required this.energySavingAc,
     required this.period,
   });
 
@@ -33,7 +35,13 @@ class EnergyData {
           ? (json['energy_saving'] as num).toDouble()
           : double.tryParse(json['energy_saving'].toString()) ?? 0.0;
 
+      // ✅ New parsing for energy_saving_ac
+      double energySavingAc = (json['energy_saving_ac'] is num)
+          ? (json['energy_saving_ac'] as num).toDouble()
+          : double.tryParse(json['energy_saving_ac'].toString()) ?? 0.0;
+
       print('Parsed Energy Saving: $energySaving');
+      print('Parsed Energy Saving AC: $energySavingAc');
 
       double totalCo2Emission = (json['total_co2_emission'] as num).toDouble();
       double dcCo2Reduction = (json['dc_co2_reduction'] as num).toDouble();
@@ -48,6 +56,7 @@ class EnergyData {
         totalCo2Emission: totalCo2Emission < 0 ? 0 : totalCo2Emission,
         dcCo2Reduction: dcCo2Reduction < 0 ? 0 : dcCo2Reduction,
         treesPlanted: treesPlanted < 0 ? 0 : treesPlanted,
+        energySavingAc: energySavingAc < 0 ? 0 : energySavingAc,
         period: period,
       );
     } catch (e) {

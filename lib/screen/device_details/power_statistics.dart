@@ -90,6 +90,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     getCountryCurrency(AppState().selectedCountryNotifier.value);
     getAllDevice();
 
+    fetchCountry(false);
     _tooltipBehavior = TooltipBehavior(
       enable: true,
     );
@@ -342,9 +343,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       setState(() {
         countryList = data;
         fetchData(energyType);
-        if (status) {
-          countrySelection();
-        }
+        // if (status) {
+        //   countrySelection();
+        // }
       });
     } catch (e) {
       // Handle error
@@ -504,13 +505,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   }
 
   Future<void> countrySelection() async {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final bool isTablet = screenWidth >= 600;
-
-    String radioValue = AppState().selectedCountryNotifier.value.toUpperCase();
-    String currency = "";
-    TextEditingController countryController = TextEditingController();
-    TextEditingController energyController = TextEditingController();
+    // Keep the exact value (no uppercasing) so it matches list item values
+    String radioValue = AppState().selectedCountryNotifier.value;
 
     return showDialog(
       context: context,
@@ -518,6 +514,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         return StatefulBuilder(
           builder:
               (BuildContext context, void Function(void Function()) setState) {
+            // Exclude any "Custom" option from the list entirely
+            final List<CountryData> options = countryList.where((c) {
+              final name = c.name.toLowerCase();
+              final code = c.currencyType.toLowerCase();
+              return name != 'custom' && code != 'custom';
+            }).toList();
+
             return AlertDialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -534,6 +537,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
+                      // Header
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -546,9 +550,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                             ),
                           ),
                           InkWell(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
+                            onTap: () => Navigator.of(context).pop(),
                             child: Padding(
                               padding: EdgeInsets.only(right: 10.dynamic),
                               child: const Icon(Icons.close),
@@ -560,169 +562,67 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         padding: EdgeInsets.only(
                             top: 10.dynamic, bottom: 10.dynamic),
                         child: Divider(
-                          thickness: 1.dynamic,
-                          color: Colors.black12,
-                        ),
+                            thickness: 1.dynamic, color: Colors.black12),
                       ),
-                      // Country Selection Radio Buttons
-                      ...countryList.map((country) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CountryFlag.fromCountryCode(
-                              country.currencyType.isNotEmpty
-                                  ? country.currencyType
-                                  : "sg",
-                              shape: const Circle(),
-                              height: 25.dynamic,
-                              width: 25.dynamic,
-                            ),
-                            SizedBox(width: 20.dynamic),
-                            Text(
-                              country.name,
-                              style: GoogleFonts.roboto(
-                                fontSize: 14.dynamic,
-                                color: ConstantColors.appColor,
+
+                      // Country Selection (whole row tappable)
+                      ...options.map((country) {
+                        final String value = country.currencyType;
+                        return RadioListTile<String>(
+                          value: value,
+                          groupValue: radioValue,
+                          onChanged: (v) => setState(() => radioValue = v!),
+                          activeColor: ConstantColors.borderButtonColor,
+                          selected: radioValue == value,
+                          selectedTileColor: ConstantColors.borderButtonColor
+                              .withOpacity(0.08),
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.trailing,
+                          title: Row(
+                            children: [
+                              CountryFlag.fromCountryCode(
+                                value.isNotEmpty ? value : "sg",
+                                shape: const Circle(),
+                                height: 25.dynamic,
+                                width: 25.dynamic,
                               ),
-                            ),
-                            const Spacer(),
-                            Transform.scale(
-                              scale: 1,
-                              child: Radio(
-                                value: country.currencyType,
-                                groupValue: radioValue,
-                                hoverColor: ConstantColors.borderButtonColor,
-                                fillColor: MaterialStateColor.resolveWith(
-                                    (states) =>
-                                        ConstantColors.borderButtonColor),
-                                onChanged: (value) {
-                                  setState(() {
-                                    radioValue = value.toString();
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                      SizedBox(height: 10.dynamic),
-                      if (radioValue == "Custom") ...[
-                        Container(
-                          padding: EdgeInsets.only(
-                            left: 20,
-                            right: 0,
-                            top: isTablet ? 20 : 0,
-                            bottom: isTablet ? 20 : 0,
-                          ),
-                          decoration: BoxDecoration(
-                            color: ConstantColors.inputColor,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: TextField(
-                            onTap: () {
-                              showCountryPicker(
-                                context: context,
-                                showPhoneCode: false,
-                                onSelect: (Country country) {
-                                  countryController.text = country.name;
-                                  currency = country.countryCode;
-                                },
-                              );
-                            },
-                            controller: countryController,
-                            autocorrect: false,
-                            readOnly: true,
-                            textAlignVertical: TextAlignVertical.center,
-                            decoration: InputDecoration(
-                              suffixIcon: Icon(
-                                Icons.expand_more,
-                                size: screenWidth * 0.05,
-                                color: ConstantColors.mainlyTextColor,
-                              ),
-                              border: InputBorder.none,
-                              hintStyle: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.04,
-                              ),
-                              hintText: 'Select Country',
-                            ),
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.04,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10.dynamic),
-                        Container(
-                          padding: EdgeInsets.only(
-                            left: 20,
-                            right: 0,
-                            top: isTablet ? 20 : 0,
-                            bottom: isTablet ? 20 : 0,
-                          ),
-                          decoration: BoxDecoration(
-                            color: ConstantColors.inputColor,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: TextField(
-                            controller: energyController,
-                            textAlignVertical: TextAlignVertical.center,
-                            decoration: InputDecoration(
-                              prefixIcon: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 15.0),
+                              SizedBox(width: 20.dynamic),
+                              Expanded(
                                 child: Text(
-                                  'USD | ',
+                                  country.name,
                                   style: GoogleFonts.roboto(
-                                    fontSize: screenWidth * 0.04,
-                                    color: Colors.black,
+                                    fontSize: 14.dynamic,
+                                    color: ConstantColors.appColor,
+                                    fontWeight: radioValue == value
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
                                   ),
                                 ),
                               ),
-                              border: InputBorder.none,
-                              hintStyle: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.04,
-                              ),
-                              hintText: 'Energy rate',
-                            ),
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.04,
-                            ),
+                            ],
                           ),
-                        ),
-                        SizedBox(height: 20.dynamic),
-                      ],
+                        );
+                      }).toList(),
+
+                      SizedBox(height: 10.dynamic),
+
+                      // Apply only (Custom removed)
                       RoundedButton(
-                        text: radioValue == "Custom" ? "Create" : "Apply",
+                        text: "Apply",
                         backgroundColor: ConstantColors.borderButtonColor,
                         textColor: ConstantColors.whiteColor,
                         onPressed: () {
-                          if (radioValue == "Custom") {
-                            if (countryController.text.isEmpty) {
-                              SnackbarHelper.showSnackBar(
-                                  context, "Please select country");
-                            } else if (energyController.text.isEmpty) {
-                              SnackbarHelper.showSnackBar(
-                                  context, "Please select energy");
-                            } else {
-                              // createCountry(
-                              //   countryController.text,
-                              //   currency,
-                              //   double.parse(energyController.text),
-                              // );
-                            }
-                          } else {
-                            setState(() {
-                              print(radioValue);
-                              AppState().selectedCountryNotifier.value =
-                                  radioValue;
-                              energyNotiifer.value = true;
-                              savingNotiifer.value = false;
-                              treeNotiifer.value = false;
-                              selectedTabIndex.value = 0;
-                              fetchData('intraday');
-                              energyType = "intraday";
-                              Navigator.pop(context);
-                            });
-                          }
+                          setState(() {
+                            AppState().selectedCountryNotifier.value =
+                                radioValue;
+                            energyNotiifer.value = true;
+                            savingNotiifer.value = false;
+                            treeNotiifer.value = false;
+                            selectedTabIndex.value = 0;
+                            energyType = "intraday";
+                          });
+                          fetchData('intraday');
+                          Navigator.pop(context);
                         },
                       ),
                     ],
@@ -735,52 +635,6 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       },
     );
   }
-
-  // Future<void> requestStoragePermission() async {
-  //   if (Platform.isAndroid) {
-  //     if (await Permission.storage.request().isGranted) {
-  //       return;
-  //     } else {
-  //       throw Exception("Storage permission not granted");
-  //     }
-  //   }
-  // }
-
-  // Future<void> exportCSV(
-  //     String content, String fileName, BuildContext context) async {
-  //   //  await requestStoragePermission();
-
-  //   Directory? directory;
-
-  //   if (Platform.isAndroid) {
-  //     // App-specific external storage (does NOT need MANAGE_EXTERNAL_STORAGE)
-  //     directory = await getExternalStorageDirectory();
-  //   } else {
-  //     directory = await getApplicationDocumentsDirectory();
-  //   }
-
-  //   if (directory != null) {
-  //     final filePath = '${directory.path}/$fileName';
-  //     final file = File(filePath);
-
-  //     try {
-  //       await file.writeAsString(content);
-  //       print('File saved at: $filePath');
-
-  //       // Optionally share file after saving
-  //       ShareExtend.share(file.path, "file");
-
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('File saved at $filePath')),
-  //       );
-  //     } catch (e) {
-  //       print('Error writing file: $e');
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text('Failed to save file')),
-  //       );
-  //     }
-  //   }
-  // }
 
   Future<void> exportCSV(
       String content, String fileName, BuildContext context) async {
@@ -881,7 +735,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
         actions: [
           GestureDetector(
             onTap: () {
-              fetchCountry(true);
+              // fetchCountry(true);
+              countrySelection();
             },
             child: ValueListenableBuilder<String>(
               valueListenable: AppState().selectedCountryNotifier,
@@ -1629,7 +1484,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                         Container(
                           color: Colors.white,
                           padding: EdgeInsets.symmetric(
-                              horizontal: isTablet ? 100.dynamic : 40.dynamic,
+                              horizontal: isTablet ? 100.dynamic : 20.dynamic,
                               vertical: 10.dynamic),
                           child: Center(
                             child: Row(
@@ -1667,8 +1522,63 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                     ),
                                   ],
                                 ),
-                                SizedBox(
-                                  width: 30.dynamic,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          color: Colors.red,
+                                          width: isTablet
+                                              ? 30.dynamic
+                                              : 20.dynamic,
+                                          height:
+                                              isTablet ? 8.dynamic : 6.dynamic,
+                                        ),
+                                        SizedBox(
+                                          width: 10.dynamic,
+                                        ),
+                                        Text(
+                                          'AC',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: isTablet
+                                                ? screenWidth * 0.022
+                                                : screenWidth * 0.032,
+                                            fontWeight: FontWeight.bold,
+                                            color: ConstantColors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: screenWidth * 0.15,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          color: Colors.green,
+                                          width: isTablet
+                                              ? 30.dynamic
+                                              : 20.dynamic,
+                                          height:
+                                              isTablet ? 8.dynamic : 6.dynamic,
+                                        ),
+                                        SizedBox(
+                                          width: 10.dynamic,
+                                        ),
+                                        Text(
+                                          'DC',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: isTablet
+                                                ? screenWidth * 0.022
+                                                : screenWidth * 0.032,
+                                            fontWeight: FontWeight.bold,
+                                            color: ConstantColors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(
                                   width: isTablet ? 200.dynamic : 120.dynamic,
@@ -2110,9 +2020,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                               ),
                             ),
                           ),
-                          tooltipBehavior: _tooltipBehavior,
+                          tooltipBehavior: TooltipBehavior(
+                            enable: true,
+                            shared: true,
+                            tooltipPosition: TooltipPosition.auto,
+                          ),
                           series: <CartesianSeries>[
-                            LineSeries<EnergyData, String>(
+                            ColumnSeries<EnergyData, String>(
                               dataSource: energyDataList,
                               enableTooltip: true,
                               xValueMapper: (EnergyData data, _) {
@@ -2127,15 +2041,30 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                                   return "";
                                 }
                               },
-                              markerSettings: const MarkerSettings(
-                                isVisible: true,
-                                shape: DataMarkerType.pentagon,
-                                borderWidth: 2,
-                              ),
+                              yValueMapper: (EnergyData data, _) =>
+                                  data.energySavingAc,
+                              name: 'AC Saving',
+                              color: Colors.red,
+                            ),
+                            ColumnSeries<EnergyData, String>(
+                              dataSource: energyDataList,
+                              enableTooltip: true,
+                              xValueMapper: (EnergyData data, _) {
+                                if (energyType == "day" ||
+                                    energyType == "week") {
+                                  return data.getFormattedDate();
+                                } else if (energyType == "month") {
+                                  return data.getFormattedMonth();
+                                } else if (energyType == "year") {
+                                  return data.getFormattedYear();
+                                } else {
+                                  return "";
+                                }
+                              },
                               yValueMapper: (EnergyData data, _) =>
                                   data.energySaving,
-                              name: 'Saving',
-                              color: ConstantColors.borderButtonColor,
+                              name: 'DC Saving',
+                              color: Colors.green,
                             ),
                           ],
                         ),

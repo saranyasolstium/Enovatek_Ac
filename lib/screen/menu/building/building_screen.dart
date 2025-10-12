@@ -224,6 +224,9 @@ class BuildingScreenState extends State<BuildingScreen> {
                                   int? userId = await SharedPreferencesHelper
                                       .instance
                                       .getUserID();
+                                  int? userTypeId =
+                                      await SharedPreferencesHelper.instance
+                                          .getUserTypeID();
                                   Response response =
                                       await RemoteServices.deleteBuilding(
                                           authToken!,
@@ -237,6 +240,15 @@ class BuildingScreenState extends State<BuildingScreen> {
                                       String message = data["message"];
                                       SnackbarHelper.showSnackBar(
                                           context, message);
+                                      await RemoteServices.createUserActivity(
+                                        userId: userId,
+                                        userTypeId: userTypeId!,
+                                        remarks:
+                                            'Success,MobileApp: Building deleted. name="${building.name}',
+                                        module: 'Building',
+                                        action: 'delete',
+                                        bearerToken: authToken,
+                                      );
                                     }
                                     getAllDevice();
                                   } else {
@@ -244,6 +256,15 @@ class BuildingScreenState extends State<BuildingScreen> {
                                       String errorMessage = data["message"];
                                       SnackbarHelper.showSnackBar(
                                           context, errorMessage);
+                                      await RemoteServices.createUserActivity(
+                                        userId: userId,
+                                        userTypeId: userTypeId!,
+                                        remarks:
+                                            'Failed,MobileApp: Building deleted. name="${building.name}',
+                                        module: 'Building',
+                                        action: 'delete',
+                                        bearerToken: authToken,
+                                      );
                                     }
                                   }
                                 },

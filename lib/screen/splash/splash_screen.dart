@@ -97,10 +97,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (isLoggedIn) {
         int? userTypeId =
             await SharedPreferencesHelper.instance.getUserTypeID();
-        if (userTypeId == 1) {
-          Navigator.pushReplacementNamed(context, enginnerHomeRounte);
-        } else {
-          // Navigator.pushReplacementNamed(context, homedRoute);
+        if (userTypeId == 1 || userTypeId == 2) {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -112,6 +109,8 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             (Route<dynamic> route) => false,
           );
+        } else {
+          Navigator.pushReplacementNamed(context, enginnerHomeRounte);
         }
       } else {
         Navigator.pushReplacementNamed(context, loginRoute);

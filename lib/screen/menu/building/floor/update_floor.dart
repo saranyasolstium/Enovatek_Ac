@@ -119,6 +119,8 @@ class UpdateFloorState extends State<UpdateFloor> {
                         await SharedPreferencesHelper.instance.getAuthToken();
                     int? userId =
                         await SharedPreferencesHelper.instance.getUserID();
+                    int? userTypeId =
+                        await SharedPreferencesHelper.instance.getUserTypeID();
                     Response response = await RemoteServices.createFloor(
                         authToken!,
                         floorName,
@@ -131,6 +133,15 @@ class UpdateFloorState extends State<UpdateFloor> {
                       if (data.containsKey("message")) {
                         String message = data["message"];
                         SnackbarHelper.showSnackBar(context, message);
+                        await RemoteServices.createUserActivity(
+                          userId: userId,
+                          userTypeId: userTypeId!,
+                          remarks:
+                              'Success,MobileApp: Floor Updated. name="$floorName',
+                          module: 'Floor',
+                          action: 'Update',
+                          bearerToken: authToken,
+                        );
                       }
                       Navigator.pushReplacement(
                         context,
@@ -144,6 +155,15 @@ class UpdateFloorState extends State<UpdateFloor> {
                       if (data.containsKey("message")) {
                         String errorMessage = data["message"];
                         SnackbarHelper.showSnackBar(context, errorMessage);
+                        await RemoteServices.createUserActivity(
+                          userId: userId,
+                          userTypeId: userTypeId!,
+                          remarks:
+                              'Failed,MobileApp: Floor Update Failed. name="$floorName',
+                          module: 'Floor',
+                          action: 'Update',
+                          bearerToken: authToken,
+                        );
                       }
                     }
                   },

@@ -247,9 +247,9 @@ class BillingScreenState extends State<BillingScreen>
       final data = await RemoteServices.fetchCountryList(token: authToken!);
       setState(() {
         countryList = data;
-        if (status) {
-          countrySelection();
-        }
+        // if (status) {
+        //   countrySelection();
+        // }
       });
     } catch (e) {
       print(e);
@@ -258,7 +258,6 @@ class BillingScreenState extends State<BillingScreen>
 
   Future<void> countrySelection() async {
     final double screenWidth = MediaQuery.of(context).size.width;
-
     String radioValue = AppState().selectedCountryNotifier.value.toUpperCase();
 
     return showDialog(
@@ -314,60 +313,60 @@ class BillingScreenState extends State<BillingScreen>
                         ),
                       ),
                       ...countryList.map((country) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CountryFlag.fromCountryCode(
-                              country.currencyType.isNotEmpty
-                                  ? country.currencyType
-                                  : "sg",
-                              shape: const Circle(),
-                              height: 25.dynamic,
-                              width: 25.dynamic,
-                            ),
-                            SizedBox(width: 20.dynamic),
-                            Text(
-                              country.name,
-                              style: GoogleFonts.roboto(
-                                fontSize: screenWidth * 0.035,
-                                color: ConstantColors.appColor,
+                        return RadioListTile<String>(
+                          value: country.currencyType,
+                          groupValue: radioValue,
+                          onChanged: (value) {
+                            setState(() {
+                              radioValue = value.toString();
+                            });
+                          },
+                          activeColor: ConstantColors.borderButtonColor,
+                          selected: radioValue == country.currencyType,
+                          selectedTileColor: ConstantColors.borderButtonColor
+                              .withOpacity(0.08),
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.trailing,
+                          title: Row(
+                            children: [
+                              CountryFlag.fromCountryCode(
+                                country.currencyType.isNotEmpty
+                                    ? country.currencyType
+                                    : "sg",
+                                shape: const Circle(),
+                                height: 25.dynamic,
+                                width: 25.dynamic,
                               ),
-                            ),
-                            const Spacer(),
-                            Transform.scale(
-                              scale: 1,
-                              child: Radio(
-                                value: country.currencyType,
-                                groupValue: radioValue,
-                                hoverColor: ConstantColors.borderButtonColor,
-                                fillColor: MaterialStateColor.resolveWith(
-                                    (states) =>
-                                        ConstantColors.borderButtonColor),
-                                onChanged: (value) {
-                                  setState(() {
-                                    radioValue = value.toString();
-                                  });
-                                },
+                              SizedBox(width: 20.dynamic),
+                              Text(
+                                country.name,
+                                style: GoogleFonts.roboto(
+                                  fontSize: screenWidth * 0.035,
+                                  color: ConstantColors.appColor,
+                                  fontWeight: radioValue == country.currencyType
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         );
                       }).toList(),
                       SizedBox(height: 10.dynamic),
                       RoundedButton(
-                          text: "Apply",
-                          backgroundColor: ConstantColors.borderButtonColor,
-                          textColor: ConstantColors.whiteColor,
-                          onPressed: () {
-                            setState(() {
-                              print(radioValue);
-                              AppState().selectedCountryNotifier.value =
-                                  radioValue;
-                              fetchData(currentMonthYear);
-
-                              Navigator.pop(context);
-                            });
-                          }),
+                        text: "Apply",
+                        backgroundColor: ConstantColors.borderButtonColor,
+                        textColor: ConstantColors.whiteColor,
+                        onPressed: () {
+                          setState(() {
+                            print(radioValue);
+                            AppState().selectedCountryNotifier.value =
+                                radioValue;
+                            fetchData(currentMonthYear);
+                            Navigator.pop(context);
+                          });
+                        },
+                      ),
                     ],
                   ),
                 )
@@ -441,7 +440,8 @@ class BillingScreenState extends State<BillingScreen>
           actions: [
             GestureDetector(
               onTap: () {
-                fetchCountry(true);
+                // fetchCountry(true);
+                countrySelection();
               },
               child: ValueListenableBuilder<String>(
                 valueListenable: AppState().selectedCountryNotifier,
@@ -817,11 +817,14 @@ class BillingScreenState extends State<BillingScreen>
                       ),
                     )
                   : Container(),
+              const SizedBox(height: 30)
             ],
           ),
         ),
         bottomNavigationBar: Visibility(
-          visible: billingDataList.isNotEmpty && summaryBillList.isNotEmpty,
+          visible: billingDataList.isNotEmpty &&
+              summaryBillList.isNotEmpty &&
+              summaryDetail!.billStatus.isNotEmpty,
           child: ClipRRect(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(30.dynamic),
@@ -832,7 +835,8 @@ class BillingScreenState extends State<BillingScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  if (summaryDetail?.billStatus != "pending")
+                  if (summaryDetail?.billStatus != "pending" &&
+                      (summaryDetail?.billStatus.isNotEmpty ?? true))
                     RoundedButton(
                       onPressed: () {
                         Navigator.push(
@@ -891,7 +895,8 @@ class BillingScreenState extends State<BillingScreen>
                         );
                       }
                     },
-                    text: summaryDetail?.billStatus == "pending"
+                    text: summaryDetail?.billStatus == "pending" ||
+                            (summaryDetail?.billStatus.isEmpty ?? true)
                         ? "Pay now"
                         : "Paid",
                     backgroundColor: ConstantColors.borderButtonColor,

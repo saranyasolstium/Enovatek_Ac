@@ -979,4 +979,41 @@ class RemoteServices {
       rethrow;
     }
   }
+
+  // Add near the bottom of RemoteServices (same class)
+  static Future<void> createUserActivity({
+    required int userId,
+    required int userTypeId,
+    required String remarks,
+    required String module,
+    required String action, // e.g., "Login" or "Failed"
+    String? bearerToken, // optional
+  }) async {
+    final apiUrl = Uri.parse('${url}api/user/create_user_activity');
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      if (bearerToken != null && bearerToken.isNotEmpty)
+        'Authorization': 'Bearer $bearerToken',
+    };
+    print(headers);
+
+    final payload = {
+      "user_id": userId,
+      "user_type_id": userTypeId,
+      "remarks": remarks,
+      "module": module, // e.g., "Auth"
+      "action": action, // e.g., "Login" or "Failed"
+    };
+    print(payload);
+    try {
+      final res =
+          await http.post(apiUrl, headers: headers, body: jsonEncode(payload));
+      // Optional: print response for debugging
+      print('[Activity] status=${res.statusCode} body=${res.body}');
+    } catch (e) {
+      // Don't block app flow if logging fails
+      print('[Activity] error: $e');
+    }
+  }
 }
