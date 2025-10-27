@@ -430,12 +430,13 @@ class RemoteServices {
   }
 
   //get actiontype
-  static Future<Response> getActiontype() async {
+  static Future<Response> getActiontype(String authToken) async {
     try {
       print('${url}api/master/actiontype');
       String apiUrl = '${url}api/master/actiontype';
       Map<String, String> headers = {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
       };
 
       http.Response response = await http.get(
@@ -535,12 +536,16 @@ class RemoteServices {
       {required List<String> deviceId,
       required String periodType,
       required int userId,
-      required int countryId}) async {
+      required int countryId,
+      required String authToken}) async {
     final apiUrl = Uri.parse('${url}api/user/power_consumption_data');
     print('${url}api/user/power_consumption_data');
     final response = await http.post(
       apiUrl,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
+      },
       body: jsonEncode({
         'device_id': deviceId,
         'period_type': periodType,
@@ -760,13 +765,14 @@ class RemoteServices {
     );
   }
 
-  Future<http.Response> export({
-    required List<String> deviceId,
-    required String periodType,
-    required int userId,
-  }) async {
+  Future<http.Response> export(
+      {required List<String> deviceId,
+      required String periodType,
+      required int userId,
+      required String authToken}) async {
     final headers = {
       'Content-Type': 'application/json',
+      'Authorization': 'Bearer $authToken',
     };
 
     final response = await http.post(
@@ -796,12 +802,14 @@ class RemoteServices {
       List<String> deviceId,
       int userId,
       int countryId,
-      String periodValue) async {
+      String periodValue,
+      String authToken) async {
     try {
       print('${url}api/user/power_consumption_bill_status_data');
       String apiUrl = '${url}api/user/power_consumption_bill_status_data';
       Map<String, String> headers = {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
       };
 
       Map<String, dynamic> requestBody = {
@@ -855,13 +863,14 @@ class RemoteServices {
     }
   }
 
-  static Future<Response> paymentUpdate(
-      List<String> deviceId, String month, String paymentId) async {
+  static Future<Response> paymentUpdate(List<String> deviceId, String month,
+      String paymentId, String authToken) async {
     try {
       print('${url}api/user/device_bill_payment_update');
       String apiUrl = '${url}api/user/device_bill_payment_update';
       Map<String, String> headers = {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
       };
       Map<String, dynamic> requestBody = {
         "device_id": deviceId,
@@ -884,12 +893,14 @@ class RemoteServices {
     }
   }
 
-  static Future<Response> downloadInvoice(String? paymentId) async {
+  static Future<Response> downloadInvoice(
+      String? paymentId, String authToken) async {
     try {
       print('${url}api/user/invoice_generation');
       String apiUrl = '${url}api/user/invoice_generation';
       Map<String, String> headers = {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
       };
       Map<String, dynamic> requestBody = {
         "payment_id": paymentId,

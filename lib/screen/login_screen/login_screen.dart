@@ -80,14 +80,14 @@ class LoginScreenState extends State<LoginScreen> {
           await SharedPreferencesHelper.instance.setUserTypeID(userType);
           await SharedPreferencesHelper.instance
               .saveUserDataToSharedPreferences(profileName, profileEmailId);
-          // await RemoteServices.createUserActivity(
-          //   userId: userId,
-          //   userTypeId: userType,
-          //   remarks: 'Login success for $emailId (device: $deviceID)',
-          //   module: 'Auth',
-          //   action: 'Login',
-          //   bearerToken: accessToken,
-          // );
+          await RemoteServices.createUserActivity(
+            userId: userId,
+            userTypeId: userType,
+            remarks: 'Login success for $emailId (device: $deviceID)',
+            module: 'Auth',
+            action: 'Login',
+            bearerToken: accessToken,
+          );
           AuthHelper authHelper =
               Provider.of<AuthHelper>(context, listen: false);
           authHelper.setLoggedIn(true);

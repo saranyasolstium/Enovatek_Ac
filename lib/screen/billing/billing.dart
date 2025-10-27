@@ -75,11 +75,13 @@ class BillingScreenState extends State<BillingScreen>
     'Dec'
   ];
 
+  int? userId = 1;
+
   @override
   void initState() {
     super.initState();
-    // selectedMonthYear = getCurrentMonthYear();
-    // currentMonthYear = getCurrentMonthYear();
+    _loadUserId();
+
     selectedMonthYear = widget.monthYear;
     currentMonthYear = widget.monthYear;
     dateController.text = widget.monthYear;
@@ -95,9 +97,13 @@ class BillingScreenState extends State<BillingScreen>
     last12Months.add("Previous");
 
     last12Months = last12Months.reversed.toList();
-
-    print(last12Months);
     getAllDevice();
+  }
+
+  Future<void> _loadUserId() async {
+    final userTypeId = await SharedPreferencesHelper.instance.getUserTypeID();
+    if (!mounted) return;
+    setState(() => userId = userTypeId);
   }
 
   List<Device> getAllDevices(List<Building> buildings) {
@@ -175,7 +181,7 @@ class BillingScreenState extends State<BillingScreen>
     double totalConsumption = 0.0;
 
     for (var data in billingDataList) {
-      totalConsumption += data.totalConsumption;
+      totalConsumption += data.dcEnergyConsumed;
     }
 
     setState(() {
@@ -210,11 +216,12 @@ class BillingScreenState extends State<BillingScreen>
       billingDataList = [];
       summaryBillList = [];
       String country = AppState().selectedCountryNotifier.value.toUpperCase();
-      print("iururncnbcbn $country");
 
       int? userId = await SharedPreferencesHelper.instance.getUserID();
+      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+
       final result = await RemoteServices.consumptionBillStatus(
-          deviceList, userId!, country == "SG" ? 6 : 9, periodType);
+          deviceList, userId!, country == "SG" ? 6 : 9, periodType, authToken!);
 
       setState(() {
         billingDataList = result['billingData'];
@@ -247,9 +254,6 @@ class BillingScreenState extends State<BillingScreen>
       final data = await RemoteServices.fetchCountryList(token: authToken!);
       setState(() {
         countryList = data;
-        // if (status) {
-        //   countrySelection();
-        // }
       });
     } catch (e) {
       print(e);
@@ -712,8 +716,6 @@ class BillingScreenState extends State<BillingScreen>
                             DataColumn(
                                 label: _buildTableHeader("Due Date", context)),
                             DataColumn(
-                                label: _buildTableHeader("Due By", context)),
-                            DataColumn(
                                 label: _buildTableHeader("Paid Date", context)),
                           ],
                           rows: billingDataList.map((billing) {
@@ -722,7 +724,7 @@ class BillingScreenState extends State<BillingScreen>
                                 DataCell(
                                     _buildTableCell(billing.deviceId, context)),
                                 DataCell(_buildTableCell(
-                                    '${billing.totalConsumption.toString()} kwh',
+                                    '${billing.dcEnergyConsumed.toString()} kwh',
                                     context)),
                                 AppState()
                                             .selectedCountryNotifier
@@ -746,8 +748,6 @@ class BillingScreenState extends State<BillingScreen>
                                     : DataCell(_buildTableCell(
                                         'RM ${billing.billAmount.toString()}',
                                         context)),
-                                DataCell(_buildTableCell(
-                                    billing.getFormattedBillDate(), context)),
                                 DataCell(_buildTableCell(
                                     billing.getFormattedDueDate(), context)),
                                 DataCell(_buildTableCell(
@@ -822,7 +822,8 @@ class BillingScreenState extends State<BillingScreen>
           ),
         ),
         bottomNavigationBar: Visibility(
-          visible: billingDataList.isNotEmpty &&
+          visible: userId != 1 && // 👈 hide admin login
+              billingDataList.isNotEmpty &&
               summaryBillList.isNotEmpty &&
               summaryDetail!.billStatus.isNotEmpty,
           child: ClipRRect(
@@ -865,26 +866,17 @@ class BillingScreenState extends State<BillingScreen>
                         } else {
                           String selectedCountry =
                               AppState().selectedCountryNotifier.value;
+                          final List<String> deviceIds = billingDataList
+                              .map((b) => b.deviceId)
+                              .toSet() // make unique (optional)
+                              .toList();
 
-                          print("saranya123456 $selectedCountry");
-                          // double finalAmount = 0.0;
-                          // if (selectedCountry == "MY") {
-                          //   CurrencyRate rate =
-                          //       await LiveCurrencyRate.convertCurrency(
-                          //           'SGD', 'MYR', amountToPay);
-                          //   print(rate.result);
-                          //   finalAmount =
-                          //       double.parse(rate.result.toStringAsFixed(2));
-                          // }
+                          print("saranya123456 $deviceIds");
 
                           await PaymentService().createPaymentRequest(
                               context,
-                              //amountToPay,
-                              // selectedCountry == "MY"
-                              //     ? finalAmount
-                              // :
                               amountToPay,
-                              deviceList,
+                              deviceIds,
                               selectedMonthYear,
                               selectedCountry == "MY" ? "MYR" : "SGD");
                         }

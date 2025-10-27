@@ -217,11 +217,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       int? userId = await SharedPreferencesHelper.instance.getUserID();
       int? countryId =
           getCountryIdByCurrencyType(AppState().selectedCountryNotifier.value);
+      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
       final data = await RemoteServices.fetchEnergyData(
           deviceId: deviceList,
           periodType: periodType.toLowerCase(),
           userId: userId!,
-          countryId: countryId);
+          countryId: countryId,
+          authToken: authToken!);
       setState(() {
         energyDataList = data;
 
@@ -671,11 +673,13 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   Future<void> exportPowerConsumptionData() async {
     try {
       int? userId = await SharedPreferencesHelper.instance.getUserID();
+      String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+
       var response = await RemoteServices().export(
-        deviceId: widget.deviceList,
-        periodType: energyType,
-        userId: userId!,
-      );
+          deviceId: widget.deviceList,
+          periodType: energyType,
+          userId: userId!,
+          authToken: authToken!);
 
       if (response.statusCode == 200) {
         final csvContent = response.body;

@@ -48,7 +48,6 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getUserDataFromSharedPreferences() async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       userName = prefs.getString('userName');
@@ -79,7 +78,9 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getActionType() async {
-    Response response = await RemoteServices.getActiontype();
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+
+    Response response = await RemoteServices.getActiontype(authToken!);
     if (response.statusCode == 200) {
     } else {
       print('Response body: ${response.body}');

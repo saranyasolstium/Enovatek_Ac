@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
 import 'package:enavatek_mobile/value/dynamic_font.dart';
@@ -31,7 +32,10 @@ class PDFViewerScreenState extends State<PDFViewerScreen> {
   }
 
   Future<void> downloadInvoice() async {
-    Response response = await RemoteServices.downloadInvoice(widget.paymentId);
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+
+    Response response =
+        await RemoteServices.downloadInvoice(widget.paymentId, authToken!);
     print(response.statusCode);
     if (response.statusCode == 200) {
       Directory tempDir = await getTemporaryDirectory();
@@ -49,6 +53,8 @@ class PDFViewerScreenState extends State<PDFViewerScreen> {
   }
 
   Future<void> _downloadPdf() async {
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+
     try {
       // Request Storage Permission (Only needed for Android < 11)
       if (Platform.isAndroid) {
@@ -64,7 +70,7 @@ class PDFViewerScreenState extends State<PDFViewerScreen> {
 
       // Fetch the PDF from API
       http.Response response =
-          await RemoteServices.downloadInvoice(widget.paymentId);
+          await RemoteServices.downloadInvoice(widget.paymentId, authToken!);
 
       if (response.statusCode == 200) {
         Directory? directory;

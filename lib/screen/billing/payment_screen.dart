@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/screen/billing/billing.dart';
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
@@ -32,8 +33,10 @@ class PaymentPageState extends State<PaymentPage> {
   bool _isLoading = true;
 
   Future<void> payment() async {
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+
     Response response = await RemoteServices.paymentUpdate(
-        widget.deviceId, widget.month, widget.paymentId);
+        widget.deviceId, widget.month, widget.paymentId, authToken!);
     print(response.statusCode);
     if (response.statusCode == 200) {
       Timer(const Duration(seconds: 2), () {

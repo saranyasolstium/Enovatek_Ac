@@ -314,7 +314,7 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
                 ],
               ),
             const SizedBox(height: 20),
-            if (userId == 3)
+            if (userId == 1)
               Row(
                 children: [
                   Expanded(
@@ -339,7 +339,7 @@ class PowerStatisticsLiveScreenState extends State<PowerStatisticsLiveScreen>
                 ],
               ),
             const SizedBox(height: 20),
-            if (userId == 3)
+            if (userId == 1) //admin
               Row(
                 children: [
                   Expanded(
