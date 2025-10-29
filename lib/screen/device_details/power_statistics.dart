@@ -69,9 +69,12 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   ValueNotifier<String> currencyCodeNotifier = ValueNotifier<String>("SGD");
   ValueNotifier<String> currencySymbolNotifier = ValueNotifier<String>("\$");
 
+  ValueNotifier<String> acEnergyNotif = ValueNotifier<String>("0kWh");
+  ValueNotifier<String> dcEnergyNotif = ValueNotifier<String>("0kWh");
+  ValueNotifier<String> totalEnergyNotif = ValueNotifier<String>("0kWh");
+
   ValueNotifier<double> acNotifier = ValueNotifier<double>(0);
   ValueNotifier<double> dcNotifier = ValueNotifier<double>(0);
-  late TooltipBehavior _tooltipBehavior;
 
   List<EnergyData> intradayList = [];
 
@@ -83,17 +86,30 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   final int _numberOfArrows = 5;
 
   late AnimationController _blinkController;
+  final List<String> months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+  String currentMonthFull = ""; // "October"
 
   @override
   void initState() {
     super.initState();
+
     getCountryCurrency(AppState().selectedCountryNotifier.value);
     getAllDevice();
 
     fetchCountry(false);
-    _tooltipBehavior = TooltipBehavior(
-      enable: true,
-    );
 
     if (widget.tabIndex == 1) {
       energyNotiifer.value = true;
@@ -181,7 +197,8 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
           print('Device ID: $deviceId');
         });
         fetchCountry(false);
-        powerusages(periodType);
+        powerusages();
+        energyMonthusages();
         fetchData('intraday');
       } else {
         print('Response body does not contain buildings');
@@ -192,9 +209,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   }
 
   void updateTooltip() {
-    setState(() {
-      _tooltipBehavior = TooltipBehavior(enable: true);
-    });
+    setState(() {});
   }
 
   int getCountryIdByCurrencyType(String currencyType) {
@@ -238,6 +253,88 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
       // Handle error
       print(e);
     }
+  }
+
+  Widget monthlyEnergyTable() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "MTD Solar Energy : ${dcEnergyNotif.value}",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          // const SizedBox(height: 12),
+
+          // // Header Row (DC, AC, Total)
+          // const Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     Expanded(
+          //       child: Row(
+          //         children: [
+          //           Text("Total Energy",
+          //               style: TextStyle(
+          //                   fontWeight: FontWeight.w600, fontSize: 14)),
+          //         ],
+          //       ),
+          //     ),
+          //     Expanded(
+          //       child: Row(
+          //         children: [
+          //           Text("DC Energy",
+          //               style: TextStyle(
+          //                   fontWeight: FontWeight.w600, fontSize: 14)),
+          //         ],
+          //       ),
+          //     ),
+          //     Expanded(
+          //       child: Row(
+          //         children: [
+          //           Text("AC Energy",
+          //               style: TextStyle(
+          //                   fontWeight: FontWeight.w600, fontSize: 14)),
+          //         ],
+          //       ),
+          //     ),
+          //   ],
+          // ),
+
+          // const SizedBox(height: 8),
+
+          // // Value Row (1654.2, 1423.4, 3077.6)
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     Expanded(
+          //       child: Text(totalEnergyNotif.value,
+          //           style: const TextStyle(
+          //               fontWeight: FontWeight.w700, fontSize: 15)),
+          //     ),
+          //     Expanded(
+          //       child: Text(dcEnergyNotif.value,
+          //           style: const TextStyle(
+          //               fontWeight: FontWeight.w700, fontSize: 15)),
+          //     ),
+          //     Expanded(
+          //       child: Text(acEnergyNotif.value,
+          //           style: const TextStyle(
+          //               fontWeight: FontWeight.w700, fontSize: 15)),
+          //     ),
+          //   ],
+          // ),
+        ],
+      ),
+    );
   }
 
   Widget buildGraph({
@@ -394,7 +491,44 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
     }
   }
 
-  Future<void> powerusages(String periodType) async {
+  Future<void> energyMonthusages() async {
+    currentMonthFull = months[DateTime.now().month - 1]; // "October"
+    print("currentMonthFull $currentMonthFull");
+
+    String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
+    int? userId = await SharedPreferencesHelper.instance.getUserID();
+    print('hjashhas ${deviceList.length}');
+    final response = await RemoteServices.powerusages(
+        authToken!, deviceList, "month", currentMonthFull, "all", userId!);
+    print('response ${response.body}');
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      if (!mounted) return;
+
+      setState(() {
+        // Extract numeric values for energy
+        String totalEnergyStr = responseData['total_energy'] ?? "0 kWh";
+        print(totalEnergyStr);
+        String acEnergyStr = responseData['ac_energy'] ?? "0 kWh";
+        print(acEnergyStr);
+        String dcEnergyStr = responseData['dc_energy'] ?? "0 kWh";
+        print(dcEnergyStr);
+
+        acEnergyNotif.value = acEnergyStr;
+        dcEnergyNotif.value = dcEnergyStr;
+
+        totalEnergyNotif.value = totalEnergyStr;
+      });
+    } else {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      if (responseData.containsKey('message') &&
+          responseData['message'] == 'No record(s) found') {}
+    }
+  }
+
+  Future<void> powerusages() async {
     DateTime currentDate = DateTime.now();
     String formattedDate =
         "${currentDate.day}-${currentDate.month}-${currentDate.year}";
@@ -438,9 +572,9 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   double _ceilToStep(double x, double step) => (x / step).ceil() * step;
 
   double _scaledStep(double v) {
-    final exp = (math.log(v) / math.ln10).floor(); // order of magnitude
-    final k = math.max(0, exp - 1); // scale one digit down
-    return 5 * math.pow(10.0, k).toDouble(); // 5, 50, 500, ...
+    final exp = (math.log(v) / math.ln10).floor();
+    final k = math.max(0, exp - 1);
+    return 5 * math.pow(10.0, k).toDouble();
   }
 
   double computeMaxY(double rawMax) {
@@ -1117,6 +1251,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
                 ],
               ),
             ),
+            monthlyEnergyTable(),
             ValueListenableBuilder<int>(
               valueListenable: selectedTabIndex,
               builder: (context, value, child) {

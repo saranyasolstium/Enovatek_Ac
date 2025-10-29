@@ -251,7 +251,7 @@ class RemoteServices {
         Uri.parse(apiUrl),
         headers: headers,
       );
-      print(response.body);
+      print('Device On List ${response.body}');
       return response;
     } catch (e) {
       rethrow;
@@ -811,7 +811,7 @@ class RemoteServices {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $authToken',
       };
-
+      print('token $authToken');
       Map<String, dynamic> requestBody = {
         "device_id": deviceId,
         "user_id": userId,
@@ -877,6 +877,34 @@ class RemoteServices {
         "payment_id": paymentId,
         "status": "paid",
         "period_value": month.toLowerCase()
+      };
+      print(requestBody);
+      String jsonBody = jsonEncode(requestBody);
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonBody,
+      );
+      print(response.body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> downloadInvoiceBeforePayment(
+      List<String> deviceId, String month, String authToken) async {
+    try {
+      print('${url}api/user/invoice_generation');
+      String apiUrl = '${url}api/user/invoice_generation';
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
+      };
+      Map<String, dynamic> requestBody = {
+        "device_ids": deviceId,
+        'period': month,
       };
       print(requestBody);
       String jsonBody = jsonEncode(requestBody);

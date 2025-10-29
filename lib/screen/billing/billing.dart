@@ -6,6 +6,7 @@ import 'package:enavatek_mobile/app_state/app_state.dart';
 import 'package:enavatek_mobile/auth/shared_preference_helper.dart';
 import 'package:enavatek_mobile/model/billing.dart';
 import 'package:enavatek_mobile/model/country_data.dart';
+import 'package:enavatek_mobile/screen/billing/Invoice_pdf_viewer.dart';
 import 'package:enavatek_mobile/screen/billing/payment_service.dart';
 import 'package:enavatek_mobile/screen/billing/pdf_viewer.dart';
 import 'package:enavatek_mobile/screen/device_details/power_statistics.dart';
@@ -211,8 +212,8 @@ class BillingScreenState extends State<BillingScreen>
     try {
       setState(() {
         isLoading = true; // Start loading
+        currentMonthYear = periodType;
       });
-
       billingDataList = [];
       summaryBillList = [];
       String country = AppState().selectedCountryNotifier.value.toUpperCase();
@@ -822,10 +823,10 @@ class BillingScreenState extends State<BillingScreen>
           ),
         ),
         bottomNavigationBar: Visibility(
-          visible: userId != 1 && // 👈 hide admin login
+          visible: userId != 1 &&
               billingDataList.isNotEmpty &&
               summaryBillList.isNotEmpty &&
-              summaryDetail!.billStatus.isNotEmpty,
+              (summaryDetail?.billStatus?.isNotEmpty ?? false),
           child: ClipRRect(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(30.dynamic),
@@ -833,72 +834,176 @@ class BillingScreenState extends State<BillingScreen>
             ),
             child: BottomAppBar(
               color: Colors.white,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  if (summaryDetail?.billStatus != "pending" &&
-                      (summaryDetail?.billStatus.isNotEmpty ?? true))
-                    RoundedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PDFViewerScreen(
-                              paymentId: summaryDetail?.paymentId,
-                            ),
-                          ),
-                        );
-                      },
-                      text: "Download Invoice",
-                      backgroundColor: ConstantColors.whiteColor,
-                      textColor: ConstantColors.borderButtonColor,
-                    ),
-                  RoundedButton(
-                    onPressed: () async {
-                      if (summaryDetail?.billStatus == "pending") {
-                        double amountToPay = double.parse(totalBillAmount);
-                        print(selectedMonthYear);
-                        if (amountToPay <= 0.3) {
-                          SnackbarHelper.showSnackBar(
-                            context,
-                            "The amount must be between 0.3 and 999999999.99.",
-                          );
-                        } else {
+              child: Builder(builder: (context) {
+                final status = (summaryDetail?.billStatus ?? '').toLowerCase();
+                final isPending = status == 'pending';
+                final isPaid = status.isNotEmpty && status != 'pending';
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    // ---------- PENDING ----------
+                    if (isPending) ...[
+                      // Pay Now button
+                      RoundedButton(
+                        onPressed: () async {
+                          double amountToPay = double.parse(totalBillAmount);
+                          if (amountToPay <= 0.3) {
+                            SnackbarHelper.showSnackBar(
+                              context,
+                              "The amount must be between 0.3 and 999999999.99.",
+                            );
+                            return;
+                          }
+
                           String selectedCountry =
                               AppState().selectedCountryNotifier.value;
+                          final List<String> deviceIds = billingDataList
+                              .map((b) => b.deviceId)
+                              .toSet()
+                              .toList();
+
+                          await PaymentService().createPaymentRequest(
+                            context,
+                            amountToPay,
+                            deviceIds,
+                            selectedMonthYear,
+                            selectedCountry == "MY" ? "MYR" : "SGD",
+                          );
+                        },
+                        text: "Pay Now",
+                        backgroundColor: ConstantColors.borderButtonColor,
+                        textColor: ConstantColors.whiteColor,
+                      ),
+
+                      // Download Invoice button
+                      RoundedButton(
+                        onPressed: () {
+                          print('saranya');
                           final List<String> deviceIds = billingDataList
                               .map((b) => b.deviceId)
                               .toSet() // make unique (optional)
                               .toList();
 
                           print("saranya123456 $deviceIds");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => InVoicePDFViewerScreen(
+                                deviceId: deviceIds,
+                                month: currentMonthYear,
+                              ),
+                            ),
+                          );
+                        },
+                        text: "Download Invoice",
+                        backgroundColor: ConstantColors.whiteColor,
+                        textColor: ConstantColors.borderButtonColor,
+                      ),
+                    ],
 
-                          await PaymentService().createPaymentRequest(
-                              context,
-                              amountToPay,
-                              deviceIds,
-                              selectedMonthYear,
-                              selectedCountry == "MY" ? "MYR" : "SGD");
-                        }
-                      } else {
-                        SnackbarHelper.showSnackBar(
-                          context,
-                          "You have already made the payment.",
-                        );
-                      }
-                    },
-                    text: summaryDetail?.billStatus == "pending" ||
-                            (summaryDetail?.billStatus.isEmpty ?? true)
-                        ? "Pay now"
-                        : "Paid",
-                    backgroundColor: ConstantColors.borderButtonColor,
-                    textColor: ConstantColors.whiteColor,
-                  ),
-                ],
-              ),
+                    // ---------- PAID ----------
+                    if (isPaid)
+                      RoundedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PDFViewerScreen(
+                                paymentId: summaryDetail?.paymentId,
+                              ),
+                            ),
+                          );
+                        },
+                        text: "Download Invoice",
+                        backgroundColor: ConstantColors.whiteColor,
+                        textColor: ConstantColors.borderButtonColor,
+                      ),
+                  ],
+                );
+              }),
             ),
           ),
         ));
+
+    // bottomNavigationBar: Visibility(
+    //   visible: userId != 1 && // 👈 hide admin login
+    //       billingDataList.isNotEmpty &&
+    //       summaryBillList.isNotEmpty &&
+    //       summaryDetail!.billStatus.isNotEmpty,
+    //   child: ClipRRect(
+    //     borderRadius: BorderRadius.only(
+    //       topLeft: Radius.circular(30.dynamic),
+    //       topRight: Radius.circular(30.dynamic),
+    //     ),
+    //     child: BottomAppBar(
+    //       color: Colors.white,
+    //       child: Row(
+    //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+    //         children: [
+    //           if (summaryDetail?.billStatus != "pending" &&
+    //               (summaryDetail?.billStatus.isNotEmpty ?? true))
+    //             RoundedButton(
+    //               onPressed: () {
+    //                 Navigator.push(
+    //                   context,
+    //                   MaterialPageRoute(
+    //                     builder: (context) => PDFViewerScreen(
+    //                       paymentId: summaryDetail?.paymentId,
+    //                     ),
+    //                   ),
+    //                 );
+    //               },
+    //               text: "Download Invoice",
+    //               backgroundColor: ConstantColors.whiteColor,
+    //               textColor: ConstantColors.borderButtonColor,
+    //             ),
+    //           RoundedButton(
+    //             onPressed: () async {
+    //               if (summaryDetail?.billStatus == "pending") {
+    //                 double amountToPay = double.parse(totalBillAmount);
+    //                 print(selectedMonthYear);
+    //                 if (amountToPay <= 0.3) {
+    //                   SnackbarHelper.showSnackBar(
+    //                     context,
+    //                     "The amount must be between 0.3 and 999999999.99.",
+    //                   );
+    //                 } else {
+    //                   String selectedCountry =
+    //                       AppState().selectedCountryNotifier.value;
+    //                   final List<String> deviceIds = billingDataList
+    //                       .map((b) => b.deviceId)
+    //                       .toSet() // make unique (optional)
+    //                       .toList();
+
+    //                   print("saranya123456 $deviceIds");
+
+    //                   await PaymentService().createPaymentRequest(
+    //                       context,
+    //                       amountToPay,
+    //                       deviceIds,
+    //                       selectedMonthYear,
+    //                       selectedCountry == "MY" ? "MYR" : "SGD");
+    //                 }
+    //               } else {
+    //                 SnackbarHelper.showSnackBar(
+    //                   context,
+    //                   "You have already made the payment.",
+    //                 );
+    //               }
+    //             },
+    //             text: summaryDetail?.billStatus == "pending" ||
+    //                     (summaryDetail?.billStatus.isEmpty ?? true)
+    //                 ? "Pay now"
+    //                 : "Paid",
+    //             backgroundColor: ConstantColors.borderButtonColor,
+    //             textColor: ConstantColors.whiteColor,
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //   ),
+    // ));
   }
 }
 
