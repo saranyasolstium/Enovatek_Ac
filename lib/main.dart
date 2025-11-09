@@ -14,7 +14,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp(options: firebaseOptions);
+  await Firebase.initializeApp(options: firebaseOptions);
   runApp(
     Sizer(
       builder: (context, orientation, deviceType) {

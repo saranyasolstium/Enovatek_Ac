@@ -553,7 +553,7 @@ class RemoteServices {
         "country_id": countryId
       }),
     );
-    print('request ${jsonEncode({
+    print('request123 ${jsonEncode({
           'device_id': deviceId,
           'period_type': periodType,
           'user_id': userId,

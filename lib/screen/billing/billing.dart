@@ -220,7 +220,7 @@ class BillingScreenState extends State<BillingScreen>
 
       int? userId = await SharedPreferencesHelper.instance.getUserID();
       String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
-
+      print(authToken);
       final result = await RemoteServices.consumptionBillStatus(
           deviceList, userId!, country == "SG" ? 6 : 9, periodType, authToken!);
 
@@ -228,6 +228,7 @@ class BillingScreenState extends State<BillingScreen>
         billingDataList = result['billingData'];
         summaryBillList = result['summaryBill'];
         summaryDetail = result['summaryDetail'];
+        print(result['summaryDetail']);
         selectedMonthYear = periodType;
 
         selectedMonth = formatPeriod(billingDataList.first.period);
@@ -399,6 +400,58 @@ class BillingScreenState extends State<BillingScreen>
       });
       print('Selected date: ${dateController.text}');
     }
+  }
+
+  Widget _buildPaymentNotes() {
+    // If no summary detail, or bill not pending → no notes
+    if (summaryDetail == null) return const SizedBox.shrink();
+
+    final status = (summaryDetail!.billStatus).toLowerCase();
+    if (status != 'pending') return const SizedBox.shrink();
+
+    // Parse amounts from API
+    final double penaltyAmount = double.tryParse(summaryDetail!.penalty) ?? 0.0;
+    final double reconnectionCharge =
+        double.tryParse(summaryDetail!.reconnectionCharge) ?? 0.0;
+
+    // If both are 0 → nothing to show
+    if (penaltyAmount <= 0 && reconnectionCharge <= 0) {
+      return const SizedBox.shrink();
+    }
+
+    final String currency =
+        AppState().selectedCountryNotifier.value.toUpperCase() == "SG"
+            ? 'S\$'
+            : 'RM';
+
+    String noteText;
+
+    // 👉 Case 1: reconnectionCharge == 0 → only penalty note
+    if (reconnectionCharge <= 0) {
+      noteText =
+          'Note: Kindly make the payment before the due date to avoid a $currency${penaltyAmount.toStringAsFixed(2)} penalty and reconnection fees.';
+
+      // noteText =
+      //     'Note: A penalty of $currency${penaltyAmount.toStringAsFixed(2)} '
+      //     'is applied. Please pay before the due date to avoid disconnection.';
+    } else {
+      // 👉 Case 2: reconnectionCharge > 0 → show both penalty + reconnection
+      noteText = 'Note: This bill includes a penalty of $currency'
+          '${penaltyAmount.toStringAsFixed(2)} and a reconnection charge of '
+          '$currency${reconnectionCharge.toStringAsFixed(2)}.';
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Text(
+        noteText,
+        style: GoogleFonts.roboto(
+          fontSize: 12,
+          color: reconnectionCharge > 0 ? Colors.red[700] : Colors.orange[700],
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
   }
 
   @override
@@ -659,9 +712,7 @@ class BillingScreenState extends State<BillingScreen>
                   ),
                 ],
               ),
-              SizedBox(
-                height: 10.dynamic,
-              ),
+              _buildPaymentNotes(),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.dynamic),
                 child: Divider(

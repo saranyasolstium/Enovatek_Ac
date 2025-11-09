@@ -55,7 +55,7 @@ class BillingData {
   }
 
   String getFormattedDueDate() {
-     if (dueDate == null || dueDate.isEmpty) {
+    if (dueDate == null || dueDate.isEmpty) {
       return '-';
     }
     DateTime parsedDate = DateTime.parse(dueDate);
@@ -64,7 +64,7 @@ class BillingData {
   }
 
   String getFormattedBillDate() {
-     if (billDate == null || billDate.isEmpty) {
+    if (billDate == null || billDate.isEmpty) {
       return '-';
     }
     DateTime parsedDate = DateTime.parse(billDate);
@@ -107,20 +107,26 @@ class SummaryDetail {
   final String totalConsumption;
   final String billStatus;
   final String paymentId;
+  final String penalty;
+  final String reconnectionCharge;
 
   SummaryDetail({
     required this.totalBillAmount,
     required this.totalConsumption,
     required this.billStatus,
     required this.paymentId,
+    required this.penalty,
+    required this.reconnectionCharge,
   });
 
   factory SummaryDetail.fromJson(Map<String, dynamic> json) {
     return SummaryDetail(
-      totalBillAmount: json['total_bill_amount'],
-      totalConsumption: json['total_consumption'],
-      billStatus: json['bill_status'],
-      paymentId: json['payment_id'],
+      totalBillAmount: json['total_bill_amount'] ?? "0.0",
+      totalConsumption: json['total_consumption'] ?? "0.0",
+      billStatus: json['bill_status'] ?? "",
+      paymentId: json['payment_id'] ?? "",
+      penalty: json['tax_with_penalty'] ?? "0.0",
+      reconnectionCharge: json['tax_with_reconnection_charges'] ?? "0.0",
     );
   }
 }

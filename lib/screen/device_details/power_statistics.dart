@@ -9,6 +9,7 @@ import 'package:enavatek_mobile/model/energy.dart';
 import 'package:enavatek_mobile/router/route_constant.dart';
 import 'package:enavatek_mobile/screen/menu/building/building.dart';
 import 'package:enavatek_mobile/screen/menu/live_data.dart';
+import 'package:enavatek_mobile/services/push_notification_service.dart';
 import 'dart:math' as math;
 import 'package:enavatek_mobile/services/remote_service.dart';
 import 'package:enavatek_mobile/value/constant_colors.dart';
@@ -168,7 +169,7 @@ class PowerStatisticsScreenState extends State<PowerStatisticsScreen>
   }
 
   Future<void> getAllDevice() async {
-    // await FirebaseApi().initNotifications();
+    await FirebaseApi().initNotifications();
 
     String? authToken = await SharedPreferencesHelper.instance.getAuthToken();
     int? userId = await SharedPreferencesHelper.instance.getUserID();
